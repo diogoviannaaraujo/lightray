@@ -214,8 +214,7 @@ public final class Connection {
                 stats.path.duplicates += 1
                 return
             }
-            let plaintext: [UInt8]
-            do { plaintext = try receiveProtection.open(Array(packet.dropFirst(16)), header: Array(packet.prefix(16)), packetNumber: number) } catch {
+            guard let plaintext = try? receiveProtection.open(Array(packet.dropFirst(16)), header: Array(packet.prefix(16)), packetNumber: number) else {
                 stats.path.authenticationFailures += 1
                 return
             }
