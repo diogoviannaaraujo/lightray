@@ -1,0 +1,22 @@
+{
+  "authentication_failures" : 0,
+  "benchmark" : "macOS UDP loopback, AES-GCM, full session",
+  "delivered_mbps_including_drain" : 20.055859835129638,
+  "elapsed_seconds_including_drain" : 4.9875550000000004,
+  "errors" : [
+
+  ],
+  "frames_received" : 300,
+  "frames_submitted" : 300,
+  "latency_p50_ms" : 1.1399999999999999,
+  "latency_p99_ms" : 1.5,
+  "nacks" : 0,
+  "new_client_port" : 58634,
+  "old_client_port" : 58634,
+  "parks" : 0,
+  "resumes" : 0,
+  "retransmits" : 0,
+  "seconds" : 5,
+  "target_mbps" : 20,
+  "udp_received_gbps_including_drain" : 0.020963879897063793
+}
