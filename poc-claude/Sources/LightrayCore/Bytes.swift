@@ -87,6 +87,18 @@ public struct ByteReader: ~Escapable {
         src.withUnsafeBytes { dst.copyMemory(from: $0) }
         offset &+= n
     }
+
+    /// Reads `n` bytes into a fresh array. Keys, tokens and stream tables only;
+    /// never per packet.
+    @inlinable @_lifetime(self: copy self)
+    public mutating func byteArray(_ n: Int) throws(WireError) -> [UInt8] {
+        guard n >= 0, remaining >= n else { throw .truncated }
+        var out = [UInt8](repeating: 0, count: n)
+        let src = bytes.extracting(unchecked: offset..<(offset &+ n))
+        out.withUnsafeMutableBytes { dst in src.withUnsafeBytes { dst.copyMemory(from: $0) } }
+        offset &+= n
+        return out
+    }
 }
 
 // MARK: - Writer
@@ -96,7 +108,7 @@ public struct ByteReader: ~Escapable {
 /// because a datagram running out of room is an ordinary control-flow event.
 public struct ByteWriter: ~Copyable {
     public let buffer: UnsafeMutableRawBufferPointer
-    public private(set) var offset: Int
+    public var offset: Int
 
     @inlinable
     public init(_ buffer: UnsafeMutableRawBufferPointer, offset: Int = 0) {
@@ -155,6 +167,19 @@ public struct ByteWriter: ~Copyable {
         guard total > offset else { return }
         UnsafeMutableRawBufferPointer(rebasing: buffer[offset..<total]).initializeMemory(as: UInt8.self, repeating: 0)
         offset = total
+    }
+
+
+    @inlinable
+    public mutating func put(_ array: [UInt8]) throws(WireError) {
+        guard freeCapacity >= array.count else { throw .overflow }
+        let at = offset
+        array.withUnsafeBytes { src in
+            if src.count > 0 {
+                UnsafeMutableRawBufferPointer(rebasing: buffer[at..<(at &+ src.count)]).copyMemory(from: src)
+            }
+        }
+        offset &+= array.count
     }
 
     @inlinable public mutating func rewind(to index: Int) { offset = index }

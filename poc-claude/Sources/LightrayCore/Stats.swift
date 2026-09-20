@@ -1,9 +1,9 @@
 /// A log2-bucketed histogram. Fixed storage, so every update is allocation-free.
 public struct Log2Histogram: Sendable {
-    public private(set) var buckets: InlineArray<32, UInt32>
-    public private(set) var count: UInt64
-    public private(set) var sum: UInt64
-    public private(set) var maxValue: UInt64
+    public var buckets: InlineArray<32, UInt32>
+    public var count: UInt64
+    public var sum: UInt64
+    public var maxValue: UInt64
 
     public init() {
         buckets = InlineArray<32, UInt32>(repeating: 0)
@@ -42,8 +42,8 @@ public struct Log2Histogram: Sendable {
 
 /// Exponentially weighted moving average over nanosecond quantities.
 public struct EWMA: Sendable {
-    public private(set) var value: Double = 0
-    public private(set) var initialized = false
+    public var value: Double = 0
+    public var initialized = false
     public let alpha: Double
 
     public init(alpha: Double) { self.alpha = alpha }

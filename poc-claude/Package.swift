@@ -27,9 +27,11 @@ let package = Package(
         // The only module that touches Darwin sockets, kqueue and threads.
         .target(name: "LightrayRuntime", dependencies: ["LightrayEngine"], swiftSettings: settings),
         .target(name: "LightrayTestSupport", dependencies: ["LightrayEngine"], swiftSettings: settings),
-        .executableTarget(name: "lightray-poc", dependencies: ["LightrayRuntime"], swiftSettings: settings),
+        // The demo borrows TestSupport's synthetic frame source: the library holds no
+        // encoders, so a demo needs something to stand in for one.
+        .executableTarget(name: "lightray-poc", dependencies: ["LightrayRuntime", "LightrayTestSupport"], swiftSettings: settings),
 
-        .testTarget(name: "LightrayCoreTests", dependencies: ["LightrayCore"], swiftSettings: settings),
+        .testTarget(name: "LightrayCoreTests", dependencies: ["LightrayCore", "LightrayTestSupport"], swiftSettings: settings),
         .testTarget(name: "LightrayCryptoTests", dependencies: ["LightrayCrypto"], swiftSettings: settings),
         .testTarget(name: "LightrayEngineTests", dependencies: ["LightrayEngine", "LightrayTestSupport"], swiftSettings: settings),
         .testTarget(name: "LightrayScenarioTests", dependencies: ["LightrayTestSupport"], swiftSettings: settings),

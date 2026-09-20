@@ -1,8 +1,8 @@
 /// A growable bitset over 64-bit words, used for fragment arrival maps and the
 /// replay window. Words are allocated when a slot is created, never per packet.
 public struct Bitset: Sendable {
-    public private(set) var words: [UInt64]
-    public private(set) var count: Int
+    public var words: [UInt64]
+    public var count: Int
 
     public init() { words = []; count = 0 }
 

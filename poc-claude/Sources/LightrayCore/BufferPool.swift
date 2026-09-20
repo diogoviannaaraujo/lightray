@@ -1,4 +1,5 @@
 import Darwin
+import Synchronization
 
 /// Fixed-size MTU slabs plus size-classed large buffers for whole frames.
 ///
@@ -113,4 +114,40 @@ public final class HeapStorage: ByteStorage, @unchecked Sendable {
     public var mutableBytes: UnsafeMutableRawBufferPointer { buffer }
 
     deinit { buffer.deallocate() }
+}
+
+/// A thread-safe hand-back point for pooled buffers.
+///
+/// A decoded frame can be released on whatever thread the app's decoder runs on,
+/// which is not the loop thread that owns the pool. Released buffers queue here
+/// and the loop thread returns them to the pool on its next turn.
+public final class BufferReclaimer: @unchecked Sendable {
+    /// Buffers cross the thread boundary as plain integers, because a raw
+    /// pointer is not `Sendable` and the concurrency checker is right to say so:
+    /// only the loop thread may actually touch the memory again.
+    private struct Entry: Sendable { var base: UInt; var count: Int }
+    private let pending = Mutex<[Entry]>([])
+
+    public init() {}
+
+    public func give(_ buffer: UnsafeMutableRawBufferPointer) {
+        guard let base = buffer.baseAddress else { return }
+        let entry = Entry(base: UInt(bitPattern: base), count: buffer.count)
+        pending.withLock { $0.append(entry) }
+    }
+
+    /// Returns queued buffers to `pool`. Called from the loop thread.
+    public func drain(into pool: BufferPool) {
+        let taken: [Entry] = pending.withLock { list in
+            let copy = list
+            list.removeAll(keepingCapacity: true)
+            return copy
+        }
+        for e in taken {
+            guard let base = UnsafeMutableRawPointer(bitPattern: e.base) else { continue }
+            pool.giveBackLarge(UnsafeMutableRawBufferPointer(start: base, count: e.count))
+        }
+    }
+
+    public var pendingCount: Int { pending.withLock { $0.count } }
 }
