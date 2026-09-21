@@ -208,7 +208,7 @@ A sender MAY pack many entries into one chunk; a receiver MUST accept any number
 ### What counts as a hole
 
 A receiver MUST NOT `NACK` a fragment index above the highest index it has received for
-that frame.
+that frame, except for the paced-tail timeout described below.
 
 > **Why this rule matters more than it looks.** Without it, a receiver seeing fragment 0
 > of a 436-fragment keyframe concludes that fragments 1 through 435 are missing and asks
@@ -220,9 +220,10 @@ that frame.
 > A hole *below* the highest index received is different: those fragments were sent, and
 > something later arrived without them, so they are genuinely missing.
 
-For the last fragments of a frame, where nothing higher can arrive to reveal the hole, a
-receiver MUST use a timer instead: if no fragment of a frame has arrived for longer than
-the reorder window and the frame is incomplete, the missing tail MAY be requested.
+For the last fragments of an incomplete frame, a receiver MAY request indices above the highest received only after a pacing-aware tail timeout.
+A conservative default requires both two frame intervals since first arrival and inactivity of at least the reorder window.
+The receiver MUST NOT request the tail after the frame deadline and SHOULD allow additional pacing slack when backlog is known.
+This timeout is a repair heuristic, not proof of loss: a slower sender or path may still be delivering the original tail.
 
 ### Timing
 
@@ -284,13 +285,12 @@ req_id:u32
 
 15 bytes. Reasons and preferences are in [registries.md](registries.md).
 
-A receiver MUST reject a chunk whose `reason` or `preferred` is unassigned. A sender MUST
-keep `req_id` constant across repeats of the same request and MUST produce at most one
-recovery frame per `req_id`.
+A receiver MUST reject a chunk whose `reason` or `preferred` is unassigned.
+The requester reuses `req_id` within a bounded attempt; the media sender produces at most one recovery frame per identifier on that stream.
+After an unsuccessful attempt expires, the requester uses a new identifier; the complete rules are in [video.md](video.md#repeating-the-request).
 
-`last_good_frame` and `lost_frame` are informational: they let a sender log and
-understand what happened, and let it ignore a request that names a frame older than a
-recovery frame it has already produced.
+`last_good_frame` and `lost_frame` are informational.
+The sender MUST NOT reject a fresh attempt solely because the named loss is older than a recovery frame it already produced, since that recovery frame may also have been lost.
 
 ```
 13000f010000000001e0000001eb0000

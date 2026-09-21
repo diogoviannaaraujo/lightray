@@ -303,6 +303,9 @@ implementations behave alike.
 | `ltr_ack_interval` | 250 ms | no |
 | `max_acked_ltr` | 16 | no |
 | `frame_deadline` | 3 frame intervals | no |
+| `recovery_attempt_timeout` | max(2 × frame_deadline, 3 × srtt) | no |
+| `tail_wait` | age ≥ 2 frame intervals and inactivity ≥ reorder_window | no |
+| `client_liveness_timeout` | 2 s while active or resuming | no |
 | `reorder_window` | max(1 ms, srtt / 4) | no |
 | `nack_retry_interval` | max(1.5 × srtt, 2 ms) | no |
 | `retransmit_store` | 500 ms and 16 MB | no |

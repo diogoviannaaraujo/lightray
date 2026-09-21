@@ -181,11 +181,11 @@ specified in this directory.
 - [ ] Always write `ack_count`, even when zero
 - [ ] `NACK` only holes below the highest index received, plus a tail timer
 - [ ] Acknowledge long-term references only after a successful decode, rate-limited
-- [ ] Send `REFRESH_REQUEST` on an expired frame, repeating with a stable `req_id`
+- [ ] Send `REFRESH_REQUEST` on an expired frame, repeating with a stable `req_id` within each bounded attempt and a new identifier after expiry
 - [ ] Reply to `PING` with `PONG` carrying the hold time
 
 **Sending**
-- [ ] Reliable messages on stream 0 and on input streams, `msg_seq` from 0
+- [ ] Reliable messages on stream 0 and on input streams, `msg_seq` initially 0 and retained across ordinary resume
 - [ ] Retransmit unacknowledged segments on a timeout
 - [ ] Pace outbound media; never pace control chunks
 
@@ -213,7 +213,7 @@ Everything above that applies to receiving and sending, plus:
 - [ ] Bound and evict parked sessions, oldest first
 - [ ] Signal idle at `pipeline_idle_after`; expire at `grace_window`, in running time
 - [ ] Rebind only on an authenticated, in-window, strictly-newest packet
-- [ ] On resume: rebind, flush, send `STATE{RESUME}`, produce an `IDR` per video stream
+- [ ] On resume: rebind, flush media only, preserve reliable state, send `STATE{RESUME}`, produce an `IDR` per video stream
 - [ ] Answer `REFRESH_REQUEST`, escalating `LTR_ANY` → `IDR` correctly
 - [ ] Retain acknowledged references, bounded, discarding oldest first
 - [ ] Apply `RECONFIGURE` partially and answer with the values actually applied
@@ -238,8 +238,7 @@ These are the cases where two implementations most often appear to work and do n
 5. **Deliver the last fragment of a frame first**, then the rest out of order.
 6. **Answer a `NACK` after the frame was already delivered** and assert the frame is not
    delivered twice.
-7. **Break the reference chain and then send an `LTR_ANY` frame**; assert it is
-   delivered rather than gated.
+7. **Break the `PREVIOUS` chain while retaining valid acknowledged long-term references**, then send `LTR_ANY`; assert delivery is allowed, and separately assert rejection after decoder reset until a new IDR decodes.
 8. **Drop an audio frame** and assert the next is still delivered, and the gap reported.
 9. **Change the client's source port mid-stream** without parking; assert the stream
    continues with no keyframe.
@@ -251,3 +250,14 @@ These are the cases where two implementations most often appear to work and do n
     processed.
 13. **Send a malformed chunk after a valid one in the same datagram**; assert the valid
     one was processed.
+
+## Regression scenarios from the HEVC demo
+
+- [ ] Park with a missing reliable command, a later completed and acknowledged command, and pending outgoing messages; resume and deliver each exactly once in order with continued sequence numbers.
+- [ ] Deliver an unseen pre-park reliable packet after resume and verify it fills its original gap without colliding with a new command.
+- [ ] Lose a recovery frame beyond its repair deadline; expire the attempt and recover with a new request identifier.
+- [ ] Restart the host with a new reset key; ignore the unverifiable reset and complete the bounded liveness fallback to a fresh handshake.
+- [ ] Advance frame identifiers through `0xffffffff` to 1 and preserve `PREVIOUS` gating across the wrap.
+- [ ] Change bitrate, frame rate and MTU without an IDR and preserve prediction across the generation boundary.
+- [ ] Pace a large keyframe on a clean path without immediately NACKing its queued tail; expire genuinely late frames without unbounded buffering.
+- [ ] Decode the published IDR example and authenticate the published protected datagram, asserting that its media fragment travels alone.
