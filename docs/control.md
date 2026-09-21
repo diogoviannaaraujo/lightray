@@ -165,6 +165,11 @@ behind it.
 > explicit and unambiguous, and makes a stale frame that arrives after the change
 > recognisable rather than corrupting.
 
+Generation comparisons MUST use `u32` serial-number arithmetic.
+A generation change alone MUST NOT invalidate decoder references or break the `PREVIOUS` chain.
+In particular, bitrate, frame-rate and datagram-size changes preserve prediction across the generation boundary.
+A self-contained newer-generation IDR MAY be decoded before its reliable configuration message arrives; a stale frame MUST NOT roll back the current configuration.
+
 ## Changes that force a keyframe
 
 A change to `RESOLUTION` or `HDR` MUST produce an `IDR` as the first frame of the new

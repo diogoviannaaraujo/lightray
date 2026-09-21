@@ -20,14 +20,11 @@ payload[...]              the remainder of the chunk
 A message is split into `seg_count` segments, numbered from 0. A message of one segment
 has `seg_count = 1` and `seg_index = 0`.
 
-`msg_seq` numbers **messages**, not segments, and increments by one per message on that
-stream. It starts at **0** on a new stream, and **restarts at 0** when a session resumes.
-
-> **Why it restarts at 0 rather than continuing.** The receiver has to know where the
-> sequence begins in order to detect that the very first message was lost. Bootstrapping
-> the expectation from whichever segment happens to arrive first means a lost leading
-> message is never noticed and never repaired — it is simply skipped. A known starting
-> point makes the first message as recoverable as every other.
+`msg_seq` numbers messages, not segments, independently per stream and direction.
+It starts at **0** on a new reliable stream and increments modulo 2³²; zero is valid.
+Ordinary park/resume MUST preserve the next outgoing number and the next expected incoming number.
+A receiver MUST NOT bootstrap its expectation from the first packet after resume or accept a later number by skipping a missing command.
+Comparisons use serial-number arithmetic, and the receive window MUST remain smaller than 2³¹ messages.
 
 ### Validation
 
@@ -66,6 +63,16 @@ error rather than exceed it.
 > carried, and to maintain it correctly across retransmission — which is where it goes
 > wrong: a segment credited to the wrong packet is retransmitted until its message is
 > dropped. Naming the message directly costs five bytes and removes the map.
+
+### Parking and resuming
+
+Both peers MUST retain outgoing unacknowledged messages, incoming partial messages, completed messages held for ordered delivery, pending acknowledgements, and sequence counters across ordinary park/resume.
+A completed message held behind a gap MUST survive even if it has already been acknowledged: its sender may have released its copy.
+Retransmission timers MUST pause while parked and MUST be rearmed on resume.
+Retained commands remain pending and MUST be delivered once, in their original order; resume does not cancel them.
+Duplicate fully received messages MUST be acknowledged again without being delivered again.
+Retention remains subject to the same memory bounds as an active stream; exhaustion MUST report an error rather than silently discard commands.
+A new handshake starts a new reliable sequence space, including when it adopts a session identifier; see [reconnect.md](reconnect.md).
 
 ### Worked example
 

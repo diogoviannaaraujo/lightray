@@ -194,7 +194,7 @@ code as `NORMAL`. Close codes are in [registries.md](registries.md).
 
 ## A complete protected datagram
 
-Host to client, packet number 7, carrying one media fragment and one `PONG`, sealed
+Host to client, packet number 7, carrying one media fragment alone, sealed
 with the `h2c` keys derived in [handshake.md](handshake.md).
 
 Header, cleartext and authenticated as AAD:
@@ -220,20 +220,15 @@ Nonce, the host-to-client IV `448d50b586820bc6f220a19c` XORed with packet number
 The chunk sequence, before sealing:
 
 ```
-01001801050000000700020005047d03
-010100a0a1a2a3a4a5a6a73100080000
-0009000005dc
+01001801010000000700040005047d03010100a0a1a2a3a4a5a6a7
 ```
 
-That is a `MEDIA_FRAGMENT` of 24 body bytes followed by a `PONG` of 8. The complete
-70-byte datagram:
+This is a `MEDIA_FRAGMENT` of 24 body bytes, carrying the last fragment (index 4 of 5).
+Media fragments travel alone, so there is no accompanying `PONG`.
+The complete 59-byte datagram is:
 
 ```
-00000000abcd123400000007002625a0
-ebc383d03482ccdd54b5b69efa88bc74
-4d9e78c94febca84b0f3705b0e1fe028
-4016cec2654cfdf0cb6a8d2b807190e3
-0f5383b8a87b
+00000000abcd123400000007002625a0ebc383d03082ccdd54b5b09efa88bc744d9e78c94febca84b0f370b85cae221ab970ef25bdce71a6adeb0c
 ```
 
 ## Clocks

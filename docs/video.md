@@ -22,6 +22,9 @@ A `frame_id` is assigned **only to frames that produced bytes**.
 `frame_id` wraps. Comparisons MUST use serial-number arithmetic: `a` is newer than `b`
 when `a ≠ b` and `(a − b) mod 2³²` is less than 2³¹.
 
+The successor of `0xffffffff` is **1**, and the predecessor of **1** is `0xffffffff`.
+Implementations MUST skip zero when advancing frame identifiers or locating the `PREVIOUS` reference; serial comparisons retain the arithmetic above.
+
 ## The frame header
 
 The sender logically prepends a header to the frame's bytes. Fragmentation then operates
@@ -101,36 +104,25 @@ One `frame_id` carries exactly one access unit.
 
 ### Worked examples
 
-An `IDR` with an 8-byte `CODEC_CONFIG`:
+A complete, decodable 16 × 16 HEVC `IDR` with an 80-byte `CODEC_CONFIG`, generated using libx265:
 
 ```
-000001000000030001e240000b010008
-b0b1b2b3b4b5b6b7
+000001000000030001e24000530100500000001840010c01ffff01600000030090000003000003003cba02400000002642010101600000030090000003000003003ca0884596e96f0b9a020000030002000003003c10000000064401c0718112000001432801ac1ae0f33d5fdcfddf03600717810da9f57f7bb115b7924631e1020000cacc5d6c1c47cdb924cb879dd8cd3e9efad4eb38f5abc256ca0d205c7abc3897c1456af493a979ed56e5d4411b5d6d972bad41ed61679250c54bd927454a389f0ce54ba83c5be0ba8b8ff2ea1e0aa497e49ec2fa2d3d272d6e188d578c2f27e6f449751f96f27ff5ae8352f2988bf52c1aa503dce248121b4042e5b3faf9c3adf9fe7ee3c06bfe1199fa8b9dbfd30090fed9f9eeee3be33dc398516216bdafea5bbbeaac3ec37adc7fa611e4a3b589aee7e0fbe17cadea66770a486e9ae25821bd4b8925e02d311d842c4ffda14eb6c4f1b1598211604264759329ef4c1e7fb35f201bdfb25e12f9b0778d61e5eb242bf2202706106410a5ad36084f2cf64b27a9a039ed2f3c5c784c2129387bf43ee726767425c27a3a514fde71cef2456b108e7a27c0
 ```
 
-| Bytes | Value | Field |
-|---|---|---|
-| `00` | 0 | `frame_type`, `IDR` |
-| `00` | 0 | `ref_kind`, `NONE` |
-| `01` | 1 | `flags`, `LTR_MARK` |
-| `00000003` | 3 | `config_generation` |
-| `0001e240` | 123456 | `capture_time_us` |
-| `000b` | 11 | `ext_len` |
-| `01 0008` | | TLV type 1, 8 bytes |
-| `b0b1…b7` | | `CODEC_CONFIG` value |
+The frame is 423 bytes: a 13-byte fixed header, an 83-byte extension area, and a 327-byte length-prefixed IDR payload.
+The header has `frame_type = IDR`, `ref_kind = NONE`, `flags = LTR_MARK`, generation 3, and capture time 123456.
+The extension is TLV type 1, length 80, containing VPS, SPS and PPS of 24, 38 and 6 bytes respectively, each preceded by its own `u32` length.
 
-A predicted frame referencing a specific long-term reference:
+A predicted frame header referencing a specific long-term reference (payload omitted):
 
 ```
-01020000000001000000050000109200
-00
+0102000000000100000005000010920000
 ```
 
-`frame_type` 1, `ref_kind` 2 (`LTR`), `flags` 0, generation 1, capture 5,
-`ref_frame_id` 4242, `ext_len` 0.
+`frame_type` 1, `ref_kind` 2 (`LTR`), `flags` 0, generation 1, capture 5, `ref_frame_id` 4242, `ext_len` 0.
 
-The same frame with `ref_kind = LTR_ANY` carries **no** `ref_frame_id` and is two bytes
-shorter than the length would otherwise imply:
+The same header with `ref_kind = LTR_ANY` carries no `ref_frame_id` and is **four bytes shorter** (13 bytes instead of 17):
 
 ```
 01030000000001000000050000
@@ -208,8 +200,7 @@ against `fragment_count × stride` **before** allocating.
 ### Worked example
 
 ```
-01001801050000000700020005047d03
-010100a0a1a2a3a4a5a6a7
+01001801010000000700040005047d03010100a0a1a2a3a4a5a6a7
 ```
 
 | Bytes | Value | Field |
@@ -217,9 +208,9 @@ against `fragment_count × stride` **before** allocating.
 | `01` | `0x01` | type, `MEDIA_FRAGMENT` |
 | `0018` | 24 | length |
 | `01` | 1 | `stream` |
-| `05` | bits 0, 2 | `flags`: `KEYFRAME` and `FRAME_START` |
+| `01` | bit 0 | `flags`: `KEYFRAME` |
 | `00000007` | 7 | `frame_id` |
-| `0002` | 2 | `fragment_index` |
+| `0004` | 4 | `fragment_index` (last fragment) |
 | `0005` | 5 | `fragment_count` |
 | `047d` | 1149 | `stride` |
 | `03` | 3 | `ext_len` |
@@ -239,6 +230,13 @@ and MUST NOT retransmit a fragment of a frame whose deadline has passed.
 
 A sender MUST send retransmissions ahead of new media data. A `NACK`ed fragment is
 already late.
+
+### Deadline origins
+
+The sender's frame deadline starts when the encoded frame is submitted to the transport, before pacing.
+The receiver's deadline starts at the first fragment's arrival, or at gap discovery when an entire frame is missing.
+Each endpoint MUST snapshot the frame interval when starting its local deadline; a later frame-rate change MUST NOT retroactively move that deadline.
+The default lifetime is three frame intervals, measured with the endpoint's own monotonic clock.
 
 ## Reassembly
 
@@ -284,18 +282,16 @@ The gate is evaluated **per reference kind**:
 |---|---|
 | `NONE` | always |
 | `PREVIOUS` | the immediately preceding frame on this stream was delivered |
-| `LTR` | the frame named by `ref_frame_id` was delivered **and** acknowledged as decoded |
-| `LTR_ANY` | always |
+| `LTR` | the named frame was acknowledged as decoded and remains a valid decoder reference |
+| `LTR_ANY` | the sender’s eligible acknowledged reference set remains valid in the receiver’s decoder |
 
-A gap in the `PREVIOUS` chain MUST NOT prevent delivery of an `LTR_ANY` or `IDR` frame.
+A gap in the `PREVIOUS` chain alone MUST NOT prevent delivery of an `LTR_ANY` whose reference-validity gate is satisfied, or an `IDR`.
 
-> **Why per kind, and why `LTR_ANY` is unconditional.** A single global "we are in a bad
-> state" gate is the obvious implementation and it is wrong: the frame that arrives to
-> repair the gap is itself blocked by the gap, so recovery can never begin and the
-> receiver waits for a keyframe it did not need. `LTR_ANY` is safe to accept
-> unconditionally because it references *some* frame the receiver itself acknowledged as
-> decoded — the receiver only ever acknowledges frames it actually decoded, so whatever
-> the encoder chose is something the receiver has.
+A decoder reset invalidates previous reference acknowledgements; the receiver MUST reject predicted frames until it has successfully decoded a new `IDR`.
+A `PREVIOUS` gap alone does not invalidate retained long-term references.
+Historical acknowledgement alone is insufficient to establish current reference validity.
+Version 0 still lacks a complete reference-lifetime and stale-acknowledgement contract; see [gaps.md](gaps.md).
+Implementations unable to establish this validity MUST use IDR-only recovery without negotiating `LTR`.
 
 Decodability gating MUST NOT be applied to a stream of class `REALTIME`. See
 [audio.md](audio.md).
@@ -351,7 +347,7 @@ references, and marks the result `ref_kind = LTR_ANY`. Otherwise it produces an 
 > of candidates and choose internally, without reporting the choice. Naming the reference
 > on the wire would require information the sender cannot obtain. `LTR_ANY` says "one of
 > the frames you told me you decoded", which is exactly what the sender knows and exactly
-> what the receiver can verify.
+> what the receiver must still establish under the reference-lifetime contract.
 
 ### 3. A keyframe
 
@@ -364,11 +360,16 @@ issued.
 
 ### Repeating the request
 
-A receiver MUST repeat a `REFRESH_REQUEST` until a frame that satisfies it arrives,
-SHOULD do so no more often than once per round-trip time, and MUST keep `req_id` the same
-across repeats of the same request.
-
-A sender MUST NOT produce more than one recovery frame per `req_id`.
+A recovery attempt begins with the first transmission of a `REFRESH_REQUEST`.
+The requester MUST reuse its `req_id` within that attempt and SHOULD repeat no more often than once per round-trip time.
+The media sender MUST produce at most one recovery frame per `req_id` on that stream; duplicate requests do not create additional frames.
+An attempt succeeds only when a suitable recovery frame is successfully decoded; `DECODER_RESET` requires an `IDR`.
+The requester MUST bound the attempt lifetime, measured from its first transmission; `max(2 × frame_deadline, 3 × srtt)` is RECOMMENDED, with those values sampled at attempt start.
+If recovery has not succeeded by expiry, it MUST begin a new attempt with a new `req_id`, allowing the sender to produce a replacement recovery frame.
+Request identifiers increment modulo 2³² per stream and MUST NOT be reused while an earlier attempt with that identifier can remain outstanding.
+Ordinary resume preserves this identifier sequence.
+The sender MUST bound duplicate-request bookkeeping and retain it for at least the supported attempt lifetime.
+A fresh attempt MUST NOT be ignored solely because `lost_frame` precedes a recovery frame already produced: that recovery frame may itself have been lost.
 
 ## Pacing
 
@@ -382,13 +383,16 @@ A sender MUST NOT transmit a frame's fragments as fast as the socket will accept
 > affordable. Encoders commonly ignore per-frame size limits, so the transport is the
 > only place this can be bounded.
 
-A sender MUST spread a frame's fragments across at least the frame interval, subject to a
-configured rate. The following satisfies this requirement and is RECOMMENDED:
+A sender MUST enforce a configured byte-rate envelope with bounded bursts; it need not stretch every small frame to a full frame interval.
+The following token-bucket policy is RECOMMENDED:
 
-- a token bucket refilled at `max(1.25 × bitrate, frame_bytes / frame_interval)`,
-- a burst limit of 32 datagrams,
-- priority order: control chunks, then retransmissions, then `REALTIME` streams, then
-  `MEDIA` streams.
+- Refill in bytes per second at `max(1.25 × bitrate / 8, queued_frame_bytes / frame_interval)`, subject to a configured pacing-rate cap.
+- Account for complete protected datagram bytes, including retransmissions, in the bucket and backlog.
+- Limit the burst to 32 datagrams.
+- Prioritize control chunks, then retransmissions, then `REALTIME` streams, then `MEDIA` streams.
+
+Here `bitrate` is in bits per second and `frame_interval` is in seconds.
+If the configured cap prevents timely delivery, the sender MUST expire late media rather than grow an unbounded backlog.
 
 The rate MUST follow the whole backlog, not the newest frame alone.
 

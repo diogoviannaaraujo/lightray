@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lightray-poc-ng"
+version = "0.1.0"
+description = "Independent Lightray v0 HEVC protocol experiment"
+requires-python = ">=3.12"
+dependencies = ["av==18.1.0", "cryptography==50.0.1"]
+
+[project.optional-dependencies]
+test = ["pytest==9.1.1"]
+
+[project.scripts]
+lightray-ng = "ng.demo:main"
+
+[tool.setuptools.packages.find]
+include = ["ng*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

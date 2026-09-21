@@ -33,8 +33,8 @@ client that is gone, whether or not it said so.
 On parking, a host **MUST release** every buffer holding media:
 
 - the retransmission store,
-- pacer queues,
-- reassembly state,
+- media pacer queues,
+- media reassembly state,
 - the set of acknowledged long-term references.
 
 It **MUST retain**:
@@ -44,14 +44,11 @@ It **MUST retain**:
 - the negotiated stream table,
 - the current configuration and its generation,
 - the peer address,
-- accumulated statistics.
+- accumulated statistics,
+- reliable sequence counters, unacknowledged outgoing messages, partial incoming messages, completed messages waiting for ordered delivery, and pending acknowledgements in both directions.
 
-> **Why releasing the media buffers is what makes a long grace window affordable.** The
-> retained state is on the order of a kilobyte; the media buffers are megabytes. Nothing
-> in them can reach an absent peer, and a resume forces a keyframe that would invalidate
-> them anyway — so they are pure cost. Releasing them is what lets a host hold a parked
-> session for half an hour without the memory mattering, and holding it for half an hour
-> is what makes a walk-away resumable.
+> **Why releasing media buffers matters.** Media buffers can occupy megabytes and become unusable across the forced keyframe on resume.
+> Retained protocol metadata is small, but pending reliable messages consume additional bounded memory and MUST NOT be discarded merely to park.
 
 A parked session MUST NOT be sent anything, MUST NOT arm a per-session timer, and MUST
 NOT consume processing. A host SHOULD expire parked sessions by sweeping the set
@@ -133,9 +130,12 @@ SHOULD start at 100 ms and cap at 2 seconds.
 On the first authenticated packet for a parked session, the host MUST:
 
 1. Rebind to the source address of that packet, if it differs.
-2. Discard any remaining pacer, `NACK` and reassembly state in both directions.
-3. Send `STATE` reliably on stream 0 with the `RESUME` flag set.
+2. Discard any remaining media pacer, `NACK` and media reassembly state in both directions, preserving reliable state.
+3. Rearm reliable retransmission and enqueue `STATE` on stream 0 with the `RESUME` flag set, using the next retained sequence number after previously queued messages.
 4. Produce an `IDR`, with its own `CODEC_CONFIG`, on every outbound video stream.
+
+Repeated `RESUME` packets during the same active recovery MUST NOT reset reliable state or restart the media pipeline; the queued `STATE` is retransmitted by the reliable stream.
+An asynchronous encoder completion belonging to a parked or replaced session MUST NOT repopulate its media queues.
 
 **A resume always produces a keyframe**, whether or not `decoder_lost` was set.
 
@@ -160,6 +160,15 @@ running. A host that sleeps does not age its parked sessions while asleep.
 A client that returns after the grace window will receive `SESSION_UNKNOWN` in response
 to its `RESUME`; see [handshake.md](handshake.md). It then performs a new handshake,
 which costs one round trip and a keyframe, and requires no re-pairing.
+
+### Client fallback when the host has lost its state
+
+A restarted host may have a different reset key, so its `SESSION_UNKNOWN` cannot necessarily be verified with the old session's reset token.
+The client MUST NOT accept an unverifiable reset as proof that the session ended.
+An active or resuming client MUST bound how long it waits without an authenticated response before abandoning the old session and starting a new handshake; 2 seconds is RECOMMENDED.
+Only authenticated, replay-accepted incoming packets refresh this liveness timer.
+The timer is suspended during intentional parking and starts afresh when the client first sends `RESUME`.
+This fallback does not require re-pairing and does not prove the outcome of outstanding commands.
 
 ## System sleep is not parking
 
@@ -188,6 +197,10 @@ same pairing. On adoption:
 - the session identifier, stream table, configuration and statistics **survive**;
 - the traffic keys and the packet-number space in both directions are **replaced** by the
   ones this handshake derives, and the replay window is reset.
+
+A new handshake, including adoption, MUST start reliable streams at sequence zero and MUST NOT automatically replay old pending commands into the new sequence space.
+Both endpoints MUST report unresolved old command delivery to their applications; cross-handshake exactly-once execution requires application-level reconciliation.
+This differs from ordinary resume with retained keys, which preserves pending commands and their sequence numbers.
 
 A host that does not adopt MUST allocate a new session identifier. The client learns
 which happened from the `session_id` in the `RESPONSE`.

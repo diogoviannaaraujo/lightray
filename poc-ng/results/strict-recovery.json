@@ -1,0 +1,167 @@
+{
+  "environment": {
+    "python": "3.14.5",
+    "platform": "macOS-26.6.1-arm64-arm-64bit-Mach-O",
+    "av": "18.1.0",
+    "cryptography": "50.0.1",
+    "ffmpeg_libraries": {
+      "libavutil": [
+        60,
+        26,
+        102
+      ],
+      "libavcodec": [
+        62,
+        28,
+        102
+      ],
+      "libavformat": [
+        62,
+        12,
+        102
+      ],
+      "libavdevice": [
+        62,
+        3,
+        102
+      ],
+      "libavfilter": [
+        11,
+        14,
+        102
+      ],
+      "libswscale": [
+        9,
+        5,
+        102
+      ],
+      "libswresample": [
+        6,
+        3,
+        102
+      ]
+    }
+  },
+  "config": {
+    "bitrate": 1000000,
+    "floor": 100000,
+    "width": 640,
+    "height": 360,
+    "fps": 30,
+    "hdr": 0,
+    "mds": 1200,
+    "generation": 0
+  },
+  "input": {
+    "name": "sample-h265.mp4",
+    "sha256": "3da8b217426e04f8cef08eb28d25070489c1aba7f127e4bcea3244e693691e45"
+  },
+  "strict_recovery": true,
+  "results": [
+    {
+      "scenario": "lost_recovery",
+      "seed": 20260921,
+      "seconds": 4.0,
+      "network": {
+        "delay_ms": 2,
+        "jitter_ms": 0,
+        "loss": 0,
+        "reverse_loss": 0,
+        "duplicate": 0,
+        "reorder": 0,
+        "corrupt": 0,
+        "mbps": 1000,
+        "queue_ms": 50,
+        "mtu": 9000,
+        "burst": false,
+        "drop_response": false
+      },
+      "frames_sent": 120,
+      "frames_decoded": 42,
+      "delivery_ratio": 0.35,
+      "pixel_mismatches": 0,
+      "scheduler_skipped_captures": 0,
+      "submitted_fps": 30.0,
+      "latency_ms": {
+        "count": 42,
+        "p50": 15.326,
+        "p95": 45.755,
+        "p99": 48.452,
+        "max": 49.098
+      },
+      "encode_ms": {
+        "count": 120,
+        "p50": 7.841,
+        "p95": 9.53,
+        "p99": 10.103,
+        "max": 15.685
+      },
+      "transport_ms": {
+        "count": 42,
+        "p50": 4.098,
+        "p95": 38.724,
+        "p99": 42.506,
+        "max": 43.242
+      },
+      "decode_ms": {
+        "count": 42,
+        "p50": 0.903,
+        "p95": 1.073,
+        "p99": 1.097,
+        "max": 1.228
+      },
+      "inter_decoded_gap_ms": {
+        "count": 41,
+        "p50": 32.743,
+        "p95": 35.739,
+        "p99": 36.118,
+        "max": 36.496
+      },
+      "terminal_no_output_ms": 2617.32,
+      "estimated_rtt_ms": 4.946,
+      "host": {
+        "datagrams_sent": 684,
+        "bytes_sent": 588543,
+        "handshakes": 1,
+        "datagrams_received": 760,
+        "rtt_samples": 121,
+        "frames_submitted": 120,
+        "idr_submitted": 2,
+        "refreshes": 1,
+        "retransmissions": 8
+      },
+      "client": {
+        "datagrams_sent": 761,
+        "bytes_sent": 40647,
+        "handshakes": 1,
+        "datagrams_received": 636,
+        "rtt_samples": 100,
+        "frames_decoded": 42,
+        "refresh_requests": 264,
+        "gated_frames": 3,
+        "nack_entries": 686,
+        "frames_expired": 72,
+        "held_expired": 70
+      },
+      "relay": {
+        "up_offered": 761,
+        "up_bytes": 40647,
+        "up_delivered": 761,
+        "down_offered": 684,
+        "down_bytes": 588543,
+        "down_delivered": 637,
+        "blackout_drops": 47
+      },
+      "actions": [
+        {
+          "event": "lost_recovery",
+          "next_decoded_ms": null
+        }
+      ],
+      "failures": [
+        "stream did not recover near the end"
+      ],
+      "passed": false
+    }
+  ]
+}

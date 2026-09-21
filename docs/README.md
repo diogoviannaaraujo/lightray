@@ -47,6 +47,8 @@ disagrees about the version, and fails the version check instead of negotiating.
 > version turns a negotiation failure into a version failure, which is simpler to
 > specify, simpler to test, and impossible to get subtly wrong.
 
+The HEVC profile, HDR and long-term reference-lifetime contracts remain incomplete; see [gaps.md](gaps.md) before assuming independent video interoperability.
+
 ## How to read this directory
 
 | Document | Read it when |

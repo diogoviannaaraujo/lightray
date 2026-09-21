@@ -8,6 +8,23 @@ starting.
 
 ## Open questions
 
+### Long-term reference lifetime
+
+**Status: incomplete. Blocks general LTR interoperability.**
+
+A decoded acknowledgement does not specify how long the decoder retains that reference, how eviction is coordinated, or how delayed acknowledgements are rejected after decoder reset or an IDR transition.
+`config_generation` cannot serve as a reference epoch because bitrate and frame-rate changes preserve prediction.
+The validity gate in [video.md](video.md) prevents treating historical acknowledgement as unconditional permission, but a shared reference-lifetime contract still needs specification.
+Use IDR-only recovery without negotiating `LTR` until that contract is established.
+
+### HEVC decoding contract
+
+**Status: incomplete.**
+
+Pinning HEVC does not settle profiles, levels, bit depth, chroma format, HDR metadata, or whether reordered pictures and multiple simultaneous references are permitted.
+The `PREVIOUS` gate alone does not describe arbitrary HEVC reference lists or presentation reordering.
+The demo validates a low-delay, single-chain SDR configuration; it does not establish interoperability for every HEVC encoder or HDR pipeline.
+
 ### Input payload encoding
 
 **Status: unspecified. Blocks independent interoperability.**
