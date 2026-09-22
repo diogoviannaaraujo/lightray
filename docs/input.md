@@ -24,6 +24,7 @@ has `seg_count = 1` and `seg_index = 0`.
 It starts at **0** on a new reliable stream and increments modulo 2³²; zero is valid.
 Ordinary park/resume MUST preserve the next outgoing number and the next expected incoming number.
 A receiver MUST NOT bootstrap its expectation from the first packet after resume or accept a later number by skipping a missing command.
+The one exception is a resume point, which moves an input stream's expectation forward; see [Resetting input across a resume](#resetting-input-across-a-resume).
 Comparisons use serial-number arithmetic, and the receive window MUST remain smaller than 2³¹ messages.
 
 ### Validation
@@ -67,6 +68,7 @@ error rather than exceed it.
 ### Parking and resuming
 
 Both peers MUST retain outgoing unacknowledged messages, incoming partial messages, completed messages held for ordered delivery, pending acknowledgements, and sequence counters across ordinary park/resume.
+The client-to-host direction of an input stream is the exception: it is cleared and resynchronised instead, as [Resetting input across a resume](#resetting-input-across-a-resume) describes.
 A completed message held behind a gap MUST survive even if it has already been acknowledged: its sender may have released its copy.
 Retransmission timers MUST pause while parked and MUST be rearmed on resume.
 Retained commands remain pending and MUST be delivered once, in their original order; resume does not cancel them.
@@ -113,9 +115,11 @@ Type `0x03`, length 6, stream 6, payload `hello`.
 
 **Version 0 does not define what bytes an input message contains.**
 
-The protocol carries input as opaque payloads on a `RELIABLE` stream, in order and
-without loss. What a key press, a pointer motion or a controller state looks like inside
-that payload is the application's choice.
+The protocol carries input as opaque payloads: on `RELIABLE` streams, in order and
+without loss while the session is active, and for high-rate updates on an `UNRELIABLE`
+stream; see [Splitting input by device](#splitting-input-by-device). What a key press, a
+pointer motion or a controller state looks like inside that payload is the
+application's choice.
 
 **The consequence is explicit: two independently written implementations will not
 interoperate on input.** They will establish a session, exchange video and audio
@@ -132,6 +136,199 @@ author — it is not in this specification. See [gaps.md](gaps.md).
 An application SHOULD send input as one message per event or per coalesced batch, and
 SHOULD keep messages small enough to fit in a single segment, so that a single loss costs
 one round trip rather than a reassembly.
+
+## Splitting input by device
+
+An application SHOULD give each input device its own stream, so that a loss on one
+device never delays another: a lost mouse message must not hold up a key press queued
+behind it. Order matters only within a device — a click must land where the motion before
+it left the pointer — and a stream preserves exactly that order.
+
+| Stream | Carries | Class |
+|---|---|---|
+| Keyboard | key presses and releases, and text | `RELIABLE` |
+| Mouse | motion, buttons and scroll | `RELIABLE` |
+| Touch | contacts going down, up and cancelled | `RELIABLE` |
+| Pen | contacts going down, up and cancelled, and button changes | `RELIABLE` |
+| One per gamepad | the controller's full state, and a gyroscope stopping | `RELIABLE` |
+| High-rate updates | touch and pen hover and move, and motion sensors | `UNRELIABLE` |
+
+Every one is an `INPUT` stream in the client-to-host direction. Which stream carries which
+device is part of the application-defined input encoding. The stream table cannot change
+during a session, so an application MUST allocate its gamepad streams at the handshake —
+one for each gamepad it supports, within the table's 32-entry limit.
+
+Text travels on the keyboard stream so that typed text and the key that submits it stay
+in order.
+
+> **Why one stream per device.** A `RELIABLE` stream delivers in order, so one lost
+> message holds back everything after it on that stream until it is retransmitted. With
+> every device on one stream, a lost pointer update delays an unrelated key press by a
+> round trip. Separate streams confine the delay to the device that lost the message.
+
+### Discrete events are never merged
+
+Key presses and releases, text, mouse buttons, scroll, touch and pen contacts going down,
+up or cancelled, and pen button changes are sent on their device's `RELIABLE` stream, one
+message per event. A client MUST NOT merge, reorder or drop them while the session is
+active.
+
+### Motion and state are merged before sending
+
+A client keeps at most one motion message waiting on the mouse stream, and at most one
+state message waiting on each gamepad stream. A message is waiting from when it is built
+until it is handed to the transport. While one is waiting, newer input is merged into it
+rather than queued behind it:
+
+- relative mouse motion adds its deltas to the waiting message;
+- absolute mouse position replaces the waiting position;
+- a gamepad state replaces the waiting state, **unless its buttons differ**. A button
+  change ends the merge and starts a new message, so that the host receives the exact
+  stick and trigger positions at the moment of the press.
+
+A client SHOULD hand the mouse stream at most one motion message per
+`input_merge_interval` (1 ms by default), holding a newer one back so that it absorbs the
+motion that follows. Once handed to the transport, a message is never changed.
+
+> **Why merging lowers latency.** Pointing devices report up to a thousand times a
+> second. Sent one message per report, motion fills the stream with updates that must
+> each be delivered, in order, before the next — and after a loss, all of them are
+> retransmitted before anything newer. Merging bounds what is waiting to one message, so
+> the next thing sent is always the newest position.
+
+### High-rate updates are unreliable
+
+Touch and pen hover and move, and motion-sensor readings, are sent as `DATAGRAM` chunks
+on the `UNRELIABLE` input stream, each carrying the latest value. A lost update is
+replaced by the next. A client SHOULD send at most one per device per
+`input_merge_interval`.
+
+Two such updates go on the device's `RELIABLE` stream instead, because losing either would
+leave the host in the wrong state with nothing coming to correct it:
+
+- a pen move that changes the pen's buttons;
+- a gyroscope reading of all zeros, which means the gyroscope has stopped.
+
+An `UNRELIABLE` stream is unordered, and is not ordered against the reliable streams. Its
+payload MUST therefore let the host discard an update older than one it has already
+applied — a counter per device is enough, and a reliable reading that stops a gyroscope
+carries it too. A host MUST ignore an update for a touch or pen contact that the reliable
+stream has not put down.
+
+> **Why these are unreliable and motion is not.** A hover position or a sensor reading is
+> replaced by the next one within milliseconds, so retransmitting a lost one only delays
+> the newer value behind it. A relative mouse delta is different: a lost one is movement
+> that never happens, and nothing after it repairs it. The last update before a device
+> goes still has the same problem, because nothing follows it. That is why mouse motion
+> and gamepad state are reliable and kept cheap by merging, and why a stopping gyroscope
+> is sent reliably.
+
+## Resetting input across a resume
+
+An input event means something only at the moment it was made. A click delivered after a
+long park lands on whatever is on screen by then, and typed text goes to whatever window
+has focus. Input is therefore the one thing a resume discards rather than delivers.
+
+This section replaces the rules in [Parking and resuming](#parking-and-resuming) for the
+client-to-host direction of input streams. Stream 0 and every other reliable stream keep
+those rules.
+
+### The input reset
+
+The input reset returns everything the host holds on the client's behalf to rest. The
+host releases every held key and mouse button, lifts every touch and pen contact, and
+sets every gamepad and sensor to neutral. It SHOULD keep each gamepad's virtual device
+present, so that software on the host does not see the controller unplugged. A host MUST
+track what it holds in order to do this, and MUST ignore a release of anything it does
+not hold.
+
+A host MUST perform the input reset:
+
+- when it parks a session;
+- when a session ends, by `CLOSE` or by expiry;
+- when it adopts a session on re-handshake;
+- for one stream, when a resume point moves that stream forward, as described below.
+
+The reset is local to the host. Nothing is sent.
+
+A key the user is still holding when the session resumes stays released on the host
+until it is pressed again. Gamepad messages are state rather than events, so a client
+SHOULD send each gamepad's current state as the first message on its stream after a
+resume.
+
+### What the client does
+
+Before it sends the first `RESUME`, a client MUST clear each of its `RELIABLE`
+client-to-host input streams:
+
+- it discards every message that has not been acknowledged, whether or not it was sent,
+  including a motion or state message still waiting to be merged;
+- it keeps the stream's next `msg_seq`. The first message sent after the clear uses that
+  number, and the count continues from it.
+
+That number is the stream's **resume point**. The client MUST name every `RELIABLE`
+client-to-host input stream and its resume point in `RESUME` (see
+[reconnect.md](reconnect.md#resume-0x33)), and MUST send the same points in every repeat
+of that `RESUME`, even after it has sent newer messages. A client that parks again before
+`STATE` arrives clears again and names new points.
+
+A client also discards any update it has not yet sent on an `UNRELIABLE` input stream.
+Those streams have no sequence to resume.
+
+A client that performs a new handshake instead of resuming discards its unacknowledged
+input the same way. The new handshake starts every stream at 0.
+
+### What the host does
+
+When a `RESUME` arrives — whether the session is parked or active — the host takes each
+stream it names and, if the resume point is ahead of the `msg_seq` it next expects on
+that stream:
+
+1. performs the input reset for that stream;
+2. discards every partial message, and every completed message it holds, below the
+   resume point;
+3. sets its next expected `msg_seq` to the resume point, and delivers any messages it
+   holds from there onward.
+
+"Ahead" uses the serial-number arithmetic above. A resume point at or behind the expected
+number changes nothing, so a repeated or late `RESUME` is harmless. A stream the `RESUME`
+does not name keeps its expectation.
+
+Once a stream has moved forward, a message below its expected `msg_seq` is a duplicate:
+the host acknowledges it and does not deliver it.
+
+A host can park a session whose client never parked it — after two seconds of silence,
+for example. That client clears nothing and sends no `RESUME`, so its input continues
+under the ordinary rules. The input reset at park has still released whatever was held.
+
+### Messages already in flight
+
+A message sent before the park can arrive after it. What happens depends only on whether
+it arrives before or after the host applies the resume point:
+
+- **Before**, it is delivered as usual. A message in flight arrives within moments of
+  being sent, however long the park lasts, so acting on it is no different from acting
+  on it slightly late. If its stream then moves forward, the reset releases anything it
+  pressed. If the stream does not move forward, every message the client sent before the
+  resume point has arrived, including any release that followed it.
+- **After**, it is below the expected number and is discarded as a duplicate.
+
+In neither case does the host wait for a message the client discarded, and in neither
+case does a key stay down because its release was cleared.
+
+> **Why the numbers continue instead of restarting.** If the client reused the numbers of
+> the messages it cleared, a delayed original and its replacement would share a
+> `msg_seq`. Whichever arrived first would be delivered and the other dropped as a
+> duplicate, so a stale event could be delivered in place of a fresh one, or segments of
+> the two combined into one message. Continuing the count gives every message a number no
+> other message has had, and the resume point tells the host where the gap ends.
+
+> **Why the reset happens where a stream moves forward.** Parking already released
+> everything, but a message in flight can press a key after that, and the release that
+> followed it may be one the client cleared. The host can know that a release will never
+> come only at the moment it skips the gap, so that is where it releases. The reset is
+> per stream so that a key pressed on one stream after the resume is not released because
+> a different stream skipped.
 
 ## Microphone and camera
 

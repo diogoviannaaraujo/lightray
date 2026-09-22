@@ -185,13 +185,17 @@ specified in this directory.
 - [ ] Reply to `PING` with `PONG` carrying the hold time
 
 **Sending**
-- [ ] Reliable messages on stream 0 and on input streams, `msg_seq` initially 0 and retained across ordinary resume
+- [ ] Reliable messages on stream 0 and on input streams, `msg_seq` initially 0 and retained across ordinary resume, except input the client clears
 - [ ] Retransmit unacknowledged segments on a timeout
 - [ ] Pace outbound media; never pace control chunks
+- [ ] One input stream per device; merge waiting motion and gamepad state, ending the merge on a button change
+- [ ] Touch and pen hover and move, and sensors, on an `UNRELIABLE` stream; pen button changes and a stopping gyroscope reliably
 
 **Lifecycle**
 - [ ] Send `PING` every 250 ms when otherwise idle
 - [ ] `PARK` when going idle; `RESUME` on a **new socket** with `decoder_lost` correct
+- [ ] Before the first `RESUME`, discard unacknowledged input and fix each input stream's resume point
+- [ ] Name every reliable input stream's resume point in `RESUME`, unchanged across repeats
 - [ ] Repeat `RESUME` on backoff until `STATE` arrives
 - [ ] Validate `SESSION_UNKNOWN` fully, with a constant-time token comparison
 - [ ] Re-handshake on wake; never resume across system sleep
@@ -207,13 +211,15 @@ Everything above that applies to receiving and sending, plus:
 - [ ] Clear `INTRA_REFRESH` and `FEC` from the accepted capabilities
 - [ ] Ensure `RESPONSE` is no larger than the `INIT`
 - [ ] Assign a non-zero `session_id`; bound concurrent sessions
-- [ ] Park on `PARK` or on 2 s of silence, releasing every media buffer
+- [ ] Park on `PARK` or on 2 s of silence, releasing every media buffer and performing the input reset
 - [ ] Retain keys, counters, replay window, stream table, configuration and statistics
 - [ ] Arm no timer for a parked session; expire by periodic sweep
 - [ ] Bound and evict parked sessions, oldest first
 - [ ] Signal idle at `pipeline_idle_after`; expire at `grace_window`, in running time
 - [ ] Rebind only on an authenticated, in-window, strictly-newest packet
 - [ ] On resume: rebind, flush media only, preserve reliable state, send `STATE{RESUME}`, produce an `IDR` per video stream
+- [ ] Apply resume points from every `RESUME`, forward only, discarding held and late input below them
+- [ ] Input reset on park, session end and adoption, and per stream when a resume point moves it forward; ignore a release of anything not held
 - [ ] Answer `REFRESH_REQUEST`, escalating `LTR_ANY` → `IDR` correctly
 - [ ] Retain acknowledged references, bounded, discarding oldest first
 - [ ] Apply `RECONFIGURE` partially and answer with the values actually applied
@@ -250,11 +256,20 @@ These are the cases where two implementations most often appear to work and do n
     processed.
 13. **Send a malformed chunk after a valid one in the same datagram**; assert the valid
     one was processed.
+14. **Park with a key press delivered and its release unacknowledged**, then resume;
+    assert the host released the key, did not wait for the cleared release, and
+    delivers the next key event at once.
+15. **Deliver a pre-park input message after the host has applied the resume point**;
+    assert it is acknowledged and not delivered.
+16. **Repeat a `RESUME` after newer input has been delivered**; assert nothing is
+    skipped and nothing is released.
+17. **Move a gamepad stick and press a button within one merge interval**; assert the
+    host receives the stick position the client had at the press.
 
 ## Regression scenarios from the HEVC demo
 
-- [ ] Park with a missing reliable command, a later completed and acknowledged command, and pending outgoing messages; resume and deliver each exactly once in order with continued sequence numbers.
-- [ ] Deliver an unseen pre-park reliable packet after resume and verify it fills its original gap without colliding with a new command.
+- [ ] On stream 0, park with a missing reliable command, a later completed and acknowledged command, and pending outgoing messages; resume and deliver each exactly once in order with continued sequence numbers.
+- [ ] On stream 0, deliver an unseen pre-park reliable packet after resume and verify it fills its original gap without colliding with a new command.
 - [ ] Lose a recovery frame beyond its repair deadline; expire the attempt and recover with a new request identifier.
 - [ ] Restart the host with a new reset key; ignore the unverifiable reset and complete the bounded liveness fallback to a fresh handshake.
 - [ ] Advance frame identifiers through `0xffffffff` to 1 and preserve `PREVIOUS` gating across the wrap.

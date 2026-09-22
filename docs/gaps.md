@@ -29,8 +29,9 @@ The demo validates a low-delay, single-chain SDR configuration; it does not esta
 
 **Status: unspecified. Blocks independent interoperability.**
 
-Version 0 carries input as opaque bytes on a `RELIABLE` stream, in order and without
-loss. What those bytes mean — how a key press, a pointer motion, a controller state or a
+Version 0 carries input as opaque bytes, on `RELIABLE` streams in order and without loss
+while the session is active, and for high-rate updates on an `UNRELIABLE` stream. What
+those bytes mean — how a key press, a pointer motion, a controller state or a
 touch event is encoded — is not defined.
 
 Two implementations written from this document alone will establish a session, exchange
@@ -42,8 +43,9 @@ with the events — which platform's input model, which controller abstraction, 
 coordinate space and scaling rules — and none of that is transport. A version 1 that
 specifies it should cover at minimum: keyboard scancodes and their keymap basis, pointer
 absolute and relative motion with a defined coordinate space, button and wheel events,
-controller state including analogue ranges and dead zones, touch, and a rule for
-coalescing high-rate motion.
+controller state including analogue ranges and dead zones, and touch. How input is split
+across streams, merged, and reset across a resume is already specified in
+[input.md](input.md); what each message contains is not.
 
 ### Presentation timing
 

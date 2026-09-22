@@ -50,6 +50,12 @@ It **MUST retain**:
 > **Why releasing media buffers matters.** Media buffers can occupy megabytes and become unusable across the forced keyframe on resume.
 > Retained protocol metadata is small, but pending reliable messages consume additional bounded memory and MUST NOT be discarded merely to park.
 
+On parking, a host MUST also perform the input reset ([input.md](input.md#the-input-reset)),
+releasing every key, button and contact it holds for the client, so that nothing stays
+pressed on the host while the client is away. Input the client has not had acknowledged
+does not survive the park: the client clears it before resuming; see
+[input.md](input.md#resetting-input-across-a-resume).
+
 A parked session MUST NOT be sent anything, MUST NOT arm a per-session timer, and MUST
 NOT consume processing. A host SHOULD expire parked sessions by sweeping the set
 periodically rather than by timing each one.
@@ -103,24 +109,49 @@ interruption.
 
 ## Resuming
 
-A client resumes by creating a **new socket**, which gives it a new source port, and
-sending `RESUME` until `STATE` arrives.
+A client resumes by clearing its input streams ([input.md](input.md#what-the-client-does)),
+creating a **new socket**, which gives it a new source port, and sending `RESUME` until
+`STATE` arrives.
 
 ### `RESUME` (`0x33`)
 
 ```
 flags:u8              bit 0 = decoder_lost
+point_count:u8
+points[point_count]:
+  stream:u8           a client-to-host RELIABLE input stream
+  msg_seq:u32         that stream's resume point
 ```
 
 ```
-33000101
+33000c010205000000070700000012
 ```
+
+| Bytes | Value | Field |
+|---|---|---|
+| `33` | `0x33` | type, `RESUME` |
+| `000c` | 12 | length |
+| `01` | bit 0 set | `flags`: `decoder_lost` |
+| `02` | 2 | `point_count` |
+| `05` | 5 | `stream` |
+| `00000007` | 7 | `msg_seq`, stream 5's resume point |
+| `07` | 7 | `stream` |
+| `00000012` | 18 | `msg_seq`, stream 7's resume point |
 
 A client MUST set `decoder_lost` when its decoder no longer exists — which is the case
 whenever the application tore the pipeline down, and after any resume that followed an
 idle notification.
 
 A host MUST read the flag. It MUST NOT assume either value.
+
+A client MUST name every `RELIABLE` client-to-host input stream, each once, with the
+resume point it fixed when it cleared that stream, and MUST send the same points in every
+repeat of this `RESUME`; see [input.md](input.md#resetting-input-across-a-resume). A
+client with no such stream sends `point_count = 0`.
+
+A host MUST discard a `RESUME` whose length is not `2 + 5 × point_count`, that names a
+stream twice, or that names a stream which is not a `RELIABLE` input stream the client
+may send on.
 
 A client MUST repeat `RESUME` with exponential backoff until `STATE` arrives, and
 SHOULD start at 100 ms and cap at 2 seconds.
@@ -135,6 +166,7 @@ On the first authenticated packet for a parked session, the host MUST:
 4. Produce an `IDR`, with its own `CODEC_CONFIG`, on every outbound video stream.
 
 Repeated `RESUME` packets during the same active recovery MUST NOT reset reliable state or restart the media pipeline; the queued `STATE` is retransmitted by the reliable stream.
+Every `RESUME`, whether or not the session was parked, applies its resume points as [input.md](input.md#what-the-host-does) describes; a point only ever moves a stream forward, so a repeat changes nothing.
 An asynchronous encoder completion belonging to a parked or replaced session MUST NOT repopulate its media queues.
 
 **A resume always produces a keyframe**, whether or not `decoder_lost` was set.
@@ -201,6 +233,7 @@ same pairing. On adoption:
 A new handshake, including adoption, MUST start reliable streams at sequence zero and MUST NOT automatically replay old pending commands into the new sequence space.
 Both endpoints MUST report unresolved old command delivery to their applications; cross-handshake exactly-once execution requires application-level reconciliation.
 This differs from ordinary resume with retained keys, which preserves pending commands and their sequence numbers.
+Input is the exception on both sides: a client discards its unacknowledged input instead of reporting it, and a host that adopts a session performs the input reset; see [input.md](input.md#the-input-reset).
 
 A host that does not adopt MUST allocate a new session identifier. The client learns
 which happened from the `session_id` in the `RESPONSE`.

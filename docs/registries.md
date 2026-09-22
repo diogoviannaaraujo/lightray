@@ -148,6 +148,10 @@ what an implementation SHOULD offer when it has no reason to do otherwise.
 Stream `0` is never listed. It is implicitly a bidirectional `RELIABLE` stream carrying
 control messages, and is always present.
 
+An application that splits input by device, as [input.md](input.md#splitting-input-by-device)
+recommends, replaces stream 5 with one stream per device and adds an `UNRELIABLE` input
+stream for high-rate updates.
+
 ## Media fragment flags
 
 | Bit | Name | Meaning |
@@ -309,4 +313,5 @@ implementations behave alike.
 | `reorder_window` | max(1 ms, srtt / 4) | no |
 | `nack_retry_interval` | max(1.5 × srtt, 2 ms) | no |
 | `retransmit_store` | 500 ms and 16 MB | no |
+| `input_merge_interval` | 1 ms | no |
 | `handshake_retry` | 100 ms, doubling, capped at 2 s, at most 8 attempts | no |
