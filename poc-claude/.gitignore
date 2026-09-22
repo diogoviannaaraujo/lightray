@@ -1,5 +1,0 @@
-.build/
-.swiftpm/
-Benchmarks/.build/
-Benchmarks/.swiftpm/
-Benchmarks/.benchmarkBaselines/

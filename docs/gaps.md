@@ -23,7 +23,7 @@ Use IDR-only recovery without negotiating `LTR` until that contract is establish
 
 Pinning HEVC does not settle profiles, levels, bit depth, chroma format, HDR metadata, or whether reordered pictures and multiple simultaneous references are permitted.
 The `PREVIOUS` gate alone does not describe arbitrary HEVC reference lists or presentation reordering.
-The demo validates a low-delay, single-chain SDR configuration; it does not establish interoperability for every HEVC encoder or HDR pipeline.
+Only a low-delay, single-chain SDR configuration has been validated end to end; that does not establish interoperability for every HEVC encoder or HDR pipeline.
 
 ### Input payload encoding
 

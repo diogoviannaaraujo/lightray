@@ -266,7 +266,7 @@ These are the cases where two implementations most often appear to work and do n
 17. **Move a gamepad stick and press a button within one merge interval**; assert the
     host receives the stick position the client had at the press.
 
-## Regression scenarios from the HEVC demo
+## Regression scenarios
 
 - [ ] On stream 0, park with a missing reliable command, a later completed and acknowledged command, and pending outgoing messages; resume and deliver each exactly once in order with continued sequence numbers.
 - [ ] On stream 0, deliver an unseen pre-park reliable packet after resume and verify it fills its original gap without colliding with a new command.
