@@ -1,166 +1,109 @@
-# What version 0 does not settle
+# What version 1 does not settle
 
-Two kinds of thing are listed here: features deliberately deferred with a seam reserved
-for them, and questions this specification genuinely does not answer. The second kind
-matters more — each one is a place where two conforming implementations can still fail
-to work together, and anyone building against this document should read them before
-starting.
+Three kinds of thing are listed here: decisions that wait on measurements, questions this
+specification does not yet answer, and features deliberately left out with their seams
+reserved. The first two shrink as version 1 is written; anyone building against these documents
+should read them before starting.
+
+## Waiting on measurements
+
+How Windows hosts behave is being measured on NVIDIA and Intel GPUs, and each row below is a
+decision those measurements settle. The document each lands in stays version 0, or unwritten,
+until then. The tests are described in the Windows validation brief,
+`tools/windows/BRIEF.md` on the `windows-validation` branch.
+
+| Decision | Test | Lands in |
+|---|---|---|
+| Which recovery methods a Windows host can use, and whether Quick Sync can do more than IDRs | P0-1 | [video.md](video.md) |
+| Whether a Windows host can hold a warm park, and what a cold one costs | P0-2 | [session.md](session.md) |
+| Whether "no IDR except for resolution, chroma and HDR changes" holds on Windows encoders, and how fast they follow a new target | P1-1 | [control.md](control.md), [rate-control.md](rate-control.md) |
+| Whether a resume must budget for a capture restart, and whether hosts need a "video unavailable" notice | P1-2 | [session.md](session.md) |
+| The cursor shape format: RGBA alone, or with an invert mask | P1-3 | [input.md](input.md) |
+| Whether the keyboard needs the consumer page; what a relative mouse delta means; the wheel's units; whether a host can detect a game capturing the pointer; the rumble fields | P1-4 | [input.md](input.md) |
+| Whether `GAME`'s 5 ms audio frames are worth it on Windows | P1-5 | [audio.md](audio.md), [modes.md](modes.md) |
+| Whether the pacing requirement is achievable on Windows | P1-6 | [video.md](video.md), [rate-control.md](rate-control.md) |
+| HDR metadata inside the bitstream, or in a message of its own | P2-3 | [video.md](video.md) |
+| Which chroma formats a Windows host can offer, and whether it can produce a fast-start IDR | P2-4, P2-5 | [modes.md](modes.md), [session.md](session.md) |
+
+The Apple measurements are already in [`notes/`](../notes/README.md).
 
 ## Open questions
 
-### Long-term reference lifetime
+### The smallest datagram
 
-**Status: incomplete. Blocks general LTR interoperability.**
+**Status: open until [modes.md](modes.md) is written.**
 
-A decoded acknowledgement does not specify how long the decoder retains that reference, how eviction is coordinated, or how delayed acknowledgements are rejected after decoder reset or an IDR transition.
-`config_generation` cannot serve as a reference epoch because bitrate and frame-rate changes preserve prediction.
-The validity gate in [video.md](video.md) prevents treating historical acknowledgement as unconditional permission, but a shared reference-lifetime contract still needs specification.
-Use IDR-only recovery without negotiating `LTR` until that contract is established.
-
-### HEVC decoding contract
-
-**Status: incomplete.**
-
-Pinning HEVC does not settle profiles, levels, bit depth, chroma format, HDR metadata, or whether reordered pictures and multiple simultaneous references are permitted.
-The `PREVIOUS` gate alone does not describe arbitrary HEVC reference lists or presentation reordering.
-Only a low-delay, single-chain SDR configuration has been validated end to end; that does not establish interoperability for every HEVC encoder or HDR pipeline.
-
-### Input payload encoding
-
-**Status: unspecified. Blocks independent interoperability.**
-
-Version 0 carries input as opaque bytes, on `RELIABLE` streams in order and without loss
-while the session is active, and for high-rate updates on an `UNRELIABLE` stream. What
-those bytes mean — how a key press, a pointer motion, a controller state or a
-touch event is encoded — is not defined.
-
-Two implementations written from this document alone will establish a session, exchange
-video and audio correctly, and fail to agree on input. A client built against a host it
-did not author MUST obtain the input encoding from the host's author.
-
-This is deferred rather than guessed because the encoding is bound to what the host does
-with the events — which platform's input model, which controller abstraction, which
-coordinate space and scaling rules — and none of that is transport. A version 1 that
-specifies it should cover at minimum: keyboard scancodes and their keymap basis, pointer
-absolute and relative motion with a defined coordinate space, button and wheel events,
-controller state including analogue ranges and dead zones, and touch. How input is split
-across streams, merged, and reset across a resume is already specified in
-[input.md](input.md); what each message contains is not.
+A `RESPONSE` must be no larger than the `INIT` that triggered it, and an `INIT` can be as small
+as 256 bytes. Once `SETTINGS`, `CAPABILITIES` and `LIFECYCLE` are defined, a `RESPONSE`
+carrying all of them has to fit. If it can't, the minimum `max_datagram_size` rises.
 
 ### Presentation timing
 
-**Status: partially specified.**
+**Status: partially specified; revisited with [audio.md](audio.md).**
 
-`capture_time_us` on every frame is drawn from one monotonic clock on the sending
-machine, so audio and video are directly comparable, and [audio.md](audio.md) requires a
-receiver to align them by it.
-
-What is not specified: how deep a receiver's playout buffer should be, how it should
-choose a presentation instant, what it should do when audio and video drift apart, and
-how it should recover from a buffer that has run dry or grown. These are application
-decisions with no single right answer — a latency-sensitive use wants a shallow buffer
-and visible glitches, a passive one wants the opposite — and the protocol gives an
-implementation everything it needs to make them.
-
-### Path MTU discovery
-
-**Status: partially specified.**
-
-The padded `INIT` proves the path can carry `max_datagram_size` at the moment the session
-starts, and [packets.md](packets.md) defines what happens when the size changes by
-`RECONFIGURE`. There is no mechanism for discovering mid-session that the path has
-stopped carrying the chosen size, and no automatic probe to find a size it will carry.
-
-The symptom of a mid-session MTU drop is loss that retransmission cannot repair, because
-retransmissions are the same size. A sender that observes a frame failing repeatedly at
-full size SHOULD lower `MAX_DATAGRAM_SIZE` by `RECONFIGURE`, but the detection heuristic
-is left to the implementation.
-
-### Statistics reporting
-
-**Status: intentionally local.**
-
-[feedback.md](feedback.md) defines how round-trip time, loss, jitter and queuing delay
-are derived, because both ends must derive them the same way for the backstop to behave
-consistently. How an implementation exposes them to an application — the interface, the
-publication rate, what a "link quality" summary means — is not specified and does not
-affect interoperability.
+`capture_time_us` on every frame is drawn from one monotonic clock on the sending machine, so
+audio and video are directly comparable. How deep a receiver's playout buffer should be, how
+it should choose a presentation instant, and what it should do when audio and video drift apart
+are application decisions, and version 0 left them to the application.
 
 ### Multiple concurrent clients
 
 **Status: unspecified.**
 
-The protocol demultiplexes by `session_id`, so a host can hold many sessions at once, and
-`maxParkedSessions` bounds the parked set. Nothing says how a host should divide capacity
-between several active sessions, or whether it should accept more than one at all. A host
-serving one client at a time — the expected case — needs none of this.
-
-An implementation serving several MUST schedule fairly between them; a host that drains
-sessions in a fixed order lets one busy client starve the rest.
+The protocol demultiplexes by `session_id`, so a host can hold many sessions at once. Nothing
+says how a host should divide capacity between several active sessions, or whether it should
+accept more than one at all. A host serving one client at a time, the expected case, needs none
+of this. An implementation serving several MUST schedule fairly between them; a host that
+drains sessions in a fixed order lets one busy client starve the rest.
 
 ## Deferred features
 
-Each of these has its seam reserved on the wire, so adding it later is a capability
-negotiation rather than a version bump.
-
-### Forward error correction
-
-**Reserved: capability bit 2, the FEC extension TLV on every fragment, the FEC scheme
-registry.**
-
-Every media fragment carries `{type 1, length 1, scheme}` and version 0 always writes
-scheme `NONE`. A receiver MUST discard a fragment naming a scheme it does not implement,
-so a future scheme cannot be mistaken for data.
-
-Version 0 recovers by retransmission, which costs a round trip. FEC trades bandwidth for
-latency and is the natural next step for links where a round trip is expensive. The
-reserved header bytes in the protected header exist partly so that a scheme can signal
-per-packet without a version bump.
-
-### Congestion control
-
-**Reserved: the loss backstop, and the per-packet arrival data in `FEEDBACK`.**
-
-Version 0 sets bitrate manually. `FEEDBACK` already carries everything a controller
-needs — per-packet arrival times, from which send and receive rates, one-way delay
-variation and queuing delay all follow — and the backstop in
-[feedback.md](feedback.md) prevents the worst outcome in the meantime.
-
-What is missing is the controller: a model of the path, a rate signal derived from it,
-and a ramp. That is a substantial piece of work with its own failure modes, and shipping
-a poor one would be worse than shipping none, because implementations would then have to
-interoperate with its mistakes.
-
-### Intra refresh
-
-**Reserved: capability bit 1, frame header flag bit 1.**
-
-Gradual intra refresh spreads the cost of a keyframe across many frames, which removes
-the bitrate spike that makes recovery expensive exactly when the link is struggling. A
-host MUST NOT accept the capability in version 0, and the frame header flag that would
-mark a completed refresh cycle is reserved.
-
-It is deferred because hardware encoders in common use do not expose the control needed
-to drive it.
+Where a feature's seam is reserved on the wire, adding it later needs no version bump.
 
 ### Rekeying
 
 **Reserved: `key_phase`, bit 6 of the protected header's `flags`.**
 
-Traffic keys last for the life of a session. With a 64-bit packet number and AES-GCM
-there is no practical limit to reach in a session of any realistic length, so version 0
-does not rekey. The bit is reserved so that a future version can, without a version bump
-and without a round trip.
+Traffic keys last for the life of a session. Noise advises against encrypting more than 2⁵⁶
+bytes under one AES-GCM key, which no session approaches, so version 1 does not rekey. The bit
+is reserved so that a later version can, without a round trip; Noise's `Rekey()` (section 11.3
+of its specification) is the natural mechanism.
 
-Note that a session adopted on re-handshake already gets fresh keys; see
-[reconnect.md](reconnect.md). That is not rekeying — it is a new key schedule for a
-session that kept its identity.
+A session taken over by a new handshake gets fresh keys ([handshake.md](handshake.md#taking-over-a-session)).
+That is not rekeying: it is a new key schedule for a session that kept its identity.
+
+### Path MTU discovery
+
+**Reserved: the `PADDING` chunk.**
+
+The padded `INIT` proves the path can carry `max_datagram_size` when the session starts.
+There is no mechanism for discovering mid-session that the path has stopped carrying it, and
+no probe to find a size it will carry. A sender that sees a frame failing repeatedly at full
+size SHOULD lower the size ([packets.md](packets.md#path-mtu-changes)); how it detects that is
+left to the implementation. `PADDING` exists so that a later version can probe with packets
+that carry nothing.
+
+### Intra refresh
+
+**Reserved in version 0: a capability bit and a frame header flag. Revisited with
+[video.md](video.md).**
+
+Gradual intra refresh spreads the cost of a keyframe across many frames. Version 1's recovery
+frames are reference invalidation, a long-term-reference refresh or an IDR, chosen by the
+host; whether intra refresh joins them depends on what the encoders expose.
+
+### Camera, touch, pen and motion sensors
+
+**Reserved: stream kind 5 for a camera; input numbers in [input.md](input.md).**
+
+Version 1 carries video and audio from host to client, and input and the microphone from
+client to host. The rest get numbers and nothing else.
 
 ### Codec negotiation
 
 **Not reserved. Deliberately absent.**
 
-The codecs are pinned to the wire version: version 0 means HEVC and Opus. Nothing on the
+The codecs are pinned to the wire version: version 1 means HEVC and Opus. Nothing on the
 wire carries a codec identifier, and a peer that disagrees fails the version check. A
 different codec is a different version, not a negotiation.
 
@@ -168,9 +111,10 @@ different codec is a different version, not a negotiation.
 
 **Not reserved. Out of scope.**
 
-The application supplies an address. The protocol handles a peer's address *changing* —
-see the rebinding rules in [packets.md](packets.md) — but does nothing to establish
-reachability in the first place.
+The application supplies an address. The protocol follows a peer's address *changing* (see
+the rebinding rules in [packets.md](packets.md#rebinding-to-a-new-address)) but does nothing
+to establish reachability in the first place. VPNs such as WireGuard and Tailscale solve this
+beneath the protocol, and nothing here depends on them.
 
 ### Pairing
 
@@ -178,4 +122,18 @@ reachability in the first place.
 
 The application supplies the pairing identifier and the pre-shared key. How two devices
 come to share one is a user-facing flow this protocol does not define. The security
-requirements on the key are in [conformance.md](conformance.md).
+requirements on the key are in [conformance.md](conformance.md#requirements).
+
+## Closed since version 0
+
+Version 0 listed these as gaps. Version 1 closes each of them, in documents still being
+written:
+
+| Version 0 gap | Version 1 answer |
+|---|---|
+| Long-term reference lifetime | A reference epoch that counts IDRs and decoder resets, in the frame header and in acknowledgements ([video.md](video.md)) |
+| HEVC decoding contract | Low-delay, with no B-frames and no reordering; Main, Main10 and optionally 4:4:4 ([video.md](video.md)) |
+| Input payload encoding | Keyboard, pointer, gamepad and cursor messages ([input.md](input.md)) |
+| Forward error correction | Per-frame Reed–Solomon, RFC 5510 ([video.md](video.md)) |
+| Congestion control | Required delay-based rate control ([rate-control.md](rate-control.md)) |
+| Statistics reporting | An optional statistics chunk for client overlays ([feedback.md](feedback.md)) |
