@@ -1,0 +1,620 @@
+{
+  "device" : "Apple M4",
+  "encoder" : "videotoolbox",
+  "fps" : 60,
+  "frames" : [
+    {
+      "bytes" : 118831,
+      "index" : 0,
+      "keyframe" : true
+    },
+    {
+      "bytes" : 2556,
+      "index" : 1,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2725,
+      "index" : 2,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 3479,
+      "index" : 3,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 5447,
+      "index" : 4,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 26422,
+      "index" : 5,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 11267,
+      "index" : 6,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 6568,
+      "index" : 7,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 4960,
+      "index" : 8,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 4630,
+      "index" : 9,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 4762,
+      "index" : 10,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 4751,
+      "index" : 11,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 4012,
+      "index" : 12,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 4204,
+      "index" : 13,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 4710,
+      "index" : 14,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 4075,
+      "index" : 15,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 3872,
+      "index" : 16,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 3683,
+      "index" : 17,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 4230,
+      "index" : 18,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 5430,
+      "index" : 19,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 4546,
+      "index" : 20,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 4855,
+      "index" : 21,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 5061,
+      "index" : 22,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 4327,
+      "index" : 23,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 3162,
+      "index" : 24,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 3785,
+      "index" : 25,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 3636,
+      "index" : 26,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 3410,
+      "index" : 27,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2939,
+      "index" : 28,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2722,
+      "index" : 29,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 3191,
+      "index" : 30,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 3155,
+      "index" : 31,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2982,
+      "index" : 32,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2707,
+      "index" : 33,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2625,
+      "index" : 34,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2911,
+      "index" : 35,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2643,
+      "index" : 36,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2786,
+      "index" : 37,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2594,
+      "index" : 38,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 1994,
+      "index" : 39,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 1931,
+      "index" : 40,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2190,
+      "index" : 41,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2300,
+      "index" : 42,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2309,
+      "index" : 43,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 1803,
+      "index" : 44,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2301,
+      "index" : 45,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 3115,
+      "index" : 46,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2365,
+      "index" : 47,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2415,
+      "index" : 48,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2181,
+      "index" : 49,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2502,
+      "index" : 50,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2730,
+      "index" : 51,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2310,
+      "index" : 52,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2934,
+      "index" : 53,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2573,
+      "index" : 54,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2339,
+      "index" : 55,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2130,
+      "index" : 56,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2598,
+      "index" : 57,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 3430,
+      "index" : 58,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 3604,
+      "index" : 59,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2518,
+      "index" : 60,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2222,
+      "index" : 61,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2527,
+      "index" : 62,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2561,
+      "index" : 63,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2241,
+      "index" : 64,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 3685,
+      "index" : 65,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 3837,
+      "index" : 66,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2942,
+      "index" : 67,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2002,
+      "index" : 68,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2033,
+      "index" : 69,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2295,
+      "index" : 70,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 3145,
+      "index" : 71,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2412,
+      "index" : 72,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 3598,
+      "index" : 73,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 3082,
+      "index" : 74,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 1800,
+      "index" : 75,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 1637,
+      "index" : 76,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 1827,
+      "index" : 77,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2486,
+      "index" : 78,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2679,
+      "index" : 79,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2406,
+      "index" : 80,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 1984,
+      "index" : 81,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2324,
+      "index" : 82,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2476,
+      "index" : 83,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2544,
+      "index" : 84,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 3277,
+      "index" : 85,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 3679,
+      "index" : 86,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 3112,
+      "index" : 87,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2548,
+      "index" : 88,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2777,
+      "index" : 89,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2756,
+      "index" : 90,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 3387,
+      "index" : 91,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2983,
+      "index" : 92,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2663,
+      "index" : 93,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2766,
+      "index" : 94,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2635,
+      "index" : 95,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2414,
+      "index" : 96,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2376,
+      "index" : 97,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2459,
+      "index" : 98,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2572,
+      "index" : 99,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2327,
+      "index" : 100,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2472,
+      "index" : 101,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2282,
+      "index" : 102,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2089,
+      "index" : 103,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 1723,
+      "index" : 104,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2041,
+      "index" : 105,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2026,
+      "index" : 106,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2096,
+      "index" : 107,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 1882,
+      "index" : 108,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2016,
+      "index" : 109,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 1961,
+      "index" : 110,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 1995,
+      "index" : 111,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 1934,
+      "index" : 112,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2003,
+      "index" : 113,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 1883,
+      "index" : 114,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2034,
+      "index" : 115,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2162,
+      "index" : 116,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2050,
+      "index" : 117,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 2001,
+      "index" : 118,
+      "keyframe" : false
+    },
+    {
+      "bytes" : 1988,
+      "index" : 119,
+      "keyframe" : false
+    }
+  ],
+  "height" : 1080,
+  "lost" : [
+    40,
+    41,
+    42,
+    43,
+    44,
+    45
+  ],
+  "notes" : "LTR tokens of frames before 40 acknowledged every 1 frame(s), one frame late; frame 46 encoded with ForceLTRRefresh",
+  "recovery" : 46,
+  "scenario" : "ltr-ack-every-frame",
+  "width" : 1920
+}
