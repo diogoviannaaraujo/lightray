@@ -1,5 +1,19 @@
 # Video
 
+> **Version 0 text, to be rewritten for version 1** once the Windows encoder measurements are
+> in ([gaps.md](gaps.md)). Version 1 changes:
+>
+> - an HEVC contract: low-delay, with no B-frames and no reordering; Main, Main10, and optionally
+>   4:4:4;
+> - per-frame Reed–Solomon FEC (RFC 5510) as FEC scheme 1;
+> - a reference epoch in the frame header, counting IDRs and decoder resets, so that both ends
+>   agree on what the client's decoder holds;
+> - recovery in the order FEC, retransmission when it can land within the latency budget, a
+>   recovery frame the client requests, then an IDR. The host chooses how to make the recovery
+>   frame, and the client declares whether its decoder accepts recovery frames that aren't IDRs;
+> - tail loss detected from gaps in `transport_seq`, replacing the tail timer;
+> - the `CAPABILITIES` parameter, and the fragment overhead that version 0's README gave.
+
 Video travels on a stream of class `MEDIA`. A frame is submitted whole by the
 application, split into fragments, and reassembled by the receiver into the same bytes.
 The protocol never inspects the payload.
@@ -137,8 +151,9 @@ except the last, which carries the remainder.
 stride = max_datagram_size − 51
 ```
 
-The 51 bytes are the fixed overhead enumerated in [README.md](README.md). At the default
-1200-byte datagram, `stride` is 1149.
+The 51 bytes are the fixed overhead: the 16-byte protected header, the 3-byte chunk header,
+the 13-byte fragment header, the 3-byte FEC extension TLV and the 16-byte authentication tag.
+At the default 1200-byte datagram, `stride` is 1149.
 
 Fragment `i` carries bytes `[i × stride, (i+1) × stride)`. A receiver places any fragment
 at `fragment_index × stride` in a contiguous buffer, the moment it arrives, with no

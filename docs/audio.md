@@ -1,5 +1,12 @@
 # Audio
 
+> **Version 0 text, to be rewritten for version 1** ([gaps.md](gaps.md)). Version 1 changes:
+>
+> - an `AUDIO_FRAME` chunk with no fragmentation: Opus frames of 5, 10 or 20 ms, several per
+>   datagram, with redundant copies of recent frames;
+> - the frame duration set by the client's preset ([modes.md](modes.md));
+> - the microphone using the same format upstream.
+
 Audio travels on a stream of class `REALTIME`. It uses the same fragmentation,
 retransmission and frame machinery as video, with two differences that follow from what
 a listener notices: audio is **never decodability-gated**, and a gap is **reported**

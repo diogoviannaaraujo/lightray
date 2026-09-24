@@ -1,5 +1,14 @@
 # Feedback, loss reporting and repair
 
+> **Version 0 text, to be rewritten for version 1** ([gaps.md](gaps.md)). Version 1 changes:
+>
+> - `FRAME_ACK` carries the reference epoch;
+> - `REFRESH_REQUEST` reports the last frame the client decoded, and its epoch;
+> - an optional `RECEIVER_STATS` chunk for client overlays;
+> - `FEEDBACK` from a new address validates it ([packets.md](packets.md#validating-a-new-address));
+> - the loss backstop and the manually set bitrate give way to
+>   [rate-control.md](rate-control.md).
+
 Four chunks carry everything a sender learns about the path and about what the receiver
 needs: `FEEDBACK` reports what arrived and when, `NACK` asks for fragments back,
 `FRAME_ACK` establishes reference points, and `REFRESH_REQUEST` asks for a frame that
