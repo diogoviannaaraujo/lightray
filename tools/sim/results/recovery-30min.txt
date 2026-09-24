@@ -1,0 +1,82 @@
+# Recovery simulation, 30 simulated minutes per cell, 60 fps, deadline 3 frames unless stated
+
+## LAN game, good Wi-Fi (RTT 4 ms, 50 Mb/s) — realised packet loss 0.10%
+strategy                              overhead  late>1f/min  freezes/min  freeze ms/min  mean freeze ms  p50 late  p99 late
+Recovery frame only (LTR/RFI)     0.0%          0.0        75.90           6879              91      0.0       0.0
+v0: NACK first     0.1%          0.1         0.00              0               0      0.0       0.5
+Moonlight: FEC 20% min 2 + spec. RFI    20.4%          0.0         7.03            225              32      0.0       0.2
+Hybrid: FEC 10% min 1 + NACK + spec.    10.5%          0.1         0.00              0               0      0.0       0.2
+Hybrid: FEC 20% min 2 + NACK + spec.    20.5%          0.0         0.00              0               0      0.0       0.2
+Hybrid: FEC 40% min 2 + NACK + spec.    40.4%          0.0         0.00              0               0      0.0       0.2
+
+## LAN game, busy Wi-Fi (RTT 6 ms, 50 Mb/s) — realised packet loss 1.25%
+strategy                              overhead  late>1f/min  freezes/min  freeze ms/min  mean freeze ms  p50 late  p99 late
+Recovery frame only (LTR/RFI)     0.0%          0.0       238.00          25534             107      0.0       0.0
+v0: NACK first     1.8%         16.4         0.33             29              88      0.0      13.2
+Moonlight: FEC 20% min 2 + spec. RFI    20.4%          0.0        66.67           2587              39      0.0       0.3
+Hybrid: FEC 10% min 1 + NACK + spec.    11.6%         18.6         0.27             23              87      0.0       9.3
+Hybrid: FEC 20% min 2 + NACK + spec.    21.4%         16.4         0.17             14              85      0.0      10.4
+Hybrid: FEC 40% min 2 + NACK + spec.    41.1%         11.9         0.27             23              84      0.0      12.3
+
+## LAN game, good Wi-Fi + AWDL pauses (Apple client) — realised packet loss 0.09%, AWDL pauses 30-50 ms/s
+strategy                              overhead  late>1f/min  freezes/min  freeze ms/min  mean freeze ms  p50 late  p99 late
+Recovery frame only (LTR/RFI)     0.0%         73.7        76.60           6966              91      0.0      30.3
+v0: NACK first     0.1%         86.6         0.03              3              87      0.0      30.6
+Moonlight: FEC 20% min 2 + spec. RFI    20.4%         84.7         7.20            246              34      0.0      30.2
+Hybrid: FEC 10% min 1 + NACK + spec.    10.5%         85.2         0.10              8              82      0.0      30.3
+Hybrid: FEC 20% min 2 + NACK + spec.    20.5%         85.7         0.00              0               0      0.0      30.6
+Hybrid: FEC 40% min 2 + NACK + spec.    40.5%         86.0         0.03              3              83      0.0      30.7
+
+## WAN desktop, fixed line (RTT 30 ms, 20 Mb/s) — realised packet loss 0.13%
+strategy                              overhead  late>1f/min  freezes/min  freeze ms/min  mean freeze ms  p50 late  p99 late
+Recovery frame only (LTR/RFI)     0.0%          0.0        44.40           5570             125      0.0       0.0
+v0: NACK first     0.1%         85.5         3.10            361             116      0.0      31.6
+Moonlight: FEC 20% min 2 + spec. RFI    26.1%          0.0         2.27            148              65      0.0       0.3
+Hybrid: FEC 10% min 1 + NACK + spec.    13.9%          5.2         0.70             56              80      0.0       0.4
+Hybrid: FEC 20% min 2 + NACK + spec.    26.2%          4.0         0.50             39              78      0.0       0.4
+Hybrid: FEC 40% min 2 + NACK + spec.    44.2%          2.2         0.50             39              77      0.0       0.3
+
+## WAN iPad, cellular (RTT 60 ms, 10 Mb/s) — realised packet loss 1.33%
+strategy                              overhead  late>1f/min  freezes/min  freeze ms/min  mean freeze ms  p50 late  p99 late
+Recovery frame only (LTR/RFI)     0.0%          0.0       102.33          22055             216      0.0       0.0
+v0: NACK first     1.4%          0.0       103.10          22012             214      0.0       0.0
+Moonlight: FEC 20% min 2 + spec. RFI    35.1%          0.0        25.23           2800             111      0.0       0.8
+Hybrid: FEC 10% min 1 + NACK + spec.    18.9%          0.0        31.83           3620             114      0.0       0.8
+Hybrid: FEC 20% min 2 + NACK + spec.    35.6%          0.0        25.83           2887             112      0.0       0.8
+Hybrid: FEC 40% min 2 + NACK + spec.    50.6%          0.0        21.80           2395             110      0.0       0.8
+
+## WAN bad (RTT 100 ms, 10 Mb/s) — realised packet loss 4.03%
+strategy                              overhead  late>1f/min  freezes/min  freeze ms/min  mean freeze ms  p50 late  p99 late
+Recovery frame only (LTR/RFI)     0.0%          0.0        99.00          41568             420      0.0       0.0
+v0: NACK first     4.3%          0.0        98.23          41703             425      0.0       0.0
+Moonlight: FEC 20% min 2 + spec. RFI    33.5%          0.0        61.90          10628             172      0.0       0.8
+Hybrid: FEC 10% min 1 + NACK + spec.    20.1%          0.0        69.73          12230             175      0.0       0.8
+Hybrid: FEC 20% min 2 + NACK + spec.    35.9%          0.0        61.07          10538             173      0.0       0.8
+Hybrid: FEC 40% min 2 + NACK + spec.    51.3%          0.0        58.03           9779             169      0.0       0.8
+
+## WAN desktop, fixed line (RTT 30 ms, 20 Mb/s), budget 80 ms — realised packet loss 0.13%
+strategy                              overhead  late>1f/min  freezes/min  freeze ms/min  mean freeze ms  p50 late  p99 late
+Recovery frame only (LTR/RFI)     0.0%          0.0        43.03           6965             162      0.0       0.0
+v0: NACK first     0.1%         94.3         0.03              6             177      0.0      33.3
+Moonlight: FEC 20% min 2 + spec. RFI    26.1%          0.0         2.40            156              65      0.0       0.3
+Hybrid: FEC 10% min 1 + NACK + spec.    13.9%          7.2         0.03              4             133      0.0       0.4
+Hybrid: FEC 20% min 2 + NACK + spec.    26.2%          5.0         0.00              0               0      0.0       0.4
+Hybrid: FEC 40% min 2 + NACK + spec.    44.2%          3.7         0.00              0               0      0.0       0.4
+
+## WAN iPad, cellular (RTT 60 ms, 10 Mb/s), budget 140 ms — realised packet loss 1.33%
+strategy                              overhead  late>1f/min  freezes/min  freeze ms/min  mean freeze ms  p50 late  p99 late
+Recovery frame only (LTR/RFI)     0.0%          0.0        81.67          28669             351      0.0       0.0
+v0: NACK first     1.4%        609.5         3.97            998             252      0.0      85.5
+Moonlight: FEC 20% min 2 + spec. RFI    35.1%          0.0        25.37           2907             115      0.0       0.8
+Hybrid: FEC 10% min 1 + NACK + spec.    19.6%        158.5         1.83            423             231      0.0      75.8
+Hybrid: FEC 20% min 2 + NACK + spec.    36.6%        123.6         1.40            326             233      0.0      75.0
+Hybrid: FEC 40% min 2 + NACK + spec.    51.3%        110.6         1.20            274             228      0.0      74.2
+
+## WAN bad (RTT 100 ms, 10 Mb/s), budget 220 ms — realised packet loss 4.03%
+strategy                              overhead  late>1f/min  freezes/min  freeze ms/min  mean freeze ms  p50 late  p99 late
+Recovery frame only (LTR/RFI)     0.0%          0.0        62.00          48779             787      0.0       0.0
+v0: NACK first     4.4%       1509.3        17.60           7523             427      6.8     140.9
+Moonlight: FEC 20% min 2 + spec. RFI    33.6%          0.0        60.67          11220             185      0.0       0.8
+Hybrid: FEC 10% min 1 + NACK + spec.    21.4%        551.2         9.90           3551             359      0.0     139.4
+Hybrid: FEC 20% min 2 + NACK + spec.    38.3%        472.4         9.47           3356             355      0.0     138.6
+Hybrid: FEC 40% min 2 + NACK + spec.    52.7%        458.6         8.00           2837             355      0.0     138.6

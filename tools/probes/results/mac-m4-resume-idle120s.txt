@@ -1,0 +1,10 @@
+# Lightray resume probe — Version 26.5 (Build 25F71)
+1080p HEVC 20 Mbps | create 0.5 ms, prepare 0.3 ms, cold first IDR 23.4 ms (p50 of 5; max 82.0)  142.2 KB
+      warm IDR after 120s idle 7.2 ms ( 142.2 KB, sync=yes); warm IDR p50 7.0 ms; steady P p50 6.2 ms, 0.9 KB
+      resume without IDR: P(unchanged) 1.0 KB in 8.3 ms; P(changed) 136.4 KB in 9.7 ms (sync=no)
+      decoder: create 76.5 ms, first IDR decode 3.0 ms, warm IDR decode p50 1.4 ms
+# Lightray resume probe — Version 26.5 (Build 25F71)
+2160p HEVC 40 Mbps | create 0.6 ms, prepare 0.3 ms, cold first IDR 42.5 ms (p50 of 5; max 78.4)  243.7 KB
+      warm IDR after 120s idle 29.6 ms ( 243.7 KB, sync=yes); warm IDR p50 20.3 ms; steady P p50 21.8 ms, 2.9 KB
+      resume without IDR: P(unchanged) 2.9 KB in 34.7 ms; P(changed) 301.9 KB in 33.3 ms (sync=no)
+      decoder: create 102.7 ms, first IDR decode 5.4 ms, warm IDR decode p50 2.7 ms
