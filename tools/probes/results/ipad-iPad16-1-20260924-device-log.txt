@@ -1,0 +1,179 @@
+       2.5 host 192.168.1.109 valid=true
+       2.6 LAUNCH model=iPad16,1 os=iPadOS_27.0 screen=1488x2266@60Hz cores=6 lowpower=false
+       3.3 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+   20216.4 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+   25170.7 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+   80202.5 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+   85231.3 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+   89833.0 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+   90111.4 willResignActive
+       0.9 host 192.168.1.109 valid=true
+       0.9 LAUNCH model=iPad16,1 os=iPadOS_27.0 screen=1488x2266@60Hz cores=6 lowpower=false
+       1.6 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+    3004.8 ENCODE 1080p low_latency=yes create_ms=36.8 first_idr_ms=43.5 idr_kb=138.1 p_p50_ms=9.1 p_p99_ms=10.2 changed_screen_p_kb=133.6
+    3254.4 DECODE 1080p create_ms=34.3 (first in process) warm_create_p50_ms=1.0 first_idr_ms=5.8 p_p50_ms=2.09 p_p99_ms=2.69 p_max_ms=2.9 errors=0
+    3254.7 DECODE kept the 1080p decoder and encoder for the next foreground
+    4737.7 ENCODE 1440p low_latency=yes create_ms=1.2 first_idr_ms=31.2 idr_kb=158.4 p_p50_ms=15.4 p_p99_ms=16.6 changed_screen_p_kb=182.2
+    5089.0 DECODE 1440p create_ms=4.2 (warm) warm_create_p50_ms=2.5 first_idr_ms=8.0 p_p50_ms=3.28 p_p99_ms=4.56 p_max_ms=4.8 errors=0
+    6475.8 ENCODE native 2266x1488 low_latency=yes create_ms=1.0 first_idr_ms=26.1 idr_kb=205.5 p_p50_ms=14.4 p_p99_ms=15.0 changed_screen_p_kb=177.0
+    6804.7 DECODE native 2266x1488 create_ms=4.0 (warm) warm_create_p50_ms=2.6 first_idr_ms=7.8 p_p50_ms=3.06 p_p99_ms=4.17 p_max_ms=4.2 errors=0
+    9544.5 ENCODE 2160p low_latency=yes create_ms=1.0 first_idr_ms=41.3 idr_kb=230.1 p_p50_ms=28.9 p_p99_ms=30.5 changed_screen_p_kb=284.7
+   10170.1 DECODE 2160p create_ms=17.0 (warm) warm_create_p50_ms=1.8 first_idr_ms=11.3 p_p50_ms=6.24 p_p99_ms=7.83 p_max_ms=8.1 errors=0
+   10344.1 SAMPLE main10-420 1920x1080 frames=60 create_ms=1.4 first_status=0 errors=0 decode_p50_ms=1.95 output=p420
+   10535.0 SAMPLE main422-10 1920x1080 frames=60 create_ms=2.4 first_status=0 errors=0 decode_p50_ms=2.68 output=p422
+   10792.8 SAMPLE main444-10 1920x1080 frames=60 create_ms=2.9 first_status=0 errors=0 decode_p50_ms=3.69 output=p444
+   11041.7 SAMPLE main444-8 1920x1080 frames=60 create_ms=2.9 first_status=0 errors=0 decode_p50_ms=3.62 output=444v
+   11132.6 CRYPTO AES-256-GCM seal_ns=2737 open_ns=1142 seal_only_ceiling=3.5Gbps
+   11172.5 CRYPTO AES-128-GCM seal_ns=1005 open_ns=878 seal_only_ceiling=9.6Gbps
+   11274.2 CRYPTO ChaCha20-Poly1305 seal_ns=2627 open_ns=2414 seal_only_ceiling=3.7Gbps
+   14595.2 THROUGHPUT id=2 offered=50Mbps secs=3 host_sent=15624 received=15624 loss=0.00% goodput=49.8Mbps seq_gaps=1 max_arrival_gap_ms=29.4 so_rcvbuf=8388608
+   17904.0 THROUGHPUT id=3 offered=100Mbps secs=3 host_sent=31249 received=31215 loss=0.11% goodput=100.5Mbps seq_gaps=6 max_arrival_gap_ms=35.2 so_rcvbuf=8388608
+   21220.5 THROUGHPUT id=4 offered=200Mbps secs=3 host_sent=62490 received=62479 loss=0.02% goodput=199.3Mbps seq_gaps=2 max_arrival_gap_ms=20.2 so_rcvbuf=8388608
+   24532.8 THROUGHPUT id=5 offered=400Mbps secs=3 host_sent=124987 received=123088 loss=1.52% goodput=395.1Mbps seq_gaps=1 max_arrival_gap_ms=67.6 so_rcvbuf=8388608
+   33185.5 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+   38050.4 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+   55056.6 JITTER sent=29990 echoed=29992 rtt_p50=2.38ms p90=14.55ms p99=43.19ms max=104.9ms spike_threshold=17.4ms spike_clusters=9 spike_interval_p50=5000ms pings_in_spikes=2484 first_clusters_at_ms=[1163,6164,12708,13630,15506,17657,22663,27686,29842]
+   55057.0 DONE
+   70580.9 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+   75398.7 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+   81411.3 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+   91025.5 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  151265.8 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  160901.0 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  226823.4 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  232845.6 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  262970.6 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  267791.2 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  431838.8 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  436648.2 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  447471.1 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  452318.4 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  478834.0 willResignActive
+  479866.1 PARK sent err=0
+  479880.8 didEnterBackground bgtask=false audio=false
+  689963.0 recv errno 57 Socket is not connected
+       0.8 host 192.168.1.109 valid=true
+       0.8 LAUNCH model=iPad16,1 os=iPadOS_27.0 screen=1488x2266@60Hz cores=6 lowpower=false
+       1.6 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+   65660.1 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+   70659.8 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+   85535.1 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  120447.4 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  299659.9 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  335848.7 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  371964.6 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  376784.9 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  469527.1 ENCODE 1080p low_latency=yes create_ms=18.3 first_idr_ms=26.7 idr_kb=138.1 p_p50_ms=9.2 p_p99_ms=9.9 changed_screen_p_kb=133.6
+  469773.2 DECODE 1080p create_ms=15.1 (first in process) warm_create_p50_ms=1.7 first_idr_ms=4.3 p_p50_ms=2.20 p_p99_ms=2.94 p_max_ms=3.0 errors=0
+  469773.5 DECODE kept the 1080p decoder and encoder for the next foreground
+  471237.9 ENCODE 1440p low_latency=yes create_ms=1.2 first_idr_ms=29.2 idr_kb=158.4 p_p50_ms=15.2 p_p99_ms=16.7 changed_screen_p_kb=182.2
+  471583.8 DECODE 1440p create_ms=4.1 (warm) warm_create_p50_ms=2.3 first_idr_ms=7.5 p_p50_ms=3.20 p_p99_ms=4.46 p_max_ms=4.5 errors=0
+  472962.1 ENCODE native 2266x1488 low_latency=yes create_ms=1.2 first_idr_ms=28.7 idr_kb=205.5 p_p50_ms=14.2 p_p99_ms=14.8 changed_screen_p_kb=177.0
+  473291.4 DECODE native 2266x1488 create_ms=3.8 (warm) warm_create_p50_ms=2.5 first_idr_ms=7.6 p_p50_ms=3.05 p_p99_ms=4.24 p_max_ms=4.3 errors=0
+  473332.1 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  476029.9 ENCODE 2160p low_latency=yes create_ms=1.2 first_idr_ms=42.4 idr_kb=230.1 p_p50_ms=28.9 p_p99_ms=29.8 changed_screen_p_kb=284.7
+  476655.6 DECODE 2160p create_ms=16.7 (warm) warm_create_p50_ms=2.0 first_idr_ms=10.6 p_p50_ms=6.26 p_p99_ms=7.59 p_max_ms=7.9 errors=0
+  476831.2 SAMPLE main10-420 1920x1080 frames=60 create_ms=1.6 first_status=0 errors=0 decode_p50_ms=1.98 output=p420
+  477022.9 SAMPLE main422-10 1920x1080 frames=60 create_ms=3.0 first_status=0 errors=0 decode_p50_ms=2.69 output=p422
+  477282.8 SAMPLE main444-10 1920x1080 frames=60 create_ms=2.9 first_status=0 errors=0 decode_p50_ms=3.73 output=p444
+  477536.8 SAMPLE main444-8 1920x1080 frames=60 create_ms=2.9 first_status=0 errors=0 decode_p50_ms=3.65 output=444v
+  477550.8 DONE
+  483114.4 willResignActive
+  484108.9 PARK sent err=0
+  484114.3 didEnterBackground bgtask=false audio=false
+  552500.2 recv errno 57 Socket is not connected
+       0.5 host 192.168.1.109 valid=true
+       0.5 LAUNCH model=iPad16,1 os=iPadOS_27.0 screen=1488x2266@60Hz cores=6 lowpower=false
+       1.6 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+      20.1 willEnterForeground
+    3571.1 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+   26207.6 ENCODE 1080p low_latency=yes create_ms=18.6 first_idr_ms=27.3 idr_kb=138.1 p_p50_ms=9.1 p_p99_ms=10.3 changed_screen_p_kb=133.6
+   26455.8 DECODE 1080p create_ms=15.6 (first in process) warm_create_p50_ms=2.0 first_idr_ms=5.0 p_p50_ms=2.21 p_p99_ms=2.84 p_max_ms=2.9 errors=0
+   26456.1 DECODE kept the 1080p decoder and encoder for the next foreground
+   27931.2 ENCODE 1440p low_latency=yes create_ms=1.4 first_idr_ms=31.2 idr_kb=158.4 p_p50_ms=15.3 p_p99_ms=15.8 changed_screen_p_kb=182.2
+   28281.0 DECODE 1440p create_ms=3.9 (warm) warm_create_p50_ms=2.4 first_idr_ms=7.0 p_p50_ms=3.26 p_p99_ms=4.60 p_max_ms=4.6 errors=0
+   29663.7 ENCODE native 2266x1488 low_latency=yes create_ms=1.1 first_idr_ms=27.1 idr_kb=205.5 p_p50_ms=14.3 p_p99_ms=15.0 changed_screen_p_kb=177.0
+   29993.1 DECODE native 2266x1488 create_ms=3.8 (warm) warm_create_p50_ms=2.2 first_idr_ms=6.9 p_p50_ms=3.07 p_p99_ms=4.00 p_max_ms=4.1 errors=0
+   32732.5 ENCODE 2160p low_latency=yes create_ms=1.0 first_idr_ms=40.0 idr_kb=230.1 p_p50_ms=29.0 p_p99_ms=29.8 changed_screen_p_kb=284.7
+   33368.2 DECODE 2160p create_ms=17.1 (warm) warm_create_p50_ms=1.9 first_idr_ms=12.4 p_p50_ms=6.29 p_p99_ms=8.31 p_max_ms=8.5 errors=0
+   33543.5 SAMPLE main10-420 1920x1080 frames=60 create_ms=1.5 first_status=0 errors=0 decode_p50_ms=1.98 output=p420
+   33738.0 SAMPLE main422-10 1920x1080 frames=60 create_ms=2.7 first_status=0 errors=0 decode_p50_ms=2.69 output=p422
+   33996.2 SAMPLE main444-10 1920x1080 frames=60 create_ms=3.0 first_status=0 errors=0 decode_p50_ms=3.73 output=p444
+   34248.5 SAMPLE main444-8 1920x1080 frames=60 create_ms=2.8 first_status=0 errors=0 decode_p50_ms=3.63 output=444v
+   34262.1 DONE
+   37551.9 willResignActive
+   38578.4 PARK sent err=0
+   38584.1 didEnterBackground bgtask=false audio=false
+   46961.3 recv errno 57 Socket is not connected
+   46963.7 willEnterForeground
+   46963.7 foreground: probing old socket
+   46964.1 RESUME away_ms=8386 max_timer_gap_while_bg_ms=7961 old_port=58673 old_send_errno=32 old_recv_errno=57 queued_on_old=0 SO_ERROR=9(gs=0) new_port=65513 new_send_errno=0 replace_ms=0.19 send_errors=[32:2]
+   47266.7 FOREGROUND will_enter_to_did_become_active_ms=303
+   47283.7 DECODER_AFTER_BACKGROUND old_session_status=-12903 old_decode_ms=0.1 old_encoder=failed rebuilt_create_ms=8.6 rebuilt_first_idr_ms=6.1 rebuilt_status=0
+   50914.5 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+   55735.9 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  107539.5 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  112402.9 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  136313.6 KEEPALIVE audio started
+  138419.1 willResignActive
+  139443.3 didEnterBackground bgtask=false audio=true
+  139443.5 PARK sent err=0
+  180648.4 willEnterForeground
+  180648.5 foreground: probing old socket
+  180648.9 RESUME away_ms=41205 max_timer_gap_while_bg_ms=102 old_port=65513 old_send_errno=0 old_recv_errno=0 queued_on_old=0 SO_ERROR=0(gs=0) new_port=52136 new_send_errno=0 replace_ms=0.28 send_errors=[32:2]
+  180952.4 FOREGROUND will_enter_to_did_become_active_ms=304
+  180969.5 DECODER_AFTER_BACKGROUND old_session_status=-12903 old_decode_ms=0.1 old_encoder=failed rebuilt_create_ms=9.3 rebuilt_first_idr_ms=6.2 rebuilt_status=0
+  184722.0 KEEPALIVE audio stopped
+  186623.5 KEEPALIVE pip armed (starts automatically when the app goes to the background)
+  188926.9 willResignActive
+  189437.8 KEEPALIVE pip started
+  189785.4 didEnterBackground bgtask=false audio=false
+  189785.8 PARK sent err=0
+  246996.4 willEnterForeground
+  246996.5 foreground: probing old socket
+  246996.9 RESUME away_ms=57211 max_timer_gap_while_bg_ms=100 old_port=52136 old_send_errno=0 old_recv_errno=0 queued_on_old=0 SO_ERROR=0(gs=0) new_port=62724 new_send_errno=0 replace_ms=0.21 send_errors=[32:2]
+  247296.5 FOREGROUND will_enter_to_did_become_active_ms=300
+  247306.8 DECODER_AFTER_BACKGROUND old_session_status=0 old_decode_ms=2.9 old_encoder=failed rebuilt_create_ms=3.1 rebuilt_first_idr_ms=3.5 rebuilt_status=0
+  249124.4 KEEPALIVE pip disabled
+  250553.3 THROUGHPUT id=2 offered=50Mbps secs=3 host_sent=15624 received=15622 loss=0.01% goodput=50.0Mbps seq_gaps=1 max_arrival_gap_ms=49.8 so_rcvbuf=8388608
+  253860.5 THROUGHPUT id=3 offered=100Mbps secs=3 host_sent=31249 received=31250 loss=0.00% goodput=100.0Mbps seq_gaps=0 max_arrival_gap_ms=7.0 so_rcvbuf=8388608
+  257174.0 THROUGHPUT id=4 offered=200Mbps secs=3 host_sent=62500 received=60622 loss=3.00% goodput=193.6Mbps seq_gaps=3 max_arrival_gap_ms=103.9 so_rcvbuf=8388608
+  260638.6 THROUGHPUT id=5 offered=400Mbps secs=3 host_sent=124990 received=124990 loss=0.00% goodput=380.0Mbps seq_gaps=0 max_arrival_gap_ms=19.0 so_rcvbuf=8388608
+  260639.1 DONE
+  265789.5 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  291118.0 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  297138.5 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  301964.4 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  317621.3 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  322414.8 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  331639.9 willResignActive
+  332653.3 didEnterBackground bgtask=true audio=false
+  332653.5 PARK sent err=0
+  346458.4 willEnterForeground
+  346458.5 foreground: probing old socket
+  346459.2 RESUME away_ms=13805 max_timer_gap_while_bg_ms=102 old_port=62724 old_send_errno=0 old_recv_errno=0 queued_on_old=0 SO_ERROR=0(gs=0) new_port=62020 new_send_errno=0 replace_ms=0.43 send_errors=[32:2]
+  346764.3 FOREGROUND will_enter_to_did_become_active_ms=306
+  346780.3 DECODER_AFTER_BACKGROUND old_session_status=-12903 old_decode_ms=0.0 old_encoder=failed rebuilt_create_ms=9.0 rebuilt_first_idr_ms=6.0 rebuilt_status=0
+  370458.2 willResignActive
+  371347.4 didEnterBackground bgtask=true audio=false
+  371347.7 PARK sent err=0
+  397803.3 BGTASK expired remaining=4.0
+  478677.0 recv errno 57 Socket is not connected
+  478678.7 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  478679.2 willEnterForeground
+  478679.3 foreground: probing old socket
+  478679.6 RESUME away_ms=107332 max_timer_gap_while_bg_ms=75777 old_port=62020 old_send_errno=32 old_recv_errno=57 queued_on_old=0 SO_ERROR=9(gs=0) new_port=64435 new_send_errno=0 replace_ms=0.19 send_errors=[32:5]
+  478984.6 FOREGROUND will_enter_to_did_become_active_ms=305
+  479001.0 DECODER_AFTER_BACKGROUND old_session_status=-12903 old_decode_ms=0.1 old_encoder=failed rebuilt_create_ms=9.3 rebuilt_first_idr_ms=5.7 rebuilt_status=0
+  540719.3 willResignActive
+  542039.6 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  542201.8 PATH status=unsatisfied interfaces=["utun5(other)"] expensive=false constrained=false
+  542365.1 PATH status=unsatisfied interfaces=["utun5(other)"] expensive=false constrained=false
+  556189.3 willResignActive
+  558913.4 PATH status=unsatisfied interfaces=["en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  559165.1 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  559306.6 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  559601.3 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  563789.6 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  573815.2 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  581039.5 PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false

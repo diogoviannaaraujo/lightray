@@ -98,6 +98,7 @@ final class NetLoop: @unchecked Sendable {
     func start() {
         guard !started else { return }
         started = true
+        signal(SIGPIPE, SIG_IGN)
         openSocket()
         var evs = [
             kevent64_s(ident: Timer.heartbeat.rawValue, filter: Int16(EVFILT_TIMER), flags: UInt16(EV_ADD), fflags: UInt32(NOTE_NSECONDS | NOTE_CRITICAL),
@@ -123,6 +124,8 @@ final class NetLoop: @unchecked Sendable {
     private func openSocket() {
         fd = socket(AF_INET6, SOCK_DGRAM, IPPROTO_UDP)
         var off: Int32 = 0, on: Int32 = 1, vi: Int32 = NET_SERVICE_TYPE_VI, big: Int32 = 8 << 20
+        // iPadOS reclaims a suspended app's sockets; sending on a reclaimed one raises SIGPIPE.
+        setsockopt(fd, SOL_SOCKET, SO_NOSIGPIPE, &on, 4)
         setsockopt(fd, IPPROTO_IPV6, IPV6_V6ONLY, &off, 4)
         setsockopt(fd, IPPROTO_IPV6, IPV6_DONTFRAG_, &on, 4)
         setsockopt(fd, SOL_SOCKET, SO_NET_SERVICE_TYPE, &vi, 4)
@@ -267,6 +270,7 @@ final class NetLoop: @unchecked Sendable {
             FileLog.shared.write("PARK sent err=\(err)")
         case .foreground:
             guard phase == "bg" else { return }  // scene apps also report foreground right after launch
+            FileLog.shared.write("foreground: probing old socket")
             let away = nowMs() - backgroundedAt
             let gap = maxGap
             var soerr: Int32 = 0

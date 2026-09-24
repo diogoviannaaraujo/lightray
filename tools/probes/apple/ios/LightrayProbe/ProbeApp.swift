@@ -38,6 +38,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         }
         nc.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [unowned self] _ in
             willEnterForegroundAt = nowMs()
+            FileLog.shared.write("willEnterForeground")
             NetLoop.shared.post(.foreground)
             if bgTask != .invalid { UIApplication.shared.endBackgroundTask(bgTask); bgTask = .invalid }
         }

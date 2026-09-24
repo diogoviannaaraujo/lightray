@@ -1,0 +1,290 @@
+# ProbeHost log, iPad mini (A17 Pro, iPad16,1), iPadOS 27.0, Wi-Fi ch 48/160 MHz; Mac M4 on Ethernet.
+# Runs of 100 ms heartbeats are collapsed into one line each (count, sequence range, phase, span).
+        0.0  probehost listening on udp/47000, writing ../../results/ipad-iPad16-1-20260924.txt
+   288563.2  ::ffff:192.168.1.110:60896 HB x2 seq=897..898 phase=fg span=0.1s
+   288695.7  ::ffff:192.168.1.110:60896 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+   288765.7  ::ffff:192.168.1.110:60896 HB x85 seq=899..983 phase=fg span=8.4s
+   297369.4  ::ffff:192.168.1.110:55179 R LAUNCH model=iPad16,1 os=iPadOS_27.0 screen=1488x2266@60Hz cores=6 lowpower=false
+   297369.5  ::ffff:192.168.1.110:55179 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+   297469.4  ::ffff:192.168.1.110:55179 HB x30 seq=1..30 phase=fg span=2.9s
+   300373.7  ::ffff:192.168.1.110:55179 R ENCODE 1080p low_latency=yes create_ms=36.8 first_idr_ms=43.5 idr_kb=138.1 p_p50_ms=9.1 p_p99_ms=10.2 changed_screen_p_kb=133.6
+   300468.8  ::ffff:192.168.1.110:55179 HB x2 seq=31..32 phase=fg span=0.1s
+   300623.5  ::ffff:192.168.1.110:55179 R DECODE 1080p create_ms=34.3 (first in process) warm_create_p50_ms=1.0 first_idr_ms=5.8 p_p50_ms=2.09 p_p99_ms=2.69 p_max_ms=2.9 errors=0
+   300623.7  ::ffff:192.168.1.110:55179 R DECODE kept the 1080p decoder and encoder for the next foreground
+   300668.7  ::ffff:192.168.1.110:55179 HB x15 seq=33..47 phase=fg span=1.4s
+   302106.5  ::ffff:192.168.1.110:55179 R ENCODE 1440p low_latency=yes create_ms=1.2 first_idr_ms=31.2 idr_kb=158.4 p_p50_ms=15.4 p_p99_ms=16.6 changed_screen_p_kb=182.2
+   302168.8  ::ffff:192.168.1.110:55179 HB x3 seq=48..50 phase=fg span=0.2s
+   302458.0  ::ffff:192.168.1.110:55179 R DECODE 1440p create_ms=4.2 (warm) warm_create_p50_ms=2.5 first_idr_ms=8.0 p_p50_ms=3.28 p_p99_ms=4.56 p_max_ms=4.8 errors=0
+   302468.8  ::ffff:192.168.1.110:55179 HB x14 seq=51..64 phase=fg span=1.3s
+   303844.4  ::ffff:192.168.1.110:55179 R ENCODE native 2266x1488 low_latency=yes create_ms=1.0 first_idr_ms=26.1 idr_kb=205.5 p_p50_ms=14.4 p_p99_ms=15.0 changed_screen_p_kb=177.0
+   303868.7  ::ffff:192.168.1.110:55179 HB x4 seq=65..68 phase=fg span=0.3s
+   304173.3  ::ffff:192.168.1.110:55179 R DECODE native 2266x1488 create_ms=4.0 (warm) warm_create_p50_ms=2.6 first_idr_ms=7.8 p_p50_ms=3.06 p_p99_ms=4.17 p_max_ms=4.2 errors=0
+   304267.8  ::ffff:192.168.1.110:55179 HB x27 seq=69..95 phase=fg span=2.6s
+   306913.2  ::ffff:192.168.1.110:55179 R ENCODE 2160p low_latency=yes create_ms=1.0 first_idr_ms=41.3 idr_kb=230.1 p_p50_ms=28.9 p_p99_ms=30.5 changed_screen_p_kb=284.7
+   306968.7  ::ffff:192.168.1.110:55179 HB x6 seq=96..101 phase=fg span=0.5s
+   307538.6  ::ffff:192.168.1.110:55179 R DECODE 2160p create_ms=17.0 (warm) warm_create_p50_ms=1.8 first_idr_ms=11.3 p_p50_ms=6.24 p_p99_ms=7.83 p_max_ms=8.1 errors=0
+   307568.5  ::ffff:192.168.1.110:55179 HB x2 seq=102..103 phase=fg span=0.1s
+   307712.8  ::ffff:192.168.1.110:55179 R SAMPLE main10-420 1920x1080 frames=60 create_ms=1.4 first_status=0 errors=0 decode_p50_ms=1.95 output=p420
+   307768.9  ::ffff:192.168.1.110:55179 HB x2 seq=104..105 phase=fg span=0.1s
+   307903.6  ::ffff:192.168.1.110:55179 R SAMPLE main422-10 1920x1080 frames=60 create_ms=2.4 first_status=0 errors=0 decode_p50_ms=2.68 output=p422
+   307968.5  ::ffff:192.168.1.110:55179 HB x2 seq=106..107 phase=fg span=0.1s
+   308162.5  ::ffff:192.168.1.110:55179 R SAMPLE main444-10 1920x1080 frames=60 create_ms=2.9 first_status=0 errors=0 decode_p50_ms=3.69 output=p444
+   308168.6  ::ffff:192.168.1.110:55179 HB x3 seq=108..110 phase=fg span=0.2s
+   308410.7  ::ffff:192.168.1.110:55179 R SAMPLE main444-8 1920x1080 frames=60 create_ms=2.9 first_status=0 errors=0 decode_p50_ms=3.62 output=444v
+   308469.2  ::ffff:192.168.1.110:55179 HB x1 seq=111..111 phase=fg span=0.0s
+   308500.9  ::ffff:192.168.1.110:55179 R CRYPTO AES-256-GCM seal_ns=2737 open_ns=1142 seal_only_ceiling=3.5Gbps
+   308540.2  ::ffff:192.168.1.110:55179 R CRYPTO AES-128-GCM seal_ns=1005 open_ns=878 seal_only_ceiling=9.6Gbps
+   308568.4  ::ffff:192.168.1.110:55179 HB x1 seq=112..112 phase=fg span=0.0s
+   308642.4  ::ffff:192.168.1.110:55179 R CRYPTO ChaCha20-Poly1305 seal_ns=2627 open_ns=2414 seal_only_ceiling=3.7Gbps
+   308644.6  ::ffff:192.168.1.110:55179 TPUT id=2 rate=50 secs=3 size=1200
+   308669.2  ::ffff:192.168.1.110:55179 HB x32 seq=113..144 phase=fg span=3.1s
+   311774.3  TPUT_SENT id=2 rate=50Mbps secs=3.0 sent=15624 send_errors=0
+   311870.8  ::ffff:192.168.1.110:55179 HB x1 seq=145..145 phase=fg span=0.0s
+   311964.2  ::ffff:192.168.1.110:55179 R THROUGHPUT id=2 offered=50Mbps secs=3 host_sent=15624 received=15624 loss=0.00% goodput=49.8Mbps seq_gaps=1 max_arrival_gap_ms=29.4 so_rcvbuf=8388608
+   311964.5  ::ffff:192.168.1.110:55179 TPUT id=3 rate=100 secs=3 size=1200
+   311970.0  ::ffff:192.168.1.110:55179 HB x32 seq=146..177 phase=fg span=3.1s
+   315114.2  TPUT_SENT id=3 rate=100Mbps secs=3.0 sent=31249 send_errors=0
+   315169.1  ::ffff:192.168.1.110:55179 HB x2 seq=178..179 phase=fg span=0.1s
+   315272.3  ::ffff:192.168.1.110:55179 R THROUGHPUT id=3 offered=100Mbps secs=3 host_sent=31249 received=31215 loss=0.11% goodput=100.5Mbps seq_gaps=6 max_arrival_gap_ms=35.2 so_rcvbuf=8388608
+   315272.6  ::ffff:192.168.1.110:55179 TPUT id=4 rate=200 secs=3 size=1200
+   315368.5  ::ffff:192.168.1.110:55179 HB x31 seq=180..210 phase=fg span=3.0s
+   318418.1  TPUT_SENT id=4 rate=200Mbps secs=3.0 sent=62490 send_errors=0
+   318478.4  ::ffff:192.168.1.110:55179 HB x2 seq=211..212 phase=fg span=0.1s
+   318594.1  ::ffff:192.168.1.110:55179 R THROUGHPUT id=4 offered=200Mbps secs=3 host_sent=62490 received=62479 loss=0.02% goodput=199.3Mbps seq_gaps=2 max_arrival_gap_ms=20.2 so_rcvbuf=8388608
+   318594.3  ::ffff:192.168.1.110:55179 TPUT id=5 rate=400 secs=3 size=1200
+   318680.1  ::ffff:192.168.1.110:55179 HB x31 seq=213..243 phase=fg span=3.0s
+   321726.8  TPUT_SENT id=5 rate=400Mbps secs=3.0 sent=124987 send_errors=0
+   321767.9  ::ffff:192.168.1.110:55179 HB x2 seq=244..245 phase=fg span=0.1s
+   321901.0  ::ffff:192.168.1.110:55179 R THROUGHPUT id=5 offered=400Mbps secs=3 host_sent=124987 received=123088 loss=1.52% goodput=395.1Mbps seq_gaps=1 max_arrival_gap_ms=67.6 so_rcvbuf=8388608
+   321966.7  ::ffff:192.168.1.110:55179 HB x86 seq=246..331 phase=fg span=8.5s
+   330553.3  ::ffff:192.168.1.110:55179 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+   330566.3  ::ffff:192.168.1.110:55179 HB x49 seq=332..380 phase=fg span=4.8s
+   335416.8  ::ffff:192.168.1.110:55179 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+   335466.7  ::ffff:192.168.1.110:55179 HB x170 seq=381..550 phase=fg span=16.9s
+   352423.0  ::ffff:192.168.1.110:55179 R JITTER sent=29990 echoed=29992 rtt_p50=2.38ms p90=14.55ms p99=43.19ms max=104.9ms spike_threshold=17.4ms spike_clusters=9 spike_interval_p50=5000ms pings_in_spikes=2484 first_clusters_at_ms=[1163,6164,12708,13630,15506,17657,22663,27686,29842]
+   352423.1  ::ffff:192.168.1.110:55179 R DONE
+   352466.0  ::ffff:192.168.1.110:55179 HB x5 seq=551..555 phase=fg span=0.4s
+   352975.8  PING_TRAIN_UPLINK count=29990 span=30.0s gap_p50=1.00ms gap_p99=6.02ms gap_max=28.0ms gaps_over_20ms=7 spike_interval_p50=4917ms first_spikes_at_ms=[6470,12965,17882,17977,18134,22835,28026]
+   352975.9  ::ffff:192.168.1.110:55179 HB x150 seq=556..705 phase=fg span=14.9s
+   367946.7  ::ffff:192.168.1.110:55179 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+   367965.6  ::ffff:192.168.1.110:55179 HB x48 seq=706..753 phase=fg span=4.7s
+   372764.3  ::ffff:192.168.1.110:55179 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+   372765.3  ::ffff:192.168.1.110:55179 HB x61 seq=754..814 phase=fg span=6.0s
+   378776.6  ::ffff:192.168.1.110:55179 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+   378865.6  ::ffff:192.168.1.110:55179 HB x96 seq=815..910 phase=fg span=9.5s
+   388395.2  ::ffff:192.168.1.110:55179 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+   388475.1  ::ffff:192.168.1.110:55179 HB x602 seq=911..1512 phase=fg span=60.1s
+   448629.2  ::ffff:192.168.1.110:55179 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+   448663.4  ::ffff:192.168.1.110:55179 HB x97 seq=1513..1609 phase=fg span=9.6s
+   458268.1  ::ffff:192.168.1.110:55179 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+   458367.6  ::ffff:192.168.1.110:55179 HB x659 seq=1610..2268 phase=fg span=65.8s
+   524184.5  ::ffff:192.168.1.110:55179 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+   524262.6  ::ffff:192.168.1.110:55179 HB x60 seq=2269..2328 phase=fg span=5.9s
+   530206.5  ::ffff:192.168.1.110:55179 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+   530261.0  ::ffff:192.168.1.110:55179 HB x301 seq=2329..2629 phase=fg span=30.0s
+   560330.5  ::ffff:192.168.1.110:55179 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+   560359.9  ::ffff:192.168.1.110:55179 HB x48 seq=2630..2677 phase=fg span=4.7s
+   565151.2  ::ffff:192.168.1.110:55179 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+   565159.9  ::ffff:192.168.1.110:55179 HB x1641 seq=2678..4318 phase=fg span=164.0s
+   729194.0  ::ffff:192.168.1.110:55179 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+   729255.0  ::ffff:192.168.1.110:55179 HB x48 seq=4319..4366 phase=fg span=4.7s
+   734003.2  ::ffff:192.168.1.110:55179 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+   734055.2  ::ffff:192.168.1.110:55179 HB x108 seq=4367..4474 phase=fg span=10.7s
+   744825.9  ::ffff:192.168.1.110:55179 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+   744855.1  ::ffff:192.168.1.110:55179 HB x49 seq=4475..4523 phase=fg span=4.8s
+   749673.9  ::ffff:192.168.1.110:55179 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+   749754.7  ::ffff:192.168.1.110:55179 HB x275 seq=4524..4798 phase=fg span=27.4s
+   777231.9  ::ffff:192.168.1.110:55179 PARK t=479865.9 backgroundTimeRemaining=-1.0
+   777255.8  ::ffff:192.168.1.110:55179 HB x5 seq=4799..4803 phase=bg span=0.4s
+   998659.6  ::ffff:192.168.1.110:59186 R LAUNCH model=iPad16,1 os=iPadOS_27.0 screen=1488x2266@60Hz cores=6 lowpower=false
+   998660.2  ::ffff:192.168.1.110:59186 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+   998759.0  ::ffff:192.168.1.110:59186 HB x656 seq=1..656 phase=fg span=65.5s
+  1064317.5  ::ffff:192.168.1.110:59186 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  1064358.4  ::ffff:192.168.1.110:59186 HB x50 seq=657..706 phase=fg span=4.9s
+  1069317.2  ::ffff:192.168.1.110:59186 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  1069356.4  ::ffff:192.168.1.110:59186 HB x149 seq=707..855 phase=fg span=14.8s
+  1084191.8  ::ffff:192.168.1.110:59186 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  1084256.9  ::ffff:192.168.1.110:59186 HB x349 seq=856..1204 phase=fg span=34.8s
+  1119103.6  ::ffff:192.168.1.110:59186 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  1119155.9  ::ffff:192.168.1.110:59186 HB x1792 seq=1205..2996 phase=fg span=179.1s
+  1298310.4  ::ffff:192.168.1.110:59186 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  1298350.5  ::ffff:192.168.1.110:59186 HB x362 seq=2997..3358 phase=fg span=36.1s
+  1334498.3  ::ffff:192.168.1.110:59186 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  1334549.6  ::ffff:192.168.1.110:59186 HB x361 seq=3359..3719 phase=fg span=36.0s
+  1370613.0  ::ffff:192.168.1.110:59186 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  1370653.8  ::ffff:192.168.1.110:59186 HB x48 seq=3720..3767 phase=fg span=4.7s
+  1375433.2  ::ffff:192.168.1.110:59186 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  1375448.1  ::ffff:192.168.1.110:59186 HB x928 seq=3768..4695 phase=fg span=92.7s
+  1468172.8  ::ffff:192.168.1.110:59186 R ENCODE 1080p low_latency=yes create_ms=18.3 first_idr_ms=26.7 idr_kb=138.1 p_p50_ms=9.2 p_p99_ms=9.9 changed_screen_p_kb=133.6
+  1468246.0  ::ffff:192.168.1.110:59186 HB x2 seq=4696..4697 phase=fg span=0.1s
+  1468419.2  ::ffff:192.168.1.110:59186 R DECODE 1080p create_ms=15.1 (first in process) warm_create_p50_ms=1.7 first_idr_ms=4.3 p_p50_ms=2.20 p_p99_ms=2.94 p_max_ms=3.0 errors=0
+  1468419.6  ::ffff:192.168.1.110:59186 R DECODE kept the 1080p decoder and encoder for the next foreground
+  1468444.9  ::ffff:192.168.1.110:59186 HB x15 seq=4698..4712 phase=fg span=1.4s
+  1469884.3  ::ffff:192.168.1.110:59186 R ENCODE 1440p low_latency=yes create_ms=1.2 first_idr_ms=29.2 idr_kb=158.4 p_p50_ms=15.2 p_p99_ms=16.7 changed_screen_p_kb=182.2
+  1469945.4  ::ffff:192.168.1.110:59186 HB x3 seq=4713..4715 phase=fg span=0.2s
+  1470230.0  ::ffff:192.168.1.110:59186 R DECODE 1440p create_ms=4.1 (warm) warm_create_p50_ms=2.3 first_idr_ms=7.5 p_p50_ms=3.20 p_p99_ms=4.46 p_max_ms=4.5 errors=0
+  1470245.9  ::ffff:192.168.1.110:59186 HB x14 seq=4716..4729 phase=fg span=1.3s
+  1471607.7  ::ffff:192.168.1.110:59186 R ENCODE native 2266x1488 low_latency=yes create_ms=1.2 first_idr_ms=28.7 idr_kb=205.5 p_p50_ms=14.2 p_p99_ms=14.8 changed_screen_p_kb=177.0
+  1471645.5  ::ffff:192.168.1.110:59186 HB x3 seq=4730..4732 phase=fg span=0.2s
+  1471937.2  ::ffff:192.168.1.110:59186 R DECODE native 2266x1488 create_ms=3.8 (warm) warm_create_p50_ms=2.5 first_idr_ms=7.6 p_p50_ms=3.05 p_p99_ms=4.24 p_max_ms=4.3 errors=0
+  1471945.3  ::ffff:192.168.1.110:59186 HB x1 seq=4733..4733 phase=fg span=0.0s
+  1471977.6  ::ffff:192.168.1.110:59186 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  1472045.4  ::ffff:192.168.1.110:59186 HB x27 seq=4734..4760 phase=fg span=2.6s
+  1474675.4  ::ffff:192.168.1.110:59186 R ENCODE 2160p low_latency=yes create_ms=1.2 first_idr_ms=42.4 idr_kb=230.1 p_p50_ms=28.9 p_p99_ms=29.8 changed_screen_p_kb=284.7
+  1474745.8  ::ffff:192.168.1.110:59186 HB x6 seq=4761..4766 phase=fg span=0.5s
+  1475301.3  ::ffff:192.168.1.110:59186 R DECODE 2160p create_ms=16.7 (warm) warm_create_p50_ms=2.0 first_idr_ms=10.6 p_p50_ms=6.26 p_p99_ms=7.59 p_max_ms=7.9 errors=0
+  1475345.3  ::ffff:192.168.1.110:59186 HB x2 seq=4767..4768 phase=fg span=0.1s
+  1475476.8  ::ffff:192.168.1.110:59186 R SAMPLE main10-420 1920x1080 frames=60 create_ms=1.6 first_status=0 errors=0 decode_p50_ms=1.98 output=p420
+  1475560.9  ::ffff:192.168.1.110:59186 HB x2 seq=4769..4770 phase=fg span=0.1s
+  1475675.2  ::ffff:192.168.1.110:59186 R SAMPLE main422-10 1920x1080 frames=60 create_ms=3.0 first_status=0 errors=0 decode_p50_ms=2.69 output=p422
+  1475750.0  ::ffff:192.168.1.110:59186 HB x2 seq=4771..4772 phase=fg span=0.1s
+  1475931.0  ::ffff:192.168.1.110:59186 R SAMPLE main444-10 1920x1080 frames=60 create_ms=2.9 first_status=0 errors=0 decode_p50_ms=3.73 output=p444
+  1475948.8  ::ffff:192.168.1.110:59186 HB x3 seq=4773..4775 phase=fg span=0.2s
+  1476183.2  ::ffff:192.168.1.110:59186 R SAMPLE main444-8 1920x1080 frames=60 create_ms=2.9 first_status=0 errors=0 decode_p50_ms=3.65 output=444v
+  1476201.5  ::ffff:192.168.1.110:59186 R DONE
+  1476249.4  ::ffff:192.168.1.110:59186 HB x66 seq=4776..4841 phase=fg span=6.5s
+  1482754.1  ::ffff:192.168.1.110:59186 PARK t=484108.7 backgroundTimeRemaining=-1.0
+  1482845.1  ::ffff:192.168.1.110:59186 HB x4 seq=4842..4845 phase=bg span=0.3s
+  1688136.9  ::ffff:192.168.1.110:58673 R LAUNCH model=iPad16,1 os=iPadOS_27.0 screen=1488x2266@60Hz cores=6 lowpower=false
+  1688137.0  ::ffff:192.168.1.110:58673 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  1688236.1  ::ffff:192.168.1.110:58673 HB x35 seq=1..35 phase=fg span=3.4s
+  1691705.4  ::ffff:192.168.1.110:58673 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  1691734.3  ::ffff:192.168.1.110:58673 HB x227 seq=36..262 phase=fg span=22.6s
+  1714341.3  ::ffff:192.168.1.110:58673 R ENCODE 1080p low_latency=yes create_ms=18.6 first_idr_ms=27.3 idr_kb=138.1 p_p50_ms=9.1 p_p99_ms=10.3 changed_screen_p_kb=133.6
+  1714433.8  ::ffff:192.168.1.110:58673 HB x2 seq=263..264 phase=fg span=0.1s
+  1714589.6  ::ffff:192.168.1.110:58673 R DECODE 1080p create_ms=15.6 (first in process) warm_create_p50_ms=2.0 first_idr_ms=5.0 p_p50_ms=2.21 p_p99_ms=2.84 p_max_ms=2.9 errors=0
+  1714589.9  ::ffff:192.168.1.110:58673 R DECODE kept the 1080p decoder and encoder for the next foreground
+  1714633.6  ::ffff:192.168.1.110:58673 HB x15 seq=265..279 phase=fg span=1.4s
+  1716065.0  ::ffff:192.168.1.110:58673 R ENCODE 1440p low_latency=yes create_ms=1.4 first_idr_ms=31.2 idr_kb=158.4 p_p50_ms=15.3 p_p99_ms=15.8 changed_screen_p_kb=182.2
+  1716133.7  ::ffff:192.168.1.110:58673 HB x3 seq=280..282 phase=fg span=0.2s
+  1716415.7  ::ffff:192.168.1.110:58673 R DECODE 1440p create_ms=3.9 (warm) warm_create_p50_ms=2.4 first_idr_ms=7.0 p_p50_ms=3.26 p_p99_ms=4.60 p_max_ms=4.6 errors=0
+  1716433.5  ::ffff:192.168.1.110:58673 HB x14 seq=283..296 phase=fg span=1.3s
+  1717799.7  ::ffff:192.168.1.110:58673 R ENCODE native 2266x1488 low_latency=yes create_ms=1.1 first_idr_ms=27.1 idr_kb=205.5 p_p50_ms=14.3 p_p99_ms=15.0 changed_screen_p_kb=177.0
+  1717842.1  ::ffff:192.168.1.110:58673 HB x3 seq=297..299 phase=fg span=0.2s
+  1718130.5  ::ffff:192.168.1.110:58673 R DECODE native 2266x1488 create_ms=3.8 (warm) warm_create_p50_ms=2.2 first_idr_ms=6.9 p_p50_ms=3.07 p_p99_ms=4.00 p_max_ms=4.1 errors=0
+  1718134.5  ::ffff:192.168.1.110:58673 HB x28 seq=300..327 phase=fg span=2.7s
+  1720866.1  ::ffff:192.168.1.110:58673 R ENCODE 2160p low_latency=yes create_ms=1.0 first_idr_ms=40.0 idr_kb=230.1 p_p50_ms=29.0 p_p99_ms=29.8 changed_screen_p_kb=284.7
+  1720933.9  ::ffff:192.168.1.110:58673 HB x6 seq=328..333 phase=fg span=0.5s
+  1721501.6  ::ffff:192.168.1.110:58673 R DECODE 2160p create_ms=17.1 (warm) warm_create_p50_ms=1.9 first_idr_ms=12.4 p_p50_ms=6.29 p_p99_ms=8.31 p_max_ms=8.5 errors=0
+  1721533.3  ::ffff:192.168.1.110:58673 HB x2 seq=334..335 phase=fg span=0.1s
+  1721677.1  ::ffff:192.168.1.110:58673 R SAMPLE main10-420 1920x1080 frames=60 create_ms=1.5 first_status=0 errors=0 decode_p50_ms=1.98 output=p420
+  1721733.6  ::ffff:192.168.1.110:58673 HB x2 seq=336..337 phase=fg span=0.1s
+  1721871.6  ::ffff:192.168.1.110:58673 R SAMPLE main422-10 1920x1080 frames=60 create_ms=2.7 first_status=0 errors=0 decode_p50_ms=2.69 output=p422
+  1721933.6  ::ffff:192.168.1.110:58673 HB x2 seq=338..339 phase=fg span=0.1s
+  1722130.7  ::ffff:192.168.1.110:58673 R SAMPLE main444-10 1920x1080 frames=60 create_ms=3.0 first_status=0 errors=0 decode_p50_ms=3.73 output=p444
+  1722133.2  ::ffff:192.168.1.110:58673 HB x3 seq=340..342 phase=fg span=0.2s
+  1722382.2  ::ffff:192.168.1.110:58673 R SAMPLE main444-8 1920x1080 frames=60 create_ms=2.8 first_status=0 errors=0 decode_p50_ms=3.63 output=444v
+  1722395.4  ::ffff:192.168.1.110:58673 R DONE
+  1722433.4  ::ffff:192.168.1.110:58673 HB x43 seq=343..385 phase=fg span=4.2s
+  1726711.7  ::ffff:192.168.1.110:58673 PARK t=38578.1 backgroundTimeRemaining=-1.0
+  1726732.6  ::ffff:192.168.1.110:58673 HB x5 seq=386..390 phase=bg span=0.4s
+  1735102.3  ::ffff:192.168.1.110:65513 NEW_SOCKET_FIRST_SEND
+  1735102.7  ::ffff:192.168.1.110:65513 R RESUME away_ms=8386 max_timer_gap_while_bg_ms=7961 old_port=58673 old_send_errno=32 old_recv_errno=57 queued_on_old=0 SO_ERROR=9(gs=0) new_port=65513 new_send_errno=0 replace_ms=0.19 send_errors=[32:2]
+  1735133.1  ::ffff:192.168.1.110:65513 HB x3 seq=392..394 phase=fg span=0.2s
+  1735400.4  ::ffff:192.168.1.110:65513 R FOREGROUND will_enter_to_did_become_active_ms=303
+  1735416.7  ::ffff:192.168.1.110:65513 R DECODER_AFTER_BACKGROUND old_session_status=-12903 old_decode_ms=0.1 old_encoder=failed rebuilt_create_ms=8.6 rebuilt_first_idr_ms=6.1 rebuilt_status=0
+  1735433.2  ::ffff:192.168.1.110:65513 HB x37 seq=395..431 phase=fg span=3.6s
+  1739047.1  ::ffff:192.168.1.110:65513 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  1739133.2  ::ffff:192.168.1.110:65513 HB x48 seq=432..479 phase=fg span=4.7s
+  1743868.7  ::ffff:192.168.1.110:65513 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  1743933.0  ::ffff:192.168.1.110:65513 HB x518 seq=480..997 phase=fg span=51.7s
+  1795671.0  ::ffff:192.168.1.110:65513 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  1795731.4  ::ffff:192.168.1.110:65513 HB x49 seq=998..1046 phase=fg span=4.8s
+  1800535.6  ::ffff:192.168.1.110:65513 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  1800631.2  ::ffff:192.168.1.110:65513 HB x239 seq=1047..1285 phase=fg span=23.8s
+  1824443.6  ::ffff:192.168.1.110:65513 R KEEPALIVE audio started
+  1824529.9  ::ffff:192.168.1.110:65513 HB x31 seq=1286..1316 phase=fg span=3.0s
+  1827573.6  ::ffff:192.168.1.110:65513 PARK t=139443.3 backgroundTimeRemaining=-1.0
+  1827630.1  ::ffff:192.168.1.110:65513 HB x412 seq=1317..1728 phase=bg span=41.1s
+  1868777.3  ::ffff:192.168.1.110:65513 OLD_SOCKET_PROBE
+  1868778.5  ::ffff:192.168.1.110:52136 NEW_SOCKET_FIRST_SEND
+  1868778.6  ::ffff:192.168.1.110:52136 R RESUME away_ms=41205 max_timer_gap_while_bg_ms=102 old_port=65513 old_send_errno=0 old_recv_errno=0 queued_on_old=0 SO_ERROR=0(gs=0) new_port=52136 new_send_errno=0 replace_ms=0.28 send_errors=[32:2]
+  1868828.9  ::ffff:192.168.1.110:52136 HB x3 seq=1729..1731 phase=fg span=0.2s
+  1869081.3  ::ffff:192.168.1.110:52136 R FOREGROUND will_enter_to_did_become_active_ms=304
+  1869098.2  ::ffff:192.168.1.110:52136 R DECODER_AFTER_BACKGROUND old_session_status=-12903 old_decode_ms=0.1 old_encoder=failed rebuilt_create_ms=9.3 rebuilt_first_idr_ms=6.2 rebuilt_status=0
+  1869129.4  ::ffff:192.168.1.110:52136 HB x38 seq=1732..1769 phase=fg span=3.7s
+  1872856.3  ::ffff:192.168.1.110:52136 R KEEPALIVE audio stopped
+  1872946.6  ::ffff:192.168.1.110:52136 HB x19 seq=1770..1788 phase=fg span=1.8s
+  1874751.6  ::ffff:192.168.1.110:52136 R KEEPALIVE pip armed (starts automatically when the app goes to the background)
+  1874829.3  ::ffff:192.168.1.110:52136 HB x28 seq=1789..1816 phase=fg span=2.7s
+  1877567.1  ::ffff:192.168.1.110:52136 R KEEPALIVE pip started
+  1877635.2  ::ffff:192.168.1.110:52136 HB x3 seq=1817..1819 phase=fg span=0.2s
+  1877918.3  ::ffff:192.168.1.110:52136 PARK t=189785.4 backgroundTimeRemaining=-1.0
+  1877929.9  ::ffff:192.168.1.110:52136 HB x572 seq=1820..2391 phase=bg span=57.1s
+  1935123.0  ::ffff:192.168.1.110:52136 OLD_SOCKET_PROBE
+  1935124.2  ::ffff:192.168.1.110:62724 NEW_SOCKET_FIRST_SEND
+  1935124.4  ::ffff:192.168.1.110:62724 R RESUME away_ms=57211 max_timer_gap_while_bg_ms=100 old_port=52136 old_send_errno=0 old_recv_errno=0 queued_on_old=0 SO_ERROR=0(gs=0) new_port=62724 new_send_errno=0 replace_ms=0.21 send_errors=[32:2]
+  1935126.8  ::ffff:192.168.1.110:62724 HB x3 seq=2392..2394 phase=fg span=0.2s
+  1935374.2  ::ffff:192.168.1.110:62724 TPUT id=2 rate=50 secs=3 size=1200
+  1935422.9  ::ffff:192.168.1.110:62724 R FOREGROUND will_enter_to_did_become_active_ms=300
+  1935427.0  ::ffff:192.168.1.110:62724 HB x1 seq=2395..2395 phase=fg span=0.0s
+  1935433.4  ::ffff:192.168.1.110:62724 R DECODER_AFTER_BACKGROUND old_session_status=0 old_decode_ms=2.9 old_encoder=failed rebuilt_create_ms=3.1 rebuilt_first_idr_ms=3.5 rebuilt_status=0
+  1935527.0  ::ffff:192.168.1.110:62724 HB x18 seq=2396..2413 phase=fg span=1.7s
+  1937250.9  ::ffff:192.168.1.110:62724 R KEEPALIVE pip disabled
+  1937326.3  ::ffff:192.168.1.110:62724 HB x12 seq=2414..2425 phase=fg span=1.1s
+  1938493.9  TPUT_SENT id=2 rate=50Mbps secs=3.0 sent=15624 send_errors=0
+  1938526.9  ::ffff:192.168.1.110:62724 HB x2 seq=2426..2427 phase=fg span=0.1s
+  1938680.3  ::ffff:192.168.1.110:62724 R THROUGHPUT id=2 offered=50Mbps secs=3 host_sent=15624 received=15622 loss=0.01% goodput=50.0Mbps seq_gaps=1 max_arrival_gap_ms=49.8 so_rcvbuf=8388608
+  1938681.1  ::ffff:192.168.1.110:62724 TPUT id=3 rate=100 secs=3 size=1200
+  1938726.8  ::ffff:192.168.1.110:62724 HB x31 seq=2428..2458 phase=fg span=3.0s
+  1941798.8  TPUT_SENT id=3 rate=100Mbps secs=3.0 sent=31249 send_errors=0
+  1941827.5  ::ffff:192.168.1.110:62724 HB x2 seq=2459..2460 phase=fg span=0.1s
+  1941987.5  ::ffff:192.168.1.110:62724 R THROUGHPUT id=3 offered=100Mbps secs=3 host_sent=31249 received=31250 loss=0.00% goodput=100.0Mbps seq_gaps=0 max_arrival_gap_ms=7.0 so_rcvbuf=8388608
+  1941988.2  ::ffff:192.168.1.110:62724 TPUT id=4 rate=200 secs=3 size=1200
+  1942029.4  ::ffff:192.168.1.110:62724 HB x31 seq=2461..2491 phase=fg span=3.0s
+  1945111.2  TPUT_SENT id=4 rate=200Mbps secs=3.0 sent=62500 send_errors=0
+  1945127.0  ::ffff:192.168.1.110:62724 HB x2 seq=2492..2493 phase=fg span=0.1s
+  1945300.8  ::ffff:192.168.1.110:62724 R THROUGHPUT id=4 offered=200Mbps secs=3 host_sent=62500 received=60622 loss=3.00% goodput=193.6Mbps seq_gaps=3 max_arrival_gap_ms=103.9 so_rcvbuf=8388608
+  1945301.5  ::ffff:192.168.1.110:62724 TPUT id=5 rate=400 secs=3 size=1200
+  1945326.3  ::ffff:192.168.1.110:62724 HB x31 seq=2494..2524 phase=fg span=3.0s
+  1948426.2  TPUT_SENT id=5 rate=400Mbps secs=3.0 sent=124990 send_errors=0
+  1948441.8  ::ffff:192.168.1.110:62724 HB x4 seq=2525..2528 phase=fg span=0.3s
+  1948772.0  ::ffff:192.168.1.110:62724 R THROUGHPUT id=5 offered=400Mbps secs=3 host_sent=124990 received=124990 loss=0.00% goodput=380.0Mbps seq_gaps=0 max_arrival_gap_ms=19.0 so_rcvbuf=8388608
+  1948772.2  ::ffff:192.168.1.110:62724 R DONE
+  1948826.7  ::ffff:192.168.1.110:62724 HB x51 seq=2529..2579 phase=fg span=5.0s
+  1953916.1  ::ffff:192.168.1.110:62724 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  1953926.4  ::ffff:192.168.1.110:62724 HB x254 seq=2580..2833 phase=fg span=25.3s
+  1979244.1  ::ffff:192.168.1.110:62724 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  1979326.0  ::ffff:192.168.1.110:62724 HB x60 seq=2834..2893 phase=fg span=5.9s
+  1985264.1  ::ffff:192.168.1.110:62724 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  1985325.8  ::ffff:192.168.1.110:62724 HB x48 seq=2894..2941 phase=fg span=4.7s
+  1990089.9  ::ffff:192.168.1.110:62724 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  1990125.5  ::ffff:192.168.1.110:62724 HB x157 seq=2942..3098 phase=fg span=15.6s
+  2005746.4  ::ffff:192.168.1.110:62724 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  2005824.9  ::ffff:192.168.1.110:62724 HB x48 seq=3099..3146 phase=fg span=4.7s
+  2010540.4  ::ffff:192.168.1.110:62724 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  2010625.0  ::ffff:192.168.1.110:62724 HB x102 seq=3147..3248 phase=fg span=10.1s
+  2020777.7  ::ffff:192.168.1.110:62724 PARK t=332653.3 backgroundTimeRemaining=-1.0
+  2020824.5  ::ffff:192.168.1.110:62724 HB x138 seq=3249..3386 phase=bg span=13.7s
+  2034582.6  ::ffff:192.168.1.110:62724 OLD_SOCKET_PROBE
+  2034583.9  ::ffff:192.168.1.110:62020 NEW_SOCKET_FIRST_SEND
+  2034584.0  ::ffff:192.168.1.110:62020 R RESUME away_ms=13805 max_timer_gap_while_bg_ms=102 old_port=62724 old_send_errno=0 old_recv_errno=0 queued_on_old=0 SO_ERROR=0(gs=0) new_port=62020 new_send_errno=0 replace_ms=0.43 send_errors=[32:2]
+  2034624.0  ::ffff:192.168.1.110:62020 HB x3 seq=3387..3389 phase=fg span=0.2s
+  2034888.6  ::ffff:192.168.1.110:62020 R FOREGROUND will_enter_to_did_become_active_ms=306
+  2034904.3  ::ffff:192.168.1.110:62020 R DECODER_AFTER_BACKGROUND old_session_status=-12903 old_decode_ms=0.0 old_encoder=failed rebuilt_create_ms=9.0 rebuilt_first_idr_ms=6.0 rebuilt_status=0
+  2034924.2  ::ffff:192.168.1.110:62020 HB x246 seq=3390..3635 phase=fg span=24.5s
+  2059470.8  ::ffff:192.168.1.110:62020 PARK t=371347.4 backgroundTimeRemaining=-1.0
+  2059523.1  ::ffff:192.168.1.110:62020 HB x265 seq=3636..3900 phase=bg span=26.4s
+  2085927.0  ::ffff:192.168.1.110:62020 R BGTASK expired remaining=4.0
+  2086022.9  ::ffff:192.168.1.110:62020 HB x51 seq=3901..3951 phase=bg span=5.0s
+  2166802.3  ::ffff:192.168.1.110:64435 NEW_SOCKET_FIRST_SEND
+  2166802.7  ::ffff:192.168.1.110:64435 R RESUME away_ms=107332 max_timer_gap_while_bg_ms=75777 old_port=62020 old_send_errno=32 old_recv_errno=57 queued_on_old=0 SO_ERROR=9(gs=0) new_port=64435 new_send_errno=0 replace_ms=0.19 send_errors=[32:5]
+  2166820.2  ::ffff:192.168.1.110:64435 HB x3 seq=3953..3955 phase=fg span=0.2s
+  2167104.9  ::ffff:192.168.1.110:64435 R FOREGROUND will_enter_to_did_become_active_ms=305
+  2167120.2  ::ffff:192.168.1.110:64435 HB x1 seq=3956..3956 phase=fg span=0.0s
+  2167120.4  ::ffff:192.168.1.110:64435 R DECODER_AFTER_BACKGROUND old_session_status=-12903 old_decode_ms=0.1 old_encoder=failed rebuilt_create_ms=9.3 rebuilt_first_idr_ms=5.7 rebuilt_status=0
+  2167220.3  ::ffff:192.168.1.110:64435 HB x628 seq=3957..4584 phase=fg span=62.7s
+  2247119.0  heartbeat gap 17200 ms from ::ffff:192.168.1.110:64435 — HB seq=4756 t=559000.2 phase=fg port=64435
+  2247218.5  ::ffff:192.168.1.110:64435 HB x1 seq=4757..4757 phase=fg span=0.0s
+  2247283.8  ::ffff:192.168.1.110:64435 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  2247317.9  ::ffff:192.168.1.110:64435 HB x2 seq=4758..4759 phase=fg span=0.1s
+  2247424.9  ::ffff:192.168.1.110:64435 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  2247518.4  ::ffff:192.168.1.110:64435 HB x3 seq=4760..4762 phase=fg span=0.2s
+  2247719.8  ::ffff:192.168.1.110:64435 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  2247817.8  ::ffff:192.168.1.110:64435 HB x41 seq=4763..4803 phase=fg span=4.0s
+  2251907.4  ::ffff:192.168.1.110:64435 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  2251919.5  ::ffff:192.168.1.110:64435 HB x101 seq=4804..4904 phase=fg span=10.0s
+  2261938.2  ::ffff:192.168.1.110:64435 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  2262022.4  ::ffff:192.168.1.110:64435 HB x72 seq=4905..4976 phase=fg span=7.1s
+  2269156.8  ::ffff:192.168.1.110:64435 R PATH status=satisfied interfaces=["en0(wifi)", "en0(wifi)", "utun5(other)"] expensive=false constrained=false
+  2269217.6  ::ffff:192.168.1.110:64435 HB x424 seq=4977..5400 phase=fg span=42.3s
