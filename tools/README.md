@@ -10,7 +10,8 @@ measurement or a simulation.
 | [`vectors/`](vectors) | Generates every hex example in `docs/` and checks the documents against it | Planned (phase 2) |
 | [`sim/`](sim) | Loss-recovery and rate-control simulator, and the resume latency budget | Recovery model done; rate control planned |
 | [`probes/apple/mac/`](probes/apple/mac) | VideoToolbox costs on the resume path, measured on a Mac | Done; extensions planned |
-| [`probes/apple/ios/`](probes/apple/ios) | iPad lifecycle, socket, decoder and network measurements | Planned (phase 1) |
+| [`probes/apple/ios/`](probes/apple/ios) | iPad lifecycle, socket, decoder and network measurements | Ready; needs the iPad ([README](probes/apple/ios/README.md)) |
+| [`probes/apple/shared/`](probes/apple/shared) | Synthetic desktop frames used by both Apple probes | Done |
 | [`probes/apple/verify/`](probes/apple/verify) | Decodes recovery bitstreams from other encoders with VideoToolbox | Planned (phase 1) |
 | [`probes/windows/`](probes/windows) | NVENC and QSV reference-recovery bitstreams | Planned (phase 1) |
 | [`probes/results/`](probes/results) | Raw probe output, one file per device and run | Growing |
@@ -20,7 +21,7 @@ measurement or a simulation.
 The resume probe, on an Apple-silicon Mac:
 
 ```bash
-swiftc -O -parse-as-library tools/probes/apple/mac/ResumeProbe.swift -o /tmp/resumeprobe
+swiftc -O -parse-as-library tools/probes/apple/mac/ResumeProbe.swift tools/probes/apple/shared/SyntheticDesktop.swift -o /tmp/resumeprobe
 ```
 
 ```bash

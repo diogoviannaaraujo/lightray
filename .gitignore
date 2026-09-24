@@ -4,3 +4,6 @@
 build/
 out/
 *.xcresult
+tools/probes/apple/ios/LightrayProbe.xcodeproj/
+tools/probes/apple/ios/Generated/
+tools/probes/apple/ios/Samples/
