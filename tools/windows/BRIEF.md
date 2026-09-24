@@ -16,45 +16,103 @@ about one round trip plus one frame. The host makes that possible by keeping cap
 encoder alive while the client is away ("parked").
 
 The repository holds the specification in `docs/` and measured platform behaviour in `notes/`.
-The specification is version 0 and is being replaced by version 1, which is not written yet.
-**Design points** below lists everything about version 1 that these tests need; don't treat
-`docs/` as the target.
+The specification in `docs/` is version 0 and is being replaced by version 1, which is designed
+but not written yet. **Where version 1 is going** below is the design; don't treat `docs/` as the
+target.
 
 The protocol serves three uses:
 
 1. A Mac client playing games on a **Windows host** over a LAN. This brief exists for this one.
 2. Mac to Mac remote desktop over the internet.
-3. iPad to Mac remote desktop over the internet.
+3. iPad to Mac remote desktop over the internet, where resuming after the app was in the
+   background matters most.
 
 The Apple side is measured: see `notes/macos-host.md`, `notes/ipados-client.md` and
 `notes/recovery-and-resume.md`. Follow their format, and where this brief says so, their test
 parameters, so the numbers can be compared.
 
-## Design points your results feed
+## Where version 1 is going
 
-1. **Loss recovery,** in order: forward error correction; retransmission, if it can arrive within
-   the latency budget; a recovery frame the client requests; an IDR. The client reports the last
-   frame it decoded, and the host decides how to produce the recovery frame: reference
-   invalidation, a long-term-reference refresh, or an IDR. A client will declare whether its
-   decoder accepts recovery frames that aren't IDRs.
-2. **Parking.** While a client is away, for up to several minutes, the host keeps capture and the
-   encoder alive and idle. On resume it sends a P-frame referencing the last frame the client
-   decoded if the client still has it, and an IDR otherwise.
-3. **Rate control.** Delay-based congestion control changes the target bitrate every 0.1–1 s.
-   Bitrate and frame-rate changes must take effect on the next frame without an IDR. Only
-   resolution, chroma format and HDR changes may force one.
-4. **Presets.**
-   - `GAME`: a frame every display refresh (60 or 120 fps), 4:2:0, 5 ms audio frames, the cursor
-     drawn into the video, and the host may ask the client to capture the pointer.
-   - `DESKTOP`: frames only when the screen changes (up to 60 fps), 4:4:4 when both ends support
-     it, 10 ms audio frames, and the client draws the cursor from shapes the host sends.
-5. **Cursor channel (host → client):** the shape as RGBA plus a hotspot, cached by id; visibility;
-   and a pointer-capture request that switches the client to relative mouse input.
-6. **Input (client → host):** the keyboard as USB HID usages (page 0x07) plus UTF-8 text; pointer
-   positions normalised to the video frame, and relative motion; the wheel in 1/120-notch units;
-   gamepads in the W3C "standard gamepad" layout, with rumble sent back to the client.
-7. **Audio:** Opus at 48 kHz, in 5, 10 or 20 ms frames. The microphone travels upstream.
-8. **Transport:** 1200-byte datagrams by default, paced by the sender.
+**Status.** The design below is decided, though preset values can still move with evidence like
+yours. The documents aren't written yet. They will be written in this order, with generated test
+vectors for every wire format:
+
+1. `packets.md` and `handshake.md`
+2. `video.md` and `audio.md`
+3. `feedback.md` and `rate-control.md`
+4. `control.md` and `modes.md`
+5. `session.md`, replacing `reconnect.md`
+6. `input.md`
+7. registries, conformance and open gaps
+
+Your notes feed steps 2 to 6. Version 1 keeps most of version 0's framing and changes what the
+table below describes.
+
+**Scope:**
+
+- Host → client carries video and audio; client → host carries input and the microphone.
+- Input covers the keyboard, the pointer and gamepads. Camera, touch, pen and motion sensors
+  only get reserved numbers.
+- Codecs are pinned: HEVC, and Opus at 48 kHz.
+- VPNs such as Tailscale or WireGuard run at the OS level and are out of scope. The default
+  1200-byte datagram fits inside them.
+- Hosts and clients must be implementable on any platform. Note anything Windows-specific the
+  specification has to allow for.
+
+**By area:**
+
+| Area | Version 1 |
+|---|---|
+| Handshake | `Noise_NNpsk0_25519_AESGCM_SHA256` in one round trip, keyed by a pre-shared pairing secret. AES-256-GCM traffic keys, with the packet number as the nonce. A reconnecting client can take over its existing session. |
+| Packets | A 16-byte header, 64-bit packet numbers, a replay window, and chunks a receiver can skip if it doesn't know them. After a client's IP address changes, the host sends at most 3× what it has received from the new address until the client's first feedback arrives; a port-only change is exempt. |
+| Video | HEVC with low-delay P-frames only and no reordering: Main, Main10, and optionally 4:4:4. Frames are split across datagrams, with per-frame Reed–Solomon FEC (RFC 5510). A reference epoch counts IDRs and decoder resets, so both ends agree on what the client's decoder holds. |
+| Loss recovery | FEC first; then retransmission, if it can land within the latency budget; then a recovery frame the client requests, reporting the last frame it decoded; then an IDR. The host chooses how to make the recovery frame (reference invalidation, a long-term-reference refresh or an IDR). The client declares whether its decoder accepts recovery frames that aren't IDRs. |
+| Audio | Opus frames of 5, 10 or 20 ms, several per datagram, with redundant copies of recent frames. The microphone uses the same format upstream. |
+| Rate control | Required: delay-based congestion control driven by per-packet arrival feedback (libwebrtc's GCC is the reference design), plus a circuit breaker. FEC and retransmissions count inside the target rate, which changes every 0.1–1 s. |
+| Client control | The client proposes settings when it connects and can change them at any time. The host applies what it can and reports what it applied. Resolution, chroma and HDR changes force an IDR; every other change takes effect on the next frame without one. The host may suggest a mode, for example when it detects a fullscreen game; the client decides. |
+| Session | States: active; video suspended (audio continues); parked warm (capture and encoder kept alive); parked cold (both released); expired. When it leaves, the client says how long it expects to be away, and the host clamps the warm window. On return, the client reports whether its decoder survived and which frame it last decoded. The host answers with a P-frame or long-term-reference refresh if it can, and otherwise an IDR, which may be a small "fast-start" one. A client whose app was killed must reconnect as fast as it resumes. |
+| Input | The keyboard as USB HID usages (page 0x07), plus UTF-8 text and lock-state sync. The pointer as relative motion or as a position normalised to the video frame. The wheel in 1/120-notch units. Gamepads in the W3C "standard gamepad" layout, with arrival, removal and rumble. A host → client cursor channel: visibility, the shape as RGBA plus a hotspot cached by id, the position, and a request that the client capture the pointer. |
+
+**Presets.** The client picks one, and can override any single control: maximum bitrate, frame
+rate limits, display and resolution, HDR, FEC and retransmission policy, audio settings, the
+microphone, video suspend, the warm window, the first frame after a resume, and statistics.
+
+| Control | `GAME` | `DESKTOP` |
+|---|---|---|
+| Latency budget | 3 frame intervals (50 ms at 60 fps) | max(3 frames, 2 × RTT + 20 ms), capped at 150 ms |
+| When bandwidth drops | keep the frame rate; lower quality, then resolution | keep quality; lower the frame rate, down to ~15 fps |
+| Frames produced | every display refresh (60 or 120 fps) | when the screen changes, up to 60 fps |
+| Chroma | 4:2:0 | the best both ends support (4:4:4, else 4:2:2) |
+| Audio frame | 5 ms | 10 ms |
+| Cursor | drawn into the video; the host may ask the client to capture the pointer | drawn by the client from shapes the host sends |
+| Warm window | 5 min | 15 min |
+| First frame after a resume | full quality | fast-start when bandwidth is short |
+
+**Targets,** to judge which results matter:
+
+- A client returning after about two minutes should see a new frame one round trip plus one IDR
+  later: 25–70 ms on a LAN with a warm host (`notes/recovery-and-resume.md`). Any Windows step on
+  that path that takes more than about 10 ms is worth flagging.
+- `GAME` on busy LAN Wi-Fi: at most 0.5 freezes a minute, at no more than 15% overhead.
+- After the link's capacity halves, rate control brings queueing delay back under twice its
+  baseline within 1 s. Encoders must follow new targets fast enough for that.
+
+## Open decisions your results settle
+
+| Test | Decision | Where it lands |
+|---|---|---|
+| P0-1 | Which recovery methods a Windows host can use, and whether QSV can do more than IDRs | `video.md` encoder notes; open gaps |
+| P0-2 | Whether a Windows host can hold a warm park, and what a cold one costs | `session.md`; warm-window defaults |
+| P1-1 | Whether "no IDR except for resolution, chroma and HDR changes" holds on Windows encoders, and how fast they follow a new target | `control.md`, `rate-control.md` |
+| P1-2 | Whether resumes must budget a capture restart, and whether hosts need a "video unavailable" notice | `session.md` |
+| P1-3 | The cursor shape format: RGBA alone, or with an invert mask | `input.md` |
+| P1-4 | Whether the keyboard needs the consumer page; what a relative mouse delta means; the wheel's units; whether a host can detect a game capturing the pointer; the rumble fields | `input.md` |
+| P1-5 | Whether `GAME`'s 5 ms audio frames are worth it on Windows | `audio.md`, `modes.md` |
+| P1-6 | Whether the pacing requirement is achievable on Windows | `video.md`, `rate-control.md` |
+| P2-3 | HDR metadata inside the bitstream, or in a message of its own | `video.md` |
+| P2-4, P2-5 | Which chroma formats a Windows host can offer, and whether it can produce a fast-start IDR | `modes.md`, `session.md` |
+
+In `notes/windows-host.md`, answer each of these directly.
 
 ## Already known; don't redo
 
@@ -64,6 +122,9 @@ parameters, so the numbers can be compared.
 - Moonlight's iOS client, which decodes with VideoToolbox, accepts reference invalidation for HEVC
   and AV1 but not H.264 (`Limelight/Stream/Connection.m` in moonlight-ios).
 - VideoToolbox's long-term-reference refresh costs 3–6 KB against a 141 KB IDR at 1080p.
+- A Mac host can't encode HEVC 4:4:4 through public APIs. It offers 4:2:2 10-bit (with IDR-only
+  recovery) or 4:2:0 with long-term references, so how Windows hosts compare matters for
+  `DESKTOP`'s chroma.
 - In simulation, what a recovery frame costs barely matters on a LAN: FEC and retransmission
   repair almost every loss.
 
@@ -411,6 +472,16 @@ For each GPU, record: HEVC 4:4:4 (8 and 10-bit), 4:2:2 10-bit, Main10, maximum r
 frame rate, reference and long-term-reference counts, intra refresh, and temporal layers. Encode
 1080p60 4:4:4 once (latency, IDR size), and check whether `rfi` and `ltr` still work in 4:4:4.
 
+### P2-5 Fast-start IDR
+
+**Question:** can each encoder produce, on request, an IDR of about 40 KB at 1080p (against
+~140 KB normally), and then return to full quality within a few frames?
+
+This is the small first frame a host sends when a client resumes over a slow link. Use whatever
+each API offers: a per-frame QP, a temporary QP range, or a maximum I-frame size (for example
+QSV's `MaxFrameSizeI`). Record the IDR's size and PSNR against a full-quality IDR of the same
+frame, and how many frames it takes for PSNR to come back within 1 dB.
+
 ## Exploration (reading only)
 
 Read Sunshine's Windows host (github.com/LizardByte/Sunshine: `src/platform/windows/`,
@@ -424,7 +495,8 @@ Read Sunshine's Windows host (github.com/LizardByte/Sunshine: `src/platform/wind
 - pacing;
 - NVENC and QSV settings, and whether it changes bitrate mid-stream.
 
-Compare each with the design points above, and list what Lightray should adopt or must handle.
+Compare each with **Where version 1 is going**, and list what Lightray should adopt or must
+handle.
 Cite files and lines with a commit hash. Also list, without installing anything, the virtual
 display and gamepad drivers used by Apollo (a Sunshine fork) and Parsec.
 
@@ -434,8 +506,10 @@ On the `windows-validation` branch:
 
 - **`notes/windows-host.md`,** the summary:
   - It opens with what was tested, what wasn't, and the three most important findings.
-  - Then a setup table (hardware and software versions), findings per test with tables,
-    "Implications" bullets in the style of `notes/ipados-client.md`, and open questions.
+  - Then a setup table (hardware and software versions), and findings per test with tables.
+  - Then an answer to each row of **Open decisions your results settle**, including "not
+    tested".
+  - Then "Implications" bullets in the style of `notes/ipados-client.md`, and open questions.
   - Every number must trace to a file in `tools/windows/results/`.
 - **`notes/windows-client.md`,** only if P2-2 was done.
 - **`tools/windows/`:** the code (CMake, with a README on how to build and run it) and
