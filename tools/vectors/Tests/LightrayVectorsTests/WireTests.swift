@@ -35,6 +35,9 @@ func everyCleartextInitByteIsAuthenticated(offset: Int) {
         (0x1_0000_0000, 0x8000_0000, 0x1_8000_0000),
         (0x1_0000_0000, 0x8000_0001, 0x8000_0001),
         (0x1_8000_0000, 0, 0x2_0000_0000),
+        // Near 2⁶⁴, where a sum in the comparison would overflow.
+        (0xffff_ffff_8000_0000, 1, 0xffff_ffff_0000_0001),
+        (0xffff_ffff_ffff_fff0, 0xffff_fff8, 0xffff_ffff_ffff_fff8),
     ]
     for (expected, transportSeq, packetNumber) in cases {
         #expect(Packet.reconstruct(expected: expected, transportSeq: transportSeq) == packetNumber)

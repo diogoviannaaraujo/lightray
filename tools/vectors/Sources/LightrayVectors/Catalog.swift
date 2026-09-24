@@ -120,7 +120,7 @@ public enum Catalog {
     /// Every block the documents print, by the name its `<!-- vector: name -->` marker uses.
     public static func blocks(_ example: Example = Example()) -> [(name: String, text: String)] {
         [
-            ("handshake.init.prologue", example.initPrologue.hex),
+            ("handshake.init.prologue", hexLines(example.initPrologue)),
             ("handshake.init.params", hexLines(example.initParams)),
             ("handshake.init.trace", renderTrace(example.initTrace)),
             ("handshake.init.datagram", hexLines(example.initDatagram)),
@@ -134,7 +134,7 @@ public enum Catalog {
                     ("host-to-client key", example.hostToClientKey),
                 ])
             ),
-            ("handshake.session-unknown", example.sessionUnknown.hex),
+            ("handshake.session-unknown", hexLines(example.sessionUnknown)),
             ("packets.pn-reconstruction", packetNumberTable()),
             ("packets.close", Packet.close(Packet.CloseCode.appRequest).hex),
             ("packets.datagram.header", example.datagramHeader.bytes.hex),
