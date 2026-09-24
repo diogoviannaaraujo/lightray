@@ -11,8 +11,8 @@ measurement or a simulation.
 | [`sim/`](sim) | Loss-recovery and rate-control simulator, and the resume latency budget | Recovery model done; rate control planned |
 | [`probes/apple/mac/`](probes/apple/mac) | VideoToolbox costs on the resume path, measured on a Mac | Done; extensions planned |
 | [`probes/apple/ios/`](probes/apple/ios) | iPad lifecycle, socket, decoder and network measurements | Ready; needs the iPad ([README](probes/apple/ios/README.md)) |
-| [`probes/apple/shared/`](probes/apple/shared) | Synthetic desktop frames used by both Apple probes | Done |
-| [`probes/apple/verify/`](probes/apple/verify) | Decodes recovery bitstreams from other encoders with VideoToolbox | Planned (phase 1) |
+| [`probes/apple/shared/`](probes/apple/shared) | Synthetic desktop frames, HEVC Annex B parsing and the recovery-stream verifier | Done |
+| [`probes/apple/verify/`](probes/apple/verify) | Writes VideoToolbox recovery streams and verifies any encoder's with VideoToolbox | Done |
 | [`probes/windows/`](probes/windows) | NVENC and QSV reference-recovery bitstreams | Planned (phase 1) |
 | [`probes/results/`](probes/results) | Raw probe output, one file per device and run | Growing |
 
@@ -49,3 +49,17 @@ The resume latency budget:
 ```bash
 python3 tools/sim/resume_budget.py
 ```
+
+The recovery-stream verifier, and the VideoToolbox reference streams it checks:
+
+```bash
+swiftc -O -parse-as-library tools/probes/apple/verify/VerifyRecovery.swift tools/probes/apple/shared/*.swift -o /tmp/verify-recovery
+```
+
+```bash
+/tmp/verify-recovery generate tools/probes/results/recovery && /tmp/verify-recovery verify tools/probes/results/recovery
+```
+
+Each stream loses frames 40–45 and recovers at frame 46. `verify` decodes it twice with
+VideoToolbox, complete and with the lost frames removed, and passes it only if every frame from
+the recovery frame on is identical in both. The `.hevc` files are regenerated, not committed.

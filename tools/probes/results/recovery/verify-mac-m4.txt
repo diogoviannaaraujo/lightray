@@ -1,0 +1,3 @@
+PASS frames 46–119 identical to the complete decode — videotoolbox/idr on Apple M4, 1920x1080, recovery frame 46 (keyframe, 141.3 KB), lost 40–45
+PASS frames 46–119 identical to the complete decode — videotoolbox/ltr-ack-every-250ms on Apple M4, 1920x1080, recovery frame 46 (predicted, 6.3 KB), lost 40–45
+PASS frames 46–119 identical to the complete decode — videotoolbox/ltr-ack-every-frame on Apple M4, 1920x1080, recovery frame 46 (predicted, 3.0 KB), lost 40–45

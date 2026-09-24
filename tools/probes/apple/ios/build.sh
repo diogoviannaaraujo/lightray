@@ -1,7 +1,7 @@
 #!/bin/sh
 # Builds the iPad probe.
 #   ./build.sh sim               for the iOS Simulator, unsigned
-#   ./build.sh device <TEAM_ID>  for a real iPad, signed with your development team
+#   ./build.sh device <TEAM_ID> [UDID]  for a real iPad, signed with your development team
 # Prints the path of the built LightrayProbe.app.
 set -eu
 cd "$(dirname "$0")"
@@ -33,9 +33,13 @@ case $mode in
         find build/dd/Build/Products/Release-iphonesimulator -maxdepth 1 -name LightrayProbe.app
         ;;
     device)
-        team=${2:?usage: ./build.sh device <TEAM_ID>}
+        team=${2:?usage: ./build.sh device <TEAM_ID> [DEVICE_UDID]}
+        # Naming the device lets Xcode register it in the team's provisioning profile.
+        destination='generic/platform=iOS'
+        [ -n "${3:-}" ] && destination="platform=iOS,id=$3"
         xcodebuild -project LightrayProbe.xcodeproj -scheme LightrayProbe -configuration Release \
-            -destination 'generic/platform=iOS' -derivedDataPath build/dd -allowProvisioningUpdates \
+            -destination "$destination" -derivedDataPath build/dd \
+            -allowProvisioningUpdates -allowProvisioningDeviceRegistration \
             DEVELOPMENT_TEAM="$team" -quiet build
         find build/dd/Build/Products/Release-iphoneos -maxdepth 1 -name LightrayProbe.app
         ;;

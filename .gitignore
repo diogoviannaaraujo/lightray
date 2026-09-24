@@ -7,3 +7,4 @@ out/
 tools/probes/apple/ios/LightrayProbe.xcodeproj/
 tools/probes/apple/ios/Generated/
 tools/probes/apple/ios/Samples/
+tools/probes/results/recovery/*.hevc
