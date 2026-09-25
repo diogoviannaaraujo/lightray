@@ -1,5 +1,12 @@
 # Parking, rebinding, resuming and expiry
 
+> **Version 0 text, replaced by [session.md](session.md)** in version 1. Until that is
+> written, `session.md` summarises the decided design. Rebinding is in
+> [packets.md](packets.md#addresses), and taking over a session after a relaunch is in
+> [handshake.md](handshake.md#taking-over-a-session). Where this text and those documents
+> differ, they win: in version 1, for example, a host can take over an active session as well
+> as a parked one.
+
 A client goes away constantly: the network changes, the lid closes, the user walks off.
 The protocol treats an absent client as an ordinary state rather than a failure, so that
 coming back costs one keyframe instead of a new pairing.

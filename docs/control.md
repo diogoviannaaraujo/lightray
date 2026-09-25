@@ -1,5 +1,14 @@
 # Control messages
 
+> **Version 0 text, to be rewritten for version 1** ([gaps.md](gaps.md)). Version 1 changes:
+>
+> - the client proposes settings when it connects and can change them at any time; the host
+>   applies what it can and reports what it applied;
+> - resolution, chroma and HDR changes force an IDR, and no other change does;
+> - the bitrate is chosen by rate control ([rate-control.md](rate-control.md)), within the
+>   maximum the client sets;
+> - presets, the individual controls, and the host's mode hint are in [modes.md](modes.md).
+
 Configuration changes travel as reliable messages on **stream 0**, which is always
 present, always bidirectional and always of class `RELIABLE`. They are therefore
 ordered, acknowledged and retransmitted like any other reliable message; see
