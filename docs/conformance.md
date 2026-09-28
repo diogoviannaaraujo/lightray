@@ -283,7 +283,7 @@ Everything above that applies to receiving and sending, plus:
 ## Interoperability tests worth running
 
 These are the cases where two implementations most often appear to work and do not. Tests 1,
-9, 12, 13 and 18–22 cover version 1 text; the others are *Version 0, pending* their documents.
+9, 12, 13 and 18–26 cover version 1 text; the others are *Version 0, pending* their documents.
 
 1. **Lose the `RESPONSE`.** The client must retransmit the identical `INIT`; the host
    must answer from its cache; the session must establish.
@@ -331,6 +331,14 @@ These are the cases where two implementations most often appear to work and do n
     opens them once it has the keys.
 22. **Kill the client and reconnect with `RESUME_SESSION_ID`** while the host still holds the
     session as active; assert the host takes it over and the old keys stop working.
+23. **Stream two displays and lose a keyframe on one**; assert the other stream keeps
+    delivering frames and receives no keyframe ([displays.md](displays.md#each-stream-is-independent)).
+24. **Move one of two streams to another display**; assert an IDR in a new `config_generation`
+    on that stream and nothing on the other.
+25. **Remove a display the client is showing**; assert a new `DISPLAYS` arrives, the stream that
+    showed it is reported unbound, and the other streams carry on.
+26. **Bind more streams than the host's encoder can run**; assert the binding it cannot start is
+    refused and the streams already running carry on.
 
 ## Regression scenarios
 

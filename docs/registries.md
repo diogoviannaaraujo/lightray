@@ -130,6 +130,9 @@ worked example uses it.
 | 3 | `MIC` | client → host | `REALTIME` |
 | 4 | `INPUT` | client → host | `RELIABLE` |
 
+A client that may show more than one of the host's displays adds a `VIDEO` stream for each
+([displays.md](displays.md#video-streams)).
+
 Stream `0` is never listed. It is implicitly a bidirectional `RELIABLE` stream carrying
 control messages, and is always present.
 

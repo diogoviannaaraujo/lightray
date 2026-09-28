@@ -20,6 +20,9 @@ instead of overrunning it.
 - **Degradation follows the client's preset** ([modes.md](modes.md)): `GAME` keeps the frame
   rate and lowers quality, then resolution; `DESKTOP` keeps quality and lowers the frame rate.
 - **A change of IP address resets the controller** ([packets.md](packets.md#validating-a-new-address)).
+- **One rate per session.** With several video streams, the controller divides its rate among
+  the streams that show a display, after audio, by a weight the client may set for each; by
+  default in proportion to each stream's pixel rate ([displays.md](displays.md#what-a-session-has-once)).
 - **Probing** for spare capacity uses `PADDING` ([packets.md](packets.md#padding-0x00)).
 - **Target:** after a link's capacity halves, queueing delay returns under twice its baseline
   within one second.

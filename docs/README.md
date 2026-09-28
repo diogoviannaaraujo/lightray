@@ -31,6 +31,10 @@ below gives the state of each. They are being written in this order:
 Steps 2 to 6 wait on measurements of Windows hosts; [gaps.md](gaps.md) lists what each one
 needs.
 
+[displays.md](displays.md) was written ahead of that order. It defines how a session shows several
+of the host's displays; the documents above define the bytes of its messages as they are
+rewritten.
+
 ## What the protocol does
 
 - **Establishes a session** in one round trip, with a Noise handshake keyed by a pairing secret
@@ -47,6 +51,8 @@ needs.
 - **Survives the client going away.** A parked session resumes, a relaunched app takes its
   session over, and a change of network costs no keyframe.
 - **Defines input:** keyboard, pointer and gamepads, and a cursor channel from host to client.
+- **Shows several displays at once,** each on a video stream of its own, independent of the
+  others, with one audio stream and one set of input for all of them.
 
 ## What the protocol does not do
 
@@ -106,6 +112,7 @@ The measurements behind these numbers are in [`notes/`](../notes/README.md).
 | [handshake.md](handshake.md) | Establishing a session, deriving keys, taking over a session | Version 1 |
 | [packets.md](packets.md) | Building or parsing any packet after the handshake | Version 1 |
 | [video.md](video.md) | Sending or receiving video, or repairing its loss | Version 0, to be rewritten |
+| [displays.md](displays.md) | Showing more than one of the host's displays, or choosing which one | Version 1; its byte layouts come with the documents it names |
 | [audio.md](audio.md) | Sending or receiving audio | Version 0, to be rewritten |
 | [feedback.md](feedback.md) | Reporting what arrived, requesting repair, measuring the path | Version 0, to be rewritten |
 | [rate-control.md](rate-control.md) | Choosing how fast to send | Not yet written |

@@ -7,7 +7,9 @@
 > - resolution, chroma and HDR changes force an IDR, and no other change does;
 > - the bitrate is chosen by rate control ([rate-control.md](rate-control.md)), within the
 >   maximum the client sets;
-> - presets, the individual controls, and the host's mode hint are in [modes.md](modes.md).
+> - presets, the individual controls, and the host's mode hint are in [modes.md](modes.md);
+> - settings scoped to one video stream, among them the display it shows, and a `DISPLAYS`
+>   message listing the host's displays ([displays.md](displays.md)).
 
 Configuration changes travel as reliable messages on **stream 0**, which is always
 present, always bidirectional and always of class `RELIABLE`. They are therefore

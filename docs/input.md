@@ -3,11 +3,12 @@
 > **Version 0 text, to be rewritten for version 1** ([gaps.md](gaps.md)). Version 1 changes:
 >
 > - the keyboard as USB HID usages (page 0x07), plus UTF-8 text and lock-state sync;
-> - the pointer as relative motion or as a position normalised to the video frame, and the
->   wheel in 1/120-notch units;
+> - the pointer as relative motion or as a position on one of the host's displays, naming the
+>   display and normalised to it ([displays.md](displays.md#the-pointer-and-the-cursor)), and
+>   the wheel in 1/120-notch units;
 > - gamepads in the W3C "standard gamepad" layout, with arrival, removal and rumble;
 > - a host-to-client cursor channel: visibility, the shape as RGBA plus a hotspot cached by id,
->   the position, and a request that the client capture the pointer;
+>   the position with the display it is on, and a request that the client capture the pointer;
 > - camera, touch, pen and motion sensors get reserved numbers only;
 > - stream classes and direction enforcement moved to [packets.md](packets.md#streams).
 

@@ -35,7 +35,10 @@ The Apple measurements are already in [`notes/`](../notes/README.md).
 
 A `RESPONSE` must be no larger than the `INIT` that triggered it, and an `INIT` can be as small
 as 256 bytes. Once `SETTINGS`, `CAPABILITIES` and `LIFECYCLE` are defined, a `RESPONSE`
-carrying all of them has to fit. If it can't, the minimum `max_datagram_size` rises.
+carrying all of them has to fit. If it can't, the minimum `max_datagram_size` rises. Settings are
+per video stream as well as per session ([displays.md](displays.md)), so a client that proposes
+several video streams adds to what the `RESPONSE` reports; the list of the host's displays
+travels after the handshake and does not.
 
 ### Presentation timing
 
@@ -98,6 +101,16 @@ host; whether intra refresh joins them depends on what the encoders expose.
 
 Version 1 carries video and audio from host to client, and input and the microphone from
 client to host. The rest get numbers and nothing else.
+
+### Windows, regions and virtual displays
+
+**Not reserved.**
+
+A video stream shows a whole display of the host's ([displays.md](displays.md)). Streaming a
+single window or a region of a display, creating a display on the host to match the client's
+screen (for a host with none, or an iPad-shaped desktop), and sending audio per display are left
+out. Each would be a new kind of thing a stream can show, or a new setting, rather than a change
+to the model.
 
 ### Codec negotiation
 

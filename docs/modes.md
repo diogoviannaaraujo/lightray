@@ -26,21 +26,25 @@ The values are provisional and can still move with measurements.
 ## Controls a client can override
 
 - the maximum bitrate, for example to save data on a cellular link;
-- frame-rate limits, to save battery or to spend more bits on each frame;
-- the display, the resolution and scaling;
-- HDR;
+- for each video stream ([displays.md](displays.md)): the display it shows, its resolution and
+  scaling, its frame-rate limits (to save battery or to spend more bits on each frame), HDR, and
+  its share of the rate;
 - the FEC and retransmission policy;
 - the audio bitrate, channels and redundancy;
 - the microphone;
-- suspending video;
+- suspending video, per video stream;
 - the warm window, and the expected absence a `PARK` states;
 - what the first frame after a resume should be;
 - statistics reporting.
 
 ## Decided
 
-- Resolution, chroma and HDR changes force an IDR. Every other change takes effect on the next
-  frame without one.
+- Resolution, chroma and HDR changes force an IDR, as does a change of the display a stream
+  shows. Every other change takes effect on the next frame without one.
+- A control belongs either to the session or to one video stream. The display, resolution,
+  scaling, frame rate, chroma, HDR, suspension and share of the rate are per stream, and a change
+  to one stream, an IDR included, touches no other ([displays.md](displays.md)). The rest
+  belong to the session.
 - The host may suggest a mode, for example when it detects a fullscreen game. The client
   decides.
 

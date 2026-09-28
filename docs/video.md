@@ -12,7 +12,9 @@
 >   recovery frame the client requests, then an IDR. The host chooses how to make the recovery
 >   frame, and the client declares whether its decoder accepts recovery frames that aren't IDRs;
 > - tail loss detected from gaps in `transport_seq`, replacing the tail timer;
-> - the `CAPABILITIES` parameter, and the fragment overhead that version 0's README gave.
+> - the `CAPABILITIES` parameter, and the fragment overhead that version 0's README gave;
+> - several video streams in one session, one for each display the client shows, each
+>   independent of the others ([displays.md](displays.md)).
 
 Video travels on a stream of class `MEDIA`. A frame is submitted whole by the
 application, split into fragments, and reassembled by the receiver into the same bytes.
