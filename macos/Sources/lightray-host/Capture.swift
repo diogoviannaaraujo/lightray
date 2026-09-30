@@ -14,6 +14,8 @@ protocol FrameSource: AnyObject {
     var onFrame: ((CVPixelBuffer, UInt64) -> Void)? { get set }
     /// Runs once if the source stops on its own.
     var onFailure: ((String) -> Void)? { get set }
+    /// False once the source has stopped, whether or not `onFailure` ran.
+    var isCapturing: Bool { get }
     func stop()
 }
 
@@ -56,6 +58,8 @@ final class ScreenCapture: NSObject, FrameSource, SCStreamOutput, SCStreamDelega
         self.stream = stream
     }
 
+    var isCapturing: Bool { stream?.isCapturing ?? false }
+
     func stop() {
         let stream = self.stream
         self.stream = nil
@@ -92,9 +96,8 @@ enum HostDisplays {
         let main = CGMainDisplayID()
         let screens = await MainActor.run {
             NSScreen.screens.map { screen -> (UInt32, String, Int, Bool) in
-                let number = (screen.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? NSNumber)?.uint32Value ?? 0
-                return (number, screen.localizedName, screen.maximumFramesPerSecond,
-                        screen.maximumPotentialExtendedDynamicRangeColorComponentValue > 1)
+                (screen.cgDirectDisplayID ?? 0, screen.localizedName, screen.maximumFramesPerSecond,
+                 screen.maximumPotentialExtendedDynamicRangeColorComponentValue > 1)
             }
         }
         return content.displays.map { display -> DisplayInfo in

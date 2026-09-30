@@ -6,7 +6,7 @@ microphone, park and resume, and the other things listed under [Not yet](#not-ye
 
 ## Build and test
 
-Requires macOS 14 or later and Swift 6.
+Requires macOS 27 or later and Swift 6.4.
 
 ```bash
 swift build -c release --package-path macos

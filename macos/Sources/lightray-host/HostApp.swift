@@ -281,21 +281,27 @@ final class HostApp: @unchecked Sendable {
     /// the display goes away, the client asks for something else, or the session ends. The client
     /// keeps its window and gets a keyframe, of the new size if the mode changed.
     private func watch(_ pipeline: Pipeline) {
-        let stream = pipeline.stream
         pipeline.onFailure = { [weak self, weak pipeline] reason in
             guard let self else { return }
             self.queue.async {
-                guard let pipeline, self.pipelines[stream] === pipeline else { return }
-                self.unbind(stream)
-                guard self.endpoint.session?.videos[stream] != nil else {
-                    log("stream \(stream): \(reason)")
-                    return
-                }
-                log("stream \(stream): \(reason); starting it again")
-                self.bindAttempts[stream, default: 0] += 1
-                self.recover(stream, display: pipeline.display.id, attempt: self.bindAttempts[stream]!, tries: 0)
+                guard let pipeline else { return }
+                self.captureStopped(pipeline, reason: reason)
             }
         }
+    }
+
+    /// On `queue`, once for each pipeline: whichever of the delegate and `watchDisplays` notices first.
+    private func captureStopped(_ pipeline: Pipeline, reason: String) {
+        let stream = pipeline.stream
+        guard pipelines[stream] === pipeline else { return }
+        unbind(stream)
+        guard endpoint.session?.videos[stream] != nil else {
+            log("stream \(stream): \(reason)")
+            return
+        }
+        log("stream \(stream): \(reason); starting it again")
+        bindAttempts[stream, default: 0] += 1
+        recover(stream, display: pipeline.display.id, attempt: bindAttempts[stream]!, tries: 0)
     }
 
     private func recover(_ stream: UInt8, display: UInt32, attempt: Int, tries: Int) {
@@ -340,12 +346,16 @@ final class HostApp: @unchecked Sendable {
 
     /// Checks the displays every second as well. The reconfiguration callback did not arrive when a
     /// Screen Sharing session ended and took its virtual display with it, which left the host
-    /// offering a display that no longer existed.
+    /// offering a display that no longer existed. Capture is checked too, in case a stream stops
+    /// without telling its delegate: on a still screen nothing else would show it.
     private func watchDisplays() {
         var seen = HostDisplays.signature()
         let timer = DispatchSource.makeTimerSource(queue: queue)
         timer.schedule(deadline: .now() + 1, repeating: 1, leeway: .milliseconds(100))
         timer.setEventHandler { [unowned self] in
+            for pipeline in pipelines.values where !pipeline.isCapturing {
+                captureStopped(pipeline, reason: "capture stopped without an error")
+            }
             let now = HostDisplays.signature()
             guard now != seen else { return }
             seen = now

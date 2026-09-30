@@ -61,6 +61,9 @@ final class Pipeline: @unchecked Sendable {
 
     var size: (width: Int, height: Int) { (source.width, source.height) }
 
+    /// False once capture has stopped, even if it stopped without saying so.
+    var isCapturing: Bool { source.isCapturing }
+
     /// Encodes only while the session streams; capture and the encoder stay warm otherwise.
     func setStreaming(_ on: Bool) {
         queue.async { [self] in

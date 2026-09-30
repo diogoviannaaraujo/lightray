@@ -7,6 +7,10 @@ import LightrayMac
 /// messages. The host draws the cursor into the video, so the local one is hidden over it.
 final class VideoView: NSView {
     let displayLayer = AVSampleBufferDisplayLayer()
+    /// The layer's renderer only takes pictures through a synchronizer, whose clock runs on host
+    /// time; every picture is marked to show at once regardless.
+    private let synchronizer = AVSampleBufferRenderSynchronizer()
+    private let receiver: AVSampleBufferVideoRenderer.Receiver
     /// The video's size in pixels, once a keyframe has decoded. Set on the main thread.
     var videoSize: CGSize?
     /// Called on the main thread for every input message.
@@ -21,6 +25,9 @@ final class VideoView: NSView {
     private let blankCursor = NSCursor(image: NSImage(size: NSSize(width: 1, height: 1)), hotSpot: .zero)
 
     override init(frame: NSRect) {
+        receiver = synchronizer.sampleBufferReceiver(adding: displayLayer.sampleBufferRenderer)
+        synchronizer.delaysRateChangeUntilHasSufficientMediaData = false
+        synchronizer.setRate(1, time: CMClockGetTime(CMClockGetHostTimeClock()))
         super.init(frame: frame)
         layer = CALayer()
         wantsLayer = true
@@ -63,26 +70,19 @@ final class VideoView: NSView {
 
     /// Shows a decoded picture at once. Safe from any one serial queue.
     func enqueue(_ pixels: CVPixelBuffer) {
-        var format: CMVideoFormatDescription?
-        CMVideoFormatDescriptionCreateForImageBuffer(allocator: nil, imageBuffer: pixels, formatDescriptionOut: &format)
-        guard let format else { return }
-        var timing = CMSampleTimingInfo(
-            duration: .invalid, presentationTimeStamp: CMClockGetTime(CMClockGetHostTimeClock()), decodeTimeStamp: .invalid)
-        var sample: CMSampleBuffer?
-        CMSampleBufferCreateReadyWithImageBuffer(
-            allocator: nil, imageBuffer: pixels, formatDescription: format, sampleTiming: &timing, sampleBufferOut: &sample)
-        guard let sample else { return }
-        if let attachments = CMSampleBufferGetSampleAttachmentsArray(sample, createIfNecessary: true),
-            CFArrayGetCount(attachments) > 0
-        {
-            let dictionary = unsafeBitCast(CFArrayGetValueAtIndex(attachments, 0), to: CFMutableDictionary.self)
-            CFDictionarySetValue(
-                dictionary, Unmanaged.passUnretained(kCMSampleAttachmentKey_DisplayImmediately).toOpaque(),
-                Unmanaged.passUnretained(kCFBooleanTrue).toOpaque())
+        // The decoder never writes to a picture it has handed out.
+        var picture = CMReadySampleBuffer(
+            pixelBuffer: CVReadOnlyPixelBuffer(unsafeBuffer: pixels),
+            presentationTimeStamp: CMClockGetTime(CMClockGetHostTimeClock()))
+        picture.sampleAttachments.displayImmediately = true
+        let sample = CMReadySampleBuffer<CMSampleBuffer.DynamicContent>(picture)
+        switch receiver.enqueueImmediately(sample) {
+        case .cancelledDueToFlushRequiredToResume, .cancelledDueToError:
+            receiver.flush()
+            _ = receiver.enqueueImmediately(sample)
+        default:
+            break
         }
-        let renderer = displayLayer.sampleBufferRenderer
-        if renderer.status == .failed { renderer.flush() }
-        renderer.enqueue(sample)
     }
 
     // MARK: Keyboard

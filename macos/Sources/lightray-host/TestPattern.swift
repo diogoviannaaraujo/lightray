@@ -40,6 +40,8 @@ final class TestPattern: FrameSource {
         self.timer = timer
     }
 
+    var isCapturing: Bool { timer != nil }
+
     func stop() {
         timer?.cancel()
         timer = nil

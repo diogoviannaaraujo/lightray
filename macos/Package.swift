@@ -1,9 +1,9 @@
-// swift-tools-version: 6.0
+// swift-tools-version: 6.4
 import PackageDescription
 
 let package = Package(
     name: "Lightray",
-    platforms: [.macOS(.v14)],
+    platforms: [.macOS(.v27)],
     products: [
         .library(name: "LightrayCore", targets: ["LightrayCore"]),
         .executable(name: "lightray-host", targets: ["lightray-host"]),
