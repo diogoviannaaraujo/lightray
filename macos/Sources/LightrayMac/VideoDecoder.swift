@@ -32,6 +32,7 @@ public final class VideoDecoder {
 
     /// Decodes synchronously and returns what happened.
     public func decode(_ frame: DeliveredFrame) -> Result {
+        guard Self.hasValidNALFraming(frame.payload) else { return .failed(frameID: frame.frameID, status: kVTVideoDecoderBadDataErr) }
         let isKeyframe = frame.header.frameType == .idr
         if isKeyframe, let config = frame.header.codecConfig, config != self.config || session == nil {
             let status = rebuild(config)
@@ -60,6 +61,7 @@ public final class VideoDecoder {
 
     private func rebuild(_ config: CodecConfig) -> OSStatus {
         invalidate()
+        guard Self.isParameterSet(config.vps, type: 32), Self.isParameterSet(config.sps, type: 33), Self.isParameterSet(config.pps, type: 34) else { return kVTVideoDecoderBadDataErr }
         var created: CMFormatDescription?
         let sets = [config.vps, config.sps, config.pps]
         let status = sets[0].withUnsafeBufferPointer { vps in
@@ -92,7 +94,22 @@ public final class VideoDecoder {
         return noErr
     }
 
+    private static func isParameterSet(_ nal: Bytes, type: UInt8) -> Bool {
+        nal.count >= 2 && nal[0] & 0x80 == 0 && (nal[0] >> 1) & 0x3f == type && nal[1] & 7 != 0
+    }
+
+    /// Validate lengths and the two-byte HEVC NAL headers; VideoToolbox validates the bitstream semantics.
+    static func hasValidNALFraming(_ payload: ArraySlice<UInt8>) -> Bool {
+        guard !payload.isEmpty else { return false }
+        var reader = ByteReader(payload)
+        while !reader.isAtEnd {
+            guard let length = try? reader.u32(), length >= 2, let nal = try? reader.take(Int(length)), nal[nal.startIndex] & 0x80 == 0, nal[nal.index(after: nal.startIndex)] & 7 != 0 else { return false }
+        }
+        return true
+    }
+
     static func sampleBuffer(_ payload: ArraySlice<UInt8>, format: CMVideoFormatDescription) -> CMSampleBuffer? {
+        guard hasValidNALFraming(payload) else { return nil }
         var block: CMBlockBuffer?
         guard CMBlockBufferCreateWithMemoryBlock(
             allocator: nil, memoryBlock: nil, blockLength: payload.count, blockAllocator: nil, customBlockSource: nil,

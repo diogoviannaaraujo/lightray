@@ -1,0 +1,19 @@
+{
+  "observed_date": "2026-10-01",
+  "preferred_display": {
+    "name": "U28E590",
+    "screen_id": 4,
+    "max_fps": 60
+  },
+  "window_menu_opened_by_click": true,
+  "fullscreen_menu_opened_by_click": true,
+  "statistics_visibility_toggle_observed": true,
+  "command_control_toggle_observed": true,
+  "video_state": "waiting",
+  "remote_buttons_disabled_without_video": true,
+  "preferences_disabled_for_visual_run": true,
+  "hotkey_ui_attempt": "integration_timeout",
+  "hotkey_match_unit_test": "passed",
+  "live_video_and_remote_panel_actions": "not_validated_in_this_round",
+  "claim_boundary": "Observed UI state and screenshots, not a replay test or real Windows input validation."
+}

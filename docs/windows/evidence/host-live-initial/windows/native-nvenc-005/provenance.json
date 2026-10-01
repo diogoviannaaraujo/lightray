@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "platform": "native-windows",
+  "encoder_executable_sha256": "08b7c8fd93f7f3bba281bbb7151a257d4eb7d1dafc9feeff3aafadeb84a97f6e",
+  "source_files": [
+    {
+      "path": "tools/windows/src/nvenc_encoder.hpp",
+      "sha256": "96d312175d7b848cbe8acbb602728fdd20d7062efccb9d55ebd8c81fbf7c409c"
+    },
+    {
+      "path": "tools/windows/src/nvenc_encoder.cpp",
+      "sha256": "55dbf5144b5fa094a061bfa9612d0068018be0e2ce416df759551321da0850ac"
+    },
+    {
+      "path": "tools/windows/src/nvenc_encode_probe.cpp",
+      "sha256": "8196e00d2a8579826fe74ff4e3c392610e762fb8a72270a6e7d360570d42b562"
+    },
+    {
+      "path": "tools/windows/src/hevc_annexb.hpp",
+      "sha256": "e3b24d3fe79332b4fce334876ae7f0f58d6edc1b80ea886e38a8b0b15b5f2d0c"
+    },
+    {
+      "path": "tools/windows/src/hevc_annexb_tests.cpp",
+      "sha256": "f95959206551205b2f8c456e7acf18a536b1566fd885e258fadca0313886189c"
+    },
+    {
+      "path": "tools/windows/build-nvenc-probe.ps1",
+      "sha256": "55d7595416383a005408fd8f28c836efdf197b12b87365fbf05fbd0ed64de688"
+    },
+    {
+      "path": "tools/windows/run-nvenc-probe.py",
+      "sha256": "bfa2920c2c5ca1a7dea51ae556129b95ef1395dce6667d70ca20c63822d5ffa4"
+    },
+    {
+      "path": "tools/windows/vendor/nv-codec-headers/nvEncodeAPI.h",
+      "sha256": "4fe4094541ef0f8a13249d97a8692dc5f835a6e9dd42eeadb3e2f7321d54dc7e"
+    }
+  ],
+  "runs": [
+    {
+      "resolution": [
+        1920,
+        1080
+      ],
+      "exit_code": 0,
+      "native_summary": {
+        "schema_version": 1,
+        "status": "passed",
+        "backend": "native-nvenc-d3d11",
+        "driver_api": 208,
+        "header_api_major": 13,
+        "adapter_index": 0,
+        "vendor_id": 4318,
+        "device_id": 9860,
+        "width": 1920,
+        "height": 1080,
+        "fps": 60,
+        "frames": 120,
+        "idr_frames": 2,
+        "bitrate": 20000000,
+        "wall_seconds": 0.490696,
+        "capture": "synthetic_cpu_nv12_upload",
+        "software_encoder_fallback": false,
+        "desktop_captured": false,
+        "limits": [
+          "Synchronous synthetic encode only; no network or desktop capture",
+          "Encode/lock span includes waits; not end-to-end latency or displayed FPS"
+        ]
+      },
+      "framing_verified": true,
+      "independent_profile_verified": true
+    },
+    {
+      "resolution": [
+        2560,
+        1440
+      ],
+      "exit_code": 0,
+      "native_summary": {
+        "schema_version": 1,
+        "status": "passed",
+        "backend": "native-nvenc-d3d11",
+        "driver_api": 208,
+        "header_api_major": 13,
+        "adapter_index": 0,
+        "vendor_id": 4318,
+        "device_id": 9860,
+        "width": 2560,
+        "height": 1440,
+        "fps": 60,
+        "frames": 120,
+        "idr_frames": 2,
+        "bitrate": 20000000,
+        "wall_seconds": 0.706629,
+        "capture": "synthetic_cpu_nv12_upload",
+        "software_encoder_fallback": false,
+        "desktop_captured": false,
+        "limits": [
+          "Synchronous synthetic encode only; no network or desktop capture",
+          "Encode/lock span includes waits; not end-to-end latency or displayed FPS"
+        ]
+      },
+      "framing_verified": true,
+      "independent_profile_verified": true
+    },
+    {
+      "resolution": [
+        3840,
+        2160
+      ],
+      "exit_code": 0,
+      "native_summary": {
+        "schema_version": 1,
+        "status": "passed",
+        "backend": "native-nvenc-d3d11",
+        "driver_api": 208,
+        "header_api_major": 13,
+        "adapter_index": 0,
+        "vendor_id": 4318,
+        "device_id": 9860,
+        "width": 3840,
+        "height": 2160,
+        "fps": 60,
+        "frames": 120,
+        "idr_frames": 2,
+        "bitrate": 40000000,
+        "wall_seconds": 1.40682,
+        "capture": "synthetic_cpu_nv12_upload",
+        "software_encoder_fallback": false,
+        "desktop_captured": false,
+        "limits": [
+          "Synchronous synthetic encode only; no network or desktop capture",
+          "Encode/lock span includes waits; not end-to-end latency or displayed FPS"
+        ]
+      },
+      "framing_verified": true,
+      "independent_profile_verified": true
+    }
+  ],
+  "status": "passed"
+}

@@ -1,0 +1,195 @@
+Building for debugging...
+[3 / 27]
+[4 / 28] LightrayCore
+[6 / 29] LightrayCore
+[10 / 27] LightrayMac
+[12 / 28] LightrayMac
+Build complete! (1,89 seg)
+Test Suite 'All tests' started at 2026-09-28 20:53:42.703.
+Test Suite 'All tests' passed at 2026-09-28 20:53:42.705.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.002) seconds
+Test Suite 'All tests' started at 2026-09-28 20:53:42.802.
+Test Suite 'All tests' passed at 2026-09-28 20:53:42.803.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
+◇ Test run started.
+↳ Testing Library Version: 2084
+↳ Target Platform: arm64e-apple-macos14.0
+◇ Test encoderOutputDecodes() started.
+◇ Test socketsExchangeDatagrams() started.
+◇ Test pairingTokenRoundTrips() started.
+◇ Test decodesThePublishedIDR() started.
+◇ Test malformedNALFramingIsRejected() started.
+◇ Test decoderRejectsInvalidParameterSets() started.
+◇ Test keyMapRoundTrips() started.
+✔ Test malformedNALFramingIsRejected() passed after 0.001 seconds.
+✔ Test decoderRejectsInvalidParameterSets() passed after 0.001 seconds.
+✔ Test pairingTokenRoundTrips() passed after 0.001 seconds.
+✔ Test keyMapRoundTrips() passed after 0.001 seconds.
+✔ Test socketsExchangeDatagrams() passed after 0.001 seconds.
+✔ Test decodesThePublishedIDR() passed after 0.145 seconds.
+✔ Test encoderOutputDecodes() passed after 0.661 seconds.
+✔ Test run with 7 tests in 0 suites passed after 0.661 seconds.
+◇ Test run started.
+↳ Testing Library Version: 2084
+↳ Target Platform: arm64e-apple-macos14.0
+◇ Test feedbackExample() started.
+◇ Test frameIdentifiersWrapPastZero() started.
+◇ Test pointerMotionIsMergedButButtonsAreNot() started.
+◇ Test galoisFieldTables() started.
+◇ Test feedbackDeltasClampBeforeScaling() started.
+◇ Test lostResponseIsAnsweredFromTheCache() started.
+◇ Test replayWindow() started.
+◇ Test senderAnswersRequestsOnce() started.
+◇ Test deliversInOrderAndGatesPredictedFrames() started.
+◇ Test lossyPathRecoversAndDeliversInputExactlyOnce() started.
+◇ Test portChangeContinuesWithoutAKeyframe() started.
+◇ Test lateRetransmissionIsNotDeliveredTwice() started.
+◇ Test parityRepairsRandomLoss() started.
+◇ Test validationCapHoldsWhileTheClientCannotReport() started.
+◇ Test closeExample() started.
+◇ Test handshakeParameterRules() started.
+◇ Test generatedNacksRespectDatagramLimit(size:) started.
+◇ Test predictedFrameHeaderExamples() started.
+◇ Test wifiStallsAreLateNotLost() started.
+◇ Test senderGivesStalledClientsTheTimeBack() started.
+◇ Test responseThatFailsToOpenChangesNothing() started.
+◇ Test hostPausesASilentClientAndResumesWithAKeyframe() started.
+◇ Test reliableAndDatagramExamples() started.
+◇ Test aSilentLinkDoesNotExpireFrames() started.
+◇ Test coefficientsMatchTheRFC5510Generator() started.
+◇ Test videoStreamsRecoverIndependently() started.
+◇ Test protectedDatagramWorkedExample() started.
+◇ Test pointerMotionSurvivesReliableBackpressure() started.
+◇ Test fecIsUsedOnlyWhenBothEndsAgree() started.
+◇ Test invalidFragmentsAreDiscarded() started.
+◇ Test packetNumberReconstruction() started.
+◇ Test buttonOverflowResetsInput(pendingMotion:) started.
+◇ Test fecMatchesIndependentFixture() started.
+◇ Test keyframeParityCost() started.
+◇ Test sessionStreamsWithoutRepairOnACleanPath() started.
+◇ Test parityLastLengthIsValidated(length:) started.
+◇ Test idrFrameExample() started.
+◇ Test inputMessagesRoundTrip() started.
+◇ Test nackAsksOnlyForWhatParityCannotCover() started.
+◇ Test mediaFragmentExample() started.
+◇ Test emptyCodecParameterSetsAreRejected(index:) started.
+◇ Test receiverRejectsInvalidParityLength(length:) started.
+◇ Test parityRebuildsWithoutAskingAgain() started.
+◇ Test oversizedDatagramsAreNotSealed() started.
+◇ Test inputOverflowEndsTheSession(dropClose:) started.
+◇ Test pingPongExamples() started.
+◇ Test reassemblesInAnyOrder() started.
+◇ Test hostSeedsItsRoundTripFromTheHandshake() started.
+◇ Test handshakeWorkedExample() started.
+◇ Test feedbackAcknowledgementOnly() started.
+◇ Test chunkParsingContainsErrors() started.
+◇ Test capabilitiesAreOfferedAndAnsweredInTheHandshake() started.
+◇ Test reliableStreamsDeliverInOrderOnce() started.
+◇ Test rebuildsFromAnyKOfTheShards() started.
+◇ Test clientReconnectsAfterTheHostForgetsIt() started.
+◇ Test nackExample() started.
+◇ Test blocksFollowRFC5052AndSunshineSizes() started.
+◇ Test packetsAheadOfTheResponseAreKept() started.
+◇ Test controlMessagesRoundTrip() started.
+◇ Test feedbackWithLengthsThatDoNotConsumeTheBodyIsDiscarded() started.
+◇ Test everyCleartextInitByteIsAuthenticated(offset:) started.
+◇ Test nacksOnlyHolesBelowTheHighestIndex() started.
+◇ Test reedSolomonFragments() started.
+◇ Test pacingBoundsBursts() started.
+◇ Test asksForAWholeFrameThatNeverArrived() started.
+◇ Test displayListAndSelectionTravelOnTheControlStream() started.
+◇ Test refreshRequestExample() started.
+◇ Test newAddressIsCappedUntilValidated() started.
+◇ Test case passing 1 argument size → 512 to generatedNacksRespectDatagramLimit(size:) started.
+◇ Test case passing 1 argument size → 256 to generatedNacksRespectDatagramLimit(size:) started.
+◇ Test case passing 1 argument size → 1200 to generatedNacksRespectDatagramLimit(size:) started.
+◇ Test case passing 1 argument size → 9000 to generatedNacksRespectDatagramLimit(size:) started.
+◇ Test case passing 1 argument pendingMotion → false to buttonOverflowResetsInput(pendingMotion:) started.
+◇ Test case passing 1 argument pendingMotion → true to buttonOverflowResetsInput(pendingMotion:) started.
+◇ Test case passing 1 argument length → 0 to parityLastLengthIsValidated(length:) started.
+◇ Test case passing 1 argument length → 1 to parityLastLengthIsValidated(length:) started.
+◇ Test case passing 1 argument length → 64 to parityLastLengthIsValidated(length:) started.
+◇ Test case passing 1 argument length → 65 to parityLastLengthIsValidated(length:) started.
+◇ Test case passing 1 argument index → 0 to emptyCodecParameterSetsAreRejected(index:) started.
+◇ Test case passing 1 argument length → 0 to receiverRejectsInvalidParityLength(length:) started.
+◇ Test case passing 1 argument length → 65535 to parityLastLengthIsValidated(length:) started.
+◇ Test case passing 1 argument index → 1 to emptyCodecParameterSetsAreRejected(index:) started.
+◇ Test case passing 1 argument length → 65 to receiverRejectsInvalidParityLength(length:) started.
+◇ Test case passing 1 argument index → 2 to emptyCodecParameterSetsAreRejected(index:) started.
+◇ Test case passing 1 argument dropClose → false to inputOverflowEndsTheSession(dropClose:) started.
+◇ Test case passing 1 argument length → 65535 to receiverRejectsInvalidParityLength(length:) started.
+◇ Test case passing 1 argument dropClose → true to inputOverflowEndsTheSession(dropClose:) started.
+◇ Test case passing 1 argument offset → 2 to everyCleartextInitByteIsAuthenticated(offset:) started.
+◇ Test case passing 1 argument offset → 3 to everyCleartextInitByteIsAuthenticated(offset:) started.
+◇ Test case passing 1 argument offset → 4 to everyCleartextInitByteIsAuthenticated(offset:) started.
+◇ Test case passing 1 argument offset → 11 to everyCleartextInitByteIsAuthenticated(offset:) started.
+✔ Test replayWindow() passed after 0.245 seconds.
+✔ Test lateRetransmissionIsNotDeliveredTwice() passed after 0.326 seconds.
+✔ Test frameIdentifiersWrapPastZero() passed after 0.326 seconds.
+✔ Test closeExample() passed after 0.326 seconds.
+✔ Test deliversInOrderAndGatesPredictedFrames() passed after 0.326 seconds.
+✔ Test feedbackDeltasClampBeforeScaling() passed after 0.326 seconds.
+✔ Test handshakeParameterRules() passed after 0.326 seconds.
+✔ Test senderAnswersRequestsOnce() passed after 0.326 seconds.
+✔ Test predictedFrameHeaderExamples() passed after 0.326 seconds.
+✔ Test senderGivesStalledClientsTheTimeBack() passed after 0.326 seconds.
+✔ Test feedbackExample() passed after 0.326 seconds.
+✔ Test reliableAndDatagramExamples() passed after 0.326 seconds.
+✔ Test aSilentLinkDoesNotExpireFrames() passed after 0.326 seconds.
+✔ Test responseThatFailsToOpenChangesNothing() passed after 0.326 seconds.
+✔ Test generatedNacksRespectDatagramLimit(size:) with 4 test cases passed after 0.326 seconds.
+✔ Test protectedDatagramWorkedExample() passed after 0.326 seconds.
+✔ Test invalidFragmentsAreDiscarded() passed after 0.326 seconds.
+✔ Test packetNumberReconstruction() passed after 0.326 seconds.
+✔ Test pointerMotionIsMergedButButtonsAreNot() passed after 0.326 seconds.
+✔ Test coefficientsMatchTheRFC5510Generator() passed after 0.326 seconds.
+✔ Test buttonOverflowResetsInput(pendingMotion:) with 2 test cases passed after 0.326 seconds.
+✔ Test fecMatchesIndependentFixture() passed after 0.326 seconds.
+✔ Test idrFrameExample() passed after 0.326 seconds.
+✔ Test inputMessagesRoundTrip() passed after 0.326 seconds.
+✔ Test parityLastLengthIsValidated(length:) with 5 test cases passed after 0.326 seconds.
+✔ Test mediaFragmentExample() passed after 0.326 seconds.
+✔ Test galoisFieldTables() passed after 0.326 seconds.
+✔ Test emptyCodecParameterSetsAreRejected(index:) with 3 test cases passed after 0.326 seconds.
+✔ Test receiverRejectsInvalidParityLength(length:) with 3 test cases passed after 0.326 seconds.
+✔ Test oversizedDatagramsAreNotSealed() passed after 0.326 seconds.
+✔ Test pingPongExamples() passed after 0.326 seconds.
+✔ Test nackAsksOnlyForWhatParityCannotCover() passed after 0.326 seconds.
+✔ Test reassemblesInAnyOrder() passed after 0.326 seconds.
+✔ Test pointerMotionSurvivesReliableBackpressure() passed after 0.326 seconds.
+✔ Test parityRebuildsWithoutAskingAgain() passed after 0.326 seconds.
+✔ Test handshakeWorkedExample() passed after 0.326 seconds.
+✔ Test feedbackAcknowledgementOnly() passed after 0.326 seconds.
+✔ Test chunkParsingContainsErrors() passed after 0.326 seconds.
+✔ Test capabilitiesAreOfferedAndAnsweredInTheHandshake() passed after 0.326 seconds.
+✔ Test reliableStreamsDeliverInOrderOnce() passed after 0.326 seconds.
+✔ Test inputOverflowEndsTheSession(dropClose:) with 2 test cases passed after 0.326 seconds.
+✔ Test nackExample() passed after 0.326 seconds.
+✔ Test blocksFollowRFC5052AndSunshineSizes() passed after 0.326 seconds.
+✔ Test controlMessagesRoundTrip() passed after 0.326 seconds.
+✔ Test hostSeedsItsRoundTripFromTheHandshake() passed after 0.326 seconds.
+✔ Test feedbackWithLengthsThatDoNotConsumeTheBodyIsDiscarded() passed after 0.326 seconds.
+✔ Test everyCleartextInitByteIsAuthenticated(offset:) with 4 test cases passed after 0.326 seconds.
+✔ Test nacksOnlyHolesBelowTheHighestIndex() passed after 0.326 seconds.
+✔ Test reedSolomonFragments() passed after 0.326 seconds.
+✔ Test pacingBoundsBursts() passed after 0.327 seconds.
+✔ Test asksForAWholeFrameThatNeverArrived() passed after 0.326 seconds.
+✔ Test displayListAndSelectionTravelOnTheControlStream() passed after 0.327 seconds.
+✔ Test refreshRequestExample() passed after 0.326 seconds.
+✔ Test fecIsUsedOnlyWhenBothEndsAgree() passed after 0.326 seconds.
+✔ Test lostResponseIsAnsweredFromTheCache() passed after 0.328 seconds.
+✔ Test validationCapHoldsWhileTheClientCannotReport() passed after 0.347 seconds.
+✔ Test packetsAheadOfTheResponseAreKept() passed after 0.349 seconds.
+✔ Test portChangeContinuesWithoutAKeyframe() passed after 0.390 seconds.
+✔ Test sessionStreamsWithoutRepairOnACleanPath() passed after 0.534 seconds.
+✔ Test newAddressIsCappedUntilValidated() passed after 0.570 seconds.
+✔ Test videoStreamsRecoverIndependently() passed after 0.612 seconds.
+✔ Test hostPausesASilentClientAndResumesWithAKeyframe() passed after 0.730 seconds.
+parity for a 400 KB keyframe (350 fragments): 845.822417 ms
+✔ Test keyframeParityCost() passed after 0.860 seconds.
+✔ Test rebuildsFromAnyKOfTheShards() passed after 0.995 seconds.
+✔ Test clientReconnectsAfterTheHostForgetsIt() passed after 1.050 seconds.
+✔ Test lossyPathRecoversAndDeliversInputExactlyOnce() passed after 1.092 seconds.
+✔ Test wifiStallsAreLateNotLost() passed after 5.111 seconds.
+✔ Test parityRepairsRandomLoss() passed after 5.325 seconds.
+✔ Test run with 68 tests in 0 suites passed after 5.326 seconds.

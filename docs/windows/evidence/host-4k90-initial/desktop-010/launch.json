@@ -1,0 +1,15 @@
+{
+    "executable_sha256":  "f040c7552333876533e852b0a0a53c3b6af55bd0427d9a63f47428505eaebf78",
+    "fps":  90,
+    "seconds":  210,
+    "width":  3840,
+    "task":  "LightrayLab-d815fe80ca1a4d38bcfa11d1a08a87e6",
+    "run":  "desktop-010",
+    "motion":  true,
+    "peer":  "192.168.15.13",
+    "bind":  "192.168.15.5",
+    "bitrate_mbps":  80,
+    "port":  37373,
+    "temporary_refresh_hz":  120,
+    "core_sha256":  "5f71e68c6047c42df88f2faa9bfb640b1356eeb3532fcb668ae5aa09850aec8c"
+}

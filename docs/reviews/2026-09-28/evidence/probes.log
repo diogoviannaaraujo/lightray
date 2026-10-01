@@ -1,0 +1,32 @@
+Building for debugging...
+[Pre-planning 1 / 66]
+[Planning deferred tasks]
+[23 / 38]
+[24 / 39] LightrayCore
+[33 / 92]
+[36 / 92]
+[39 / 92]
+[42 / 92]
+[44 / 92]
+[48 / 92]
+[50 / 92]
+[53 / 92]
+[57 / 92]
+[59 / 92]
+[60 / 92]
+[76 / 92] LightrayCore
+[78 / 92] LightrayCore
+[83 / 92] LightrayCore
+[85 / 92]
+[86 / 93] ReviewProbes-product
+[88 / 95] ReviewProbes-product
+[89 / 95] ReviewProbes-product
+[90 / 95] LightrayCore
+[92 / 95] LightrayCore
+[93 / 95] ReviewProbes-product
+Build complete! (9,15 seg)
+R01: parser accepts parity lastLength=65, stride=64
+R02: frame parser accepts empty VPS/SPS/PPS (decoder crash not exercised)
+R03: generated NACK datagram=284 bytes, negotiated maximum=256
+R04: full reliable queue delivers 1024 presses and 0 releases
+R05: authenticated host rebind updates peer port to 7374; application send target remains config.host port 7373

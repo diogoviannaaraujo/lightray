@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "run_id": "9fdf775c-bd99-4ce7-a9d8-51d925ab72bd",
+  "started_at": "2026-09-29T13:01:17.855912+00:00",
+  "action": "compare-reference",
+  "source": {
+    "commit": "5002116872492da705aa6252f26482b02e3df5b5",
+    "dirty": true,
+    "implementation_sha256": "46127c822a58d19cf044d2beb39a8867ea2d40b879d43845c23db2db31ff0f14"
+  },
+  "status": "passed",
+  "reason": "identical_decoded_pixels",
+  "reference_run_id": "b7afc2bc-7a98-49d7-b639-d841c770647a",
+  "candidate_run_id": "bbb9de20-c474-455a-8cf2-ca0d3af255b5",
+  "clips": [
+    {
+      "clip": "native-nvenc-1920x1080",
+      "reference_frames": 120,
+      "candidate_frames": 120,
+      "mismatched_frames": 0,
+      "first_mismatch_indices": []
+    },
+    {
+      "clip": "native-nvenc-2560x1440",
+      "reference_frames": 120,
+      "candidate_frames": 120,
+      "mismatched_frames": 0,
+      "first_mismatch_indices": []
+    },
+    {
+      "clip": "native-nvenc-3840x2160",
+      "reference_frames": 120,
+      "candidate_frames": 120,
+      "mismatched_frames": 0,
+      "first_mismatch_indices": []
+    }
+  ],
+  "limits": [
+    "Pixel equality only; does not qualify hardware acceleration, presentation or latency",
+    "A mismatch needs pixel/color-conversion investigation before attributing a decoder fault"
+  ]
+}

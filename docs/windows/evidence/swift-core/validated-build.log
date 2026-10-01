@@ -1,0 +1,16 @@
+{"action": "verify-swift-tests", "status": "passed", "run_id": "9b278659-9be4-4e86-8d44-45b2f513c59b"}
+{"action": "verify-swift-tests", "status": "passed", "run_id": "b93f2fe6-1c8f-49f5-af95-c522cffd9762"}
+Swift version 6.4 (swift-6.4-RELEASE)
+Target: x86_64-unknown-windows-msvc
+Build config: +assertions
+Building for production...
+[Computing dependencies]
+[Using on-disk description]
+[7 / 17] CryptoBoringWrapper
+[14 / 22] Crypto
+[20 / 26] Crypto
+[21 / 27] LightrayCore
+[26 / 26] LightrayCoreProbe-product
+Build complete! (54.31 secs)
+core_abi_probe.cpp
+{"status":"passed","cases":6}

@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "run_id": "c1a2c490-a709-4e7d-ba7d-e60fa4070032",
+  "started_at": "2026-09-29T00:32:12.888061+00:00",
+  "action": "compare-reference",
+  "source": {
+    "commit": "5002116872492da705aa6252f26482b02e3df5b5",
+    "dirty": true,
+    "implementation_sha256": "9f443a4479696e485419a6c62b21e1cf34af8006750d302adf0bfa43d7242515"
+  },
+  "status": "passed",
+  "reason": "identical_decoded_pixels",
+  "reference_run_id": "1fb3afc4-193d-4ed9-99c8-4275463dedd5",
+  "candidate_run_id": "3af96a4b-6e76-4d16-a909-ecc6047fa2e4",
+  "clips": [
+    {
+      "clip": "videotoolbox-idr",
+      "reference_frames": 120,
+      "candidate_frames": 120,
+      "mismatched_frames": 0,
+      "first_mismatch_indices": []
+    },
+    {
+      "clip": "videotoolbox-ltr-ack-every-250ms",
+      "reference_frames": 120,
+      "candidate_frames": 120,
+      "mismatched_frames": 0,
+      "first_mismatch_indices": []
+    },
+    {
+      "clip": "videotoolbox-ltr-ack-every-frame",
+      "reference_frames": 120,
+      "candidate_frames": 120,
+      "mismatched_frames": 0,
+      "first_mismatch_indices": []
+    }
+  ],
+  "limits": [
+    "Pixel equality only; does not qualify hardware acceleration, presentation or latency",
+    "A mismatch needs pixel/color-conversion investigation before attributing a decoder fault"
+  ]
+}

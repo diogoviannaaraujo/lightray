@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "inputs_sha256": {
+    "tools/windows/src/core_bridge.swift": "e9f11931ff6b2a2ab5ecec8bf975deec6c8cfb46c085822d15411a60941d1a9a",
+    "tools/windows/src/core_abi_probe.cpp": "c767944a56cce3035a8c2ff2db59d19800dc74db3c43a1b167f620518f919241",
+    "tools/windows/build-swift-core-probe.ps1": "31abe96460654deb8dfa30988d1fc6bed6955d6ce2de0e72f14c36ce01932d71",
+    "tools/windows/package-swift-core-probe.ps1": "29cb44c002e77bd503f145a38aea015d2e5ac1f266690e6989c47dc40eff086a",
+    "tools/windows/prepare-swift-core.py": "9c27d85bfb4f5ed31ae1f5225f5a4e797fc7bc9d5fe5b2b8ca92ef8fc9d9b230",
+    "tools/windows/reference/swift-core-package.resolved": "fc52b1b2e0ab598529919d39f2df4e440a676aa866b4ed852f5b0b002a714dab",
+    "tools/vectors/vectors.json": "74c4326679772ec98b3a4d831c67d8f70a9e37e9b2b1d2b1a455fa87b84cbec0"
+  },
+  "limits": [
+    "Preparation/build scripts evolved during the experiment; source-manifest identifies the transformed core files",
+    "Initial build logs retain the discovered discovery/unload failures; abi-final and portable-abi record the corrected process-lifetime policy"
+  ],
+  "implementation_sha256": "736abf52a6d670b5ca24d052b45f24d1e1be251b33e3eb714db586b098db62e6",
+  "implementation_digest_verified_on": [
+    "macos",
+    "windows"
+  ]
+}

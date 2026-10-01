@@ -1,0 +1,10 @@
+host_ready width=3840 height=2160 fps_target=90 bitrate_mbps=80 source_refresh_hz=60 native_nvenc=true desktop=true input=true
+frames=0 keyframes=0 tx=0 rx=0 input=0 held=0 queue=0 skipped=0 desktop_updates=0 cached_frames=0
+frames=0 keyframes=0 tx=0 rx=0 input=0 held=0 queue=0 skipped=0 desktop_updates=0 cached_frames=0
+session_started count=1
+frames=189 keyframes=3 tx=1409 rx=120 input=0 held=0 queue=0 skipped=0 desktop_updates=126 cached_frames=63
+frames=637 keyframes=3 tx=4658 rx=367 input=0 held=0 queue=0 skipped=2 desktop_updates=424 cached_frames=213
+frames=1078 keyframes=3 tx=7873 rx=616 input=0 held=0 queue=0 skipped=9 desktop_updates=719 cached_frames=359
+frames=1506 keyframes=3 tx=11095 rx=863 input=0 held=0 queue=0 skipped=25 desktop_updates=1009 cached_frames=497
+frames=1936 keyframes=3 tx=14204 rx=1111 input=0 held=0 queue=0 skipped=40 desktop_updates=1298 cached_frames=638
+frames=2377 keyframes=3 tx=17230 rx=1359 input=0 held=0 queue=0 skipped=47 desktop_updates=1593 cached_frames=784

@@ -1,0 +1,7 @@
+windows_host.cpp
+nvenc_encoder.cpp
+Generating Code...
+desktop_test_window.cpp
+windows_input_tests.cpp
+display_modes_probe.cpp
+{"status":"passed","cases":15,"system_input_injected":false}

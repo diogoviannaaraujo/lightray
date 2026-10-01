@@ -1,0 +1,20 @@
+[   0.000] socket buffers: receive 4194304, send 4194304 bytes
+[   0.000] connecting to 192.168.15.5:37373 from port 63039, with 1 video streams
+[   3.109] session 96936e77 established, datagrams up to 1200 bytes, no FEC, video streams [1]
+[   5.123] stream 1: 30 decoded fps · 0.2 connection Mb/s · RTT 6.9 ms · lost 0 · keyframes 1 · FEC-repaired 0 · NACKed 0 · decode queue drops 0 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  10.130] stream 1: 30 decoded fps · 0.2 connection Mb/s · RTT 5.3 ms · lost 0 · keyframes 1 · FEC-repaired 0 · NACKed 0 · decode queue drops 0 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  15.141] stream 1: 30 decoded fps · 0.3 connection Mb/s · RTT 3.4 ms · lost 0 · keyframes 1 · FEC-repaired 0 · NACKed 0 · decode queue drops 0 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  20.309] stream 1: 30 decoded fps · 0.2 connection Mb/s · RTT 4.1 ms · lost 0 · keyframes 1 · FEC-repaired 0 · NACKed 0 · decode queue drops 0 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  25.325] stream 1: 30 decoded fps · 0.2 connection Mb/s · RTT 5.2 ms · lost 0 · keyframes 1 · FEC-repaired 0 · NACKed 0 · decode queue drops 0 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  30.334] stream 1: 30 decoded fps · 0.2 connection Mb/s · RTT 5.3 ms · lost 0 · keyframes 1 · FEC-repaired 0 · NACKed 0 · decode queue drops 0 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  35.343] stream 1: 30 decoded fps · 0.2 connection Mb/s · RTT 3.4 ms · lost 0 · keyframes 1 · FEC-repaired 0 · NACKed 0 · decode queue drops 0 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  40.352] stream 1: 30 decoded fps · 0.3 connection Mb/s · RTT 4.6 ms · lost 0 · keyframes 1 · FEC-repaired 0 · NACKed 0 · decode queue drops 0 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  45.374] stream 1: 30 decoded fps · 0.1 connection Mb/s · RTT 8.4 ms · lost 0 · keyframes 1 · FEC-repaired 0 · NACKed 0 · decode queue drops 0 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  50.410] stream 1: 30 decoded fps · 0.1 connection Mb/s · RTT 5.3 ms · lost 0 · keyframes 1 · FEC-repaired 0 · NACKed 0 · decode queue drops 0 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  55.434] stream 1: 30 decoded fps · 0.1 connection Mb/s · RTT 5.9 ms · lost 0 · keyframes 1 · FEC-repaired 0 · NACKed 0 · decode queue drops 0 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  60.456] stream 1: 30 decoded fps · 0.1 connection Mb/s · RTT 5.2 ms · lost 0 · keyframes 1 · FEC-repaired 0 · NACKed 0 · decode queue drops 0 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  65.467] stream 1: 30 decoded fps · 0.1 connection Mb/s · RTT 5.3 ms · lost 0 · keyframes 1 · FEC-repaired 0 · NACKed 0 · decode queue drops 0 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  70.475] stream 1: 30 decoded fps · 0.1 connection Mb/s · RTT 5.3 ms · lost 0 · keyframes 1 · FEC-repaired 0 · NACKed 0 · decode queue drops 0 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  75.493] stream 1: 30 decoded fps · 0.1 connection Mb/s · RTT 5.3 ms · lost 0 · keyframes 1 · FEC-repaired 0 · NACKed 0 · decode queue drops 0 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  80.519] stream 1: 31 decoded fps · 0.1 connection Mb/s · RTT 5.2 ms · lost 0 · keyframes 1 · FEC-repaired 0 · NACKed 0 · decode queue drops 0 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  85.531] stream 1: 30 decoded fps · 0.1 connection Mb/s · RTT 5.2 ms · lost 0 · keyframes 1 · FEC-repaired 0 · NACKed 0 · decode queue drops 0 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose

@@ -1,0 +1,188 @@
+{
+  "desktop-006": {
+    "client_samples": 23,
+    "decoded_fps": {
+      "min": 86,
+      "median": 88,
+      "max": 90
+    },
+    "connection_mbps": {
+      "min": 5.0,
+      "median": 5.7,
+      "max": 6.6
+    },
+    "rtt_ms": {
+      "min": 1.9,
+      "median": 4.1,
+      "max": 5.7
+    },
+    "lost_last_sample": 35,
+    "decode_queue_drops_last_sample": 85,
+    "timing_rows": 10542,
+    "first_to_last_start_seconds": 119.996501,
+    "submitted_fps_over_start_interval": 87.84422805794979,
+    "desktop_update_rate_over_start_interval": 57.926689045708095,
+    "cached_frame_count_final": 3590,
+    "capture_us": {
+      "min": 14,
+      "median": 150.0,
+      "max": 25652
+    },
+    "encode_us": {
+      "min": 2486,
+      "median": 3406.0,
+      "max": 41185
+    },
+    "submit_us": {
+      "min": 27,
+      "median": 82.0,
+      "max": 5407
+    }
+  },
+  "desktop-007": {
+    "client_samples": 11,
+    "decoded_fps": {
+      "min": 79,
+      "median": 88,
+      "max": 90
+    },
+    "connection_mbps": {
+      "min": 5.4,
+      "median": 5.8,
+      "max": 6.3
+    },
+    "rtt_ms": {
+      "min": 2.5,
+      "median": 3.8,
+      "max": 6.9
+    },
+    "lost_last_sample": 6,
+    "decode_queue_drops_last_sample": 6,
+    "timing_rows": 5133,
+    "first_to_last_start_seconds": 58.38765,
+    "submitted_fps_over_start_interval": 87.89529977657946,
+    "desktop_update_rate_over_start_interval": 57.923208075680385,
+    "cached_frame_count_final": 1750,
+    "capture_us": {
+      "min": 13,
+      "median": 156,
+      "max": 43376
+    },
+    "encode_us": {
+      "min": 2492,
+      "median": 3377,
+      "max": 52068
+    },
+    "submit_us": {
+      "min": 29,
+      "median": 80,
+      "max": 13028
+    }
+  },
+  "desktop-016": {
+    "client_samples": 17,
+    "decoded_fps": {
+      "min": 84,
+      "median": 89,
+      "max": 90
+    },
+    "connection_mbps": {
+      "min": 5.1,
+      "median": 5.6,
+      "max": 6.3
+    },
+    "rtt_ms": {
+      "min": 3.3,
+      "median": 4.4,
+      "max": 8.1
+    },
+    "lost_last_sample": 6,
+    "decode_queue_drops_last_sample": 6,
+    "timing_rows": 7913,
+    "first_to_last_start_seconds": 89.994272,
+    "submitted_fps_over_start_interval": 87.91670652105503,
+    "desktop_update_rate_over_start_interval": 58.881525259740975,
+    "cached_frame_count_final": 2613,
+    "capture_us": {
+      "min": 15,
+      "median": 147,
+      "max": 22547
+    },
+    "encode_us": {
+      "min": 2484,
+      "median": 3275,
+      "max": 45290
+    },
+    "submit_us": {
+      "min": 27,
+      "median": 80,
+      "max": 20431
+    }
+  },
+  "desktop-017": {
+    "client_samples": 23,
+    "decoded_fps": {
+      "min": 85,
+      "median": 89,
+      "max": 90
+    },
+    "connection_mbps": {
+      "min": 6.9,
+      "median": 8.0,
+      "max": 9.8
+    },
+    "rtt_ms": {
+      "min": 2.9,
+      "median": 5.0,
+      "max": 6.9
+    },
+    "lost_last_sample": 6,
+    "decode_queue_drops_last_sample": 6,
+    "timing_rows": 10622,
+    "first_to_last_start_seconds": 119.988169,
+    "submitted_fps_over_start_interval": 88.51706037784442,
+    "desktop_update_rate_over_start_interval": 88.18369417738177,
+    "cached_frame_count_final": 40,
+    "capture_us": {
+      "min": 19,
+      "median": 190.0,
+      "max": 22513
+    },
+    "encode_us": {
+      "min": 2588,
+      "median": 3400.0,
+      "max": 47301
+    },
+    "submit_us": {
+      "min": 34,
+      "median": 108.0,
+      "max": 6202
+    },
+    "nearest_rank_percentiles_us": {
+      "capture_us": {
+        "p50": 190,
+        "p95": 456,
+        "p99": 1290
+      },
+      "encode_us": {
+        "p50": 3400,
+        "p95": 4499,
+        "p99": 5283
+      },
+      "submit_us": {
+        "p50": 108,
+        "p95": 406,
+        "p99": 1020
+      },
+      "frame_interval_us": {
+        "p50": 11085,
+        "p95": 11571,
+        "p99": 14543
+      }
+    }
+  },
+  "snapshot_dimensions": [
+    3840,
+    2160
+  ]
+}

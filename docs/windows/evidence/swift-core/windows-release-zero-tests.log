@@ -1,0 +1,28 @@
+Building for production...
+[Computing dependencies]
+[Constructing description]
+[Pre-planning 1 / 332]
+[Planning deferred tasks]
+[Constructing 1 / 1004]
+[Starting]
+[19 / 38] LightrayCoreProbe_LightrayCoreTests
+[19 / 38] CryptoBoringWrapper
+[26 / 43] Crypto
+[32 / 47] Crypto
+[33 / 48] LightrayCore
+[41 / 51] LightrayCoreProbe-product
+[41 / 51] LightrayCoreTests-product
+[45 / 51] LightrayCoreTests-product
+[49 / 53] LightrayCoreTests-test-runner
+[53 / 53] LightrayCoreTests-test-runner
+Build complete! (103.64 secs)
+Test Suite 'All tests' started at 2026-09-28 23:46:11.035
+Test Suite 'Release-windows-x86_64.xctest' started at 2026-09-28 23:46:11.036
+Test Suite 'Release-windows-x86_64.xctest' passed at 2026-09-28 23:46:11.036
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.0 (0.0) seconds
+Test Suite 'All tests' passed at 2026-09-28 23:46:11.036
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.0 (0.0) seconds
+◊ Test run started.
+→ Testing Library Version: 6.4 (efd8d65801f569d)
+→ Target Platform: x86_64-unknown-windows-msvc
+√ Test run with 0 tests in 0 suites passed after 0.001 seconds.

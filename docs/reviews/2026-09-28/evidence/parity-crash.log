@@ -1,0 +1,2 @@
+exit_code=-5
+Swift/RangeReplaceableCollection.swift:892: Fatal error: Number of elements to remove should be non-negative

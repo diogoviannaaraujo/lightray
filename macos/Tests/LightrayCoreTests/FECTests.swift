@@ -1,6 +1,46 @@
+import Foundation
 import Testing
 
 @testable import LightrayCore
+
+private struct ReferenceFEC: Decodable {
+    struct Case: Decodable {
+        let k: Int
+        let p: Int
+        let stride: Int
+        let coefficients: [[UInt8]]
+        let data: [[UInt8]]
+        let parity: [[UInt8]]
+    }
+    let cases: [Case]
+}
+
+/// The fixture comes from Python bitwise field multiplication and Vandermonde inversion, without importing the Swift implementation.
+@Test func fecMatchesIndependentFixture() throws {
+    let url = try #require(Bundle.module.url(forResource: "fec-reference", withExtension: "json", subdirectory: "Fixtures"))
+    let reference = try JSONDecoder().decode(ReferenceFEC.self, from: Data(contentsOf: url))
+    for entry in reference.cases {
+        let codec = ReedSolomon()
+        #expect(codec.coefficients(k: entry.k, p: entry.p) == entry.coefficients.flatMap { $0 })
+        let data = entry.data.flatMap { $0 }
+        var parity = Bytes(repeating: 0, count: entry.p * entry.stride)
+        data.withUnsafeBufferPointer { source in
+            parity.withUnsafeMutableBufferPointer { codec.encode(source, k: entry.k, p: entry.p, length: entry.stride, into: $0) }
+        }
+        #expect(parity == entry.parity.flatMap { $0 })
+        var damaged = data
+        let missing = Array(0..<min(entry.k, entry.p))
+        for index in missing {
+            damaged.replaceSubrange(index * entry.stride..<(index + 1) * entry.stride, with: repeatElement(UInt8(0xff), count: entry.stride))
+        }
+        let independentParity = entry.parity.flatMap { $0 }
+        independentParity.withUnsafeBufferPointer { source in
+            let chosen = missing.map { (row: $0, bytes: UnsafeBufferPointer(rebasing: source[$0 * entry.stride..<($0 + 1) * entry.stride])) }
+            damaged.withUnsafeMutableBufferPointer { codec.recover($0, k: entry.k, p: entry.p, length: entry.stride, missing: missing, parity: chosen) }
+        }
+        #expect(damaged == data)
+    }
+}
 
 @Test func galoisFieldTables() {
     // α generates every non-zero element once.

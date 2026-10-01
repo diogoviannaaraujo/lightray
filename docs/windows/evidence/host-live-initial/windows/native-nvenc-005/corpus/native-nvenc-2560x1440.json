@@ -1,0 +1,487 @@
+{
+  "width": 2560,
+  "height": 1440,
+  "fps": 60,
+  "frames": [
+    {
+      "index": 0,
+      "idr": true
+    },
+    {
+      "index": 1,
+      "idr": false
+    },
+    {
+      "index": 2,
+      "idr": false
+    },
+    {
+      "index": 3,
+      "idr": false
+    },
+    {
+      "index": 4,
+      "idr": false
+    },
+    {
+      "index": 5,
+      "idr": false
+    },
+    {
+      "index": 6,
+      "idr": false
+    },
+    {
+      "index": 7,
+      "idr": false
+    },
+    {
+      "index": 8,
+      "idr": false
+    },
+    {
+      "index": 9,
+      "idr": false
+    },
+    {
+      "index": 10,
+      "idr": false
+    },
+    {
+      "index": 11,
+      "idr": false
+    },
+    {
+      "index": 12,
+      "idr": false
+    },
+    {
+      "index": 13,
+      "idr": false
+    },
+    {
+      "index": 14,
+      "idr": false
+    },
+    {
+      "index": 15,
+      "idr": false
+    },
+    {
+      "index": 16,
+      "idr": false
+    },
+    {
+      "index": 17,
+      "idr": false
+    },
+    {
+      "index": 18,
+      "idr": false
+    },
+    {
+      "index": 19,
+      "idr": false
+    },
+    {
+      "index": 20,
+      "idr": false
+    },
+    {
+      "index": 21,
+      "idr": false
+    },
+    {
+      "index": 22,
+      "idr": false
+    },
+    {
+      "index": 23,
+      "idr": false
+    },
+    {
+      "index": 24,
+      "idr": false
+    },
+    {
+      "index": 25,
+      "idr": false
+    },
+    {
+      "index": 26,
+      "idr": false
+    },
+    {
+      "index": 27,
+      "idr": false
+    },
+    {
+      "index": 28,
+      "idr": false
+    },
+    {
+      "index": 29,
+      "idr": false
+    },
+    {
+      "index": 30,
+      "idr": false
+    },
+    {
+      "index": 31,
+      "idr": false
+    },
+    {
+      "index": 32,
+      "idr": false
+    },
+    {
+      "index": 33,
+      "idr": false
+    },
+    {
+      "index": 34,
+      "idr": false
+    },
+    {
+      "index": 35,
+      "idr": false
+    },
+    {
+      "index": 36,
+      "idr": false
+    },
+    {
+      "index": 37,
+      "idr": false
+    },
+    {
+      "index": 38,
+      "idr": false
+    },
+    {
+      "index": 39,
+      "idr": false
+    },
+    {
+      "index": 40,
+      "idr": false
+    },
+    {
+      "index": 41,
+      "idr": false
+    },
+    {
+      "index": 42,
+      "idr": false
+    },
+    {
+      "index": 43,
+      "idr": false
+    },
+    {
+      "index": 44,
+      "idr": false
+    },
+    {
+      "index": 45,
+      "idr": false
+    },
+    {
+      "index": 46,
+      "idr": false
+    },
+    {
+      "index": 47,
+      "idr": false
+    },
+    {
+      "index": 48,
+      "idr": false
+    },
+    {
+      "index": 49,
+      "idr": false
+    },
+    {
+      "index": 50,
+      "idr": false
+    },
+    {
+      "index": 51,
+      "idr": false
+    },
+    {
+      "index": 52,
+      "idr": false
+    },
+    {
+      "index": 53,
+      "idr": false
+    },
+    {
+      "index": 54,
+      "idr": false
+    },
+    {
+      "index": 55,
+      "idr": false
+    },
+    {
+      "index": 56,
+      "idr": false
+    },
+    {
+      "index": 57,
+      "idr": false
+    },
+    {
+      "index": 58,
+      "idr": false
+    },
+    {
+      "index": 59,
+      "idr": false
+    },
+    {
+      "index": 60,
+      "idr": true
+    },
+    {
+      "index": 61,
+      "idr": false
+    },
+    {
+      "index": 62,
+      "idr": false
+    },
+    {
+      "index": 63,
+      "idr": false
+    },
+    {
+      "index": 64,
+      "idr": false
+    },
+    {
+      "index": 65,
+      "idr": false
+    },
+    {
+      "index": 66,
+      "idr": false
+    },
+    {
+      "index": 67,
+      "idr": false
+    },
+    {
+      "index": 68,
+      "idr": false
+    },
+    {
+      "index": 69,
+      "idr": false
+    },
+    {
+      "index": 70,
+      "idr": false
+    },
+    {
+      "index": 71,
+      "idr": false
+    },
+    {
+      "index": 72,
+      "idr": false
+    },
+    {
+      "index": 73,
+      "idr": false
+    },
+    {
+      "index": 74,
+      "idr": false
+    },
+    {
+      "index": 75,
+      "idr": false
+    },
+    {
+      "index": 76,
+      "idr": false
+    },
+    {
+      "index": 77,
+      "idr": false
+    },
+    {
+      "index": 78,
+      "idr": false
+    },
+    {
+      "index": 79,
+      "idr": false
+    },
+    {
+      "index": 80,
+      "idr": false
+    },
+    {
+      "index": 81,
+      "idr": false
+    },
+    {
+      "index": 82,
+      "idr": false
+    },
+    {
+      "index": 83,
+      "idr": false
+    },
+    {
+      "index": 84,
+      "idr": false
+    },
+    {
+      "index": 85,
+      "idr": false
+    },
+    {
+      "index": 86,
+      "idr": false
+    },
+    {
+      "index": 87,
+      "idr": false
+    },
+    {
+      "index": 88,
+      "idr": false
+    },
+    {
+      "index": 89,
+      "idr": false
+    },
+    {
+      "index": 90,
+      "idr": false
+    },
+    {
+      "index": 91,
+      "idr": false
+    },
+    {
+      "index": 92,
+      "idr": false
+    },
+    {
+      "index": 93,
+      "idr": false
+    },
+    {
+      "index": 94,
+      "idr": false
+    },
+    {
+      "index": 95,
+      "idr": false
+    },
+    {
+      "index": 96,
+      "idr": false
+    },
+    {
+      "index": 97,
+      "idr": false
+    },
+    {
+      "index": 98,
+      "idr": false
+    },
+    {
+      "index": 99,
+      "idr": false
+    },
+    {
+      "index": 100,
+      "idr": false
+    },
+    {
+      "index": 101,
+      "idr": false
+    },
+    {
+      "index": 102,
+      "idr": false
+    },
+    {
+      "index": 103,
+      "idr": false
+    },
+    {
+      "index": 104,
+      "idr": false
+    },
+    {
+      "index": 105,
+      "idr": false
+    },
+    {
+      "index": 106,
+      "idr": false
+    },
+    {
+      "index": 107,
+      "idr": false
+    },
+    {
+      "index": 108,
+      "idr": false
+    },
+    {
+      "index": 109,
+      "idr": false
+    },
+    {
+      "index": 110,
+      "idr": false
+    },
+    {
+      "index": 111,
+      "idr": false
+    },
+    {
+      "index": 112,
+      "idr": false
+    },
+    {
+      "index": 113,
+      "idr": false
+    },
+    {
+      "index": 114,
+      "idr": false
+    },
+    {
+      "index": 115,
+      "idr": false
+    },
+    {
+      "index": 116,
+      "idr": false
+    },
+    {
+      "index": 117,
+      "idr": false
+    },
+    {
+      "index": 118,
+      "idr": false
+    },
+    {
+      "index": 119,
+      "idr": false
+    }
+  ]
+}

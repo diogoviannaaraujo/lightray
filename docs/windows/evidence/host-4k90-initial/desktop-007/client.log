@@ -1,0 +1,16 @@
+[   0.000] stream 1: presentation screen id=5 max_fps=160
+[   0.010] socket buffers: receive 4194304, send 4194304 bytes
+[   0.010] connecting to 192.168.15.5:37373 from port 57547, with 1 video streams
+[   0.019] session b1954c6a established, datagrams up to 1200 bytes, no FEC, video streams [1]
+[   5.033] stream 1: 89 decoded fps · 5.8 connection Mb/s · RTT 2.6 ms · lost 6 · keyframes 3 · FEC-repaired 0 · NACKed 0 · decode queue drops 6 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  10.047] stream 1: 79 decoded fps · 5.7 connection Mb/s · RTT 6.9 ms · lost 6 · keyframes 3 · FEC-repaired 0 · NACKed 0 · decode queue drops 6 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  15.062] stream 1: 86 decoded fps · 5.6 connection Mb/s · RTT 2.5 ms · lost 6 · keyframes 3 · FEC-repaired 0 · NACKed 0 · decode queue drops 6 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  20.081] stream 1: 86 decoded fps · 5.4 connection Mb/s · RTT 3.4 ms · lost 6 · keyframes 3 · FEC-repaired 0 · NACKed 0 · decode queue drops 6 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  25.107] stream 1: 90 decoded fps · 6.3 connection Mb/s · RTT 2.9 ms · lost 6 · keyframes 3 · FEC-repaired 0 · NACKed 0 · decode queue drops 6 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  30.120] stream 1: 88 decoded fps · 5.9 connection Mb/s · RTT 3.1 ms · lost 6 · keyframes 3 · FEC-repaired 0 · NACKed 0 · decode queue drops 6 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  35.126] stream 1: 90 decoded fps · 5.6 connection Mb/s · RTT 6.0 ms · lost 6 · keyframes 3 · FEC-repaired 0 · NACKed 0 · decode queue drops 6 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  40.136] stream 1: 88 decoded fps · 6.0 connection Mb/s · RTT 3.8 ms · lost 6 · keyframes 3 · FEC-repaired 0 · NACKed 0 · decode queue drops 6 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  45.160] stream 1: 90 decoded fps · 5.9 connection Mb/s · RTT 4.7 ms · lost 6 · keyframes 3 · FEC-repaired 0 · NACKed 0 · decode queue drops 6 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  50.169] stream 1: 88 decoded fps · 5.6 connection Mb/s · RTT 4.4 ms · lost 6 · keyframes 3 · FEC-repaired 0 · NACKed 0 · decode queue drops 6 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  55.173] stream 1: 90 decoded fps · 6.0 connection Mb/s · RTT 5.3 ms · lost 6 · keyframes 3 · FEC-repaired 0 · NACKed 0 · decode queue drops 6 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  58.417] disconnected: the host closed the session (goingAway)

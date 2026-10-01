@@ -146,7 +146,8 @@ final class ReedSolomon {
                 rows[j * k + i] = GF256.divide(numerator, GF256.multiply(y ^ nodes[i], denominators[i]))
             }
         }
-        if cache.count > 512 { cache.removeAll() }
+        // Keep the coefficient cache bounded independently of peer-selected block shapes.
+        if cache.values.reduce(0, { $0 + $1.count }) + rows.count > 1 << 20 { cache.removeAll() }
         cache[key] = rows
         return rows
     }

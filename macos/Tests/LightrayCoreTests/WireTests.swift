@@ -183,6 +183,26 @@ func single(_ bytes: Bytes) -> Chunk? {
     #expect(FrameHeader.parse(hex("00000000000001000000050000")) == nil)
 }
 
+@Test(arguments: [UInt16(0), 1, 64, 65, .max])
+func parityLastLengthIsValidated(length: UInt16) throws {
+    let fragment = MediaFragment(stream: 1, flags: MediaFragment.Flag.parity, frameID: 1, index: 0, count: 1, stride: 64, fec: .init(maxBlockLength: 1, parityPerBlock: 1, lastLength: length), payload: Bytes(repeating: 0, count: 64)[...])
+    let parsed = Chunk.parse(Chunk.mediaFragment(fragment).encoded)
+    if (1...64).contains(length) {
+        #expect(parsed.chunks == [.mediaFragment(fragment)])
+    } else {
+        #expect(parsed.chunks.isEmpty)
+        #expect(parsed.malformed == 1)
+    }
+}
+
+@Test(arguments: [0, 1, 2])
+func emptyCodecParameterSetsAreRejected(index: Int) {
+    var sets: [Bytes] = [[0x40, 1], [0x42, 1], [0x44, 1]]
+    sets[index] = []
+    let header = FrameHeader(frameType: .idr, refKind: .none, captureTimeMicros: 0, codecConfig: CodecConfig(vps: sets[0], sps: sets[1], pps: sets[2]))
+    #expect(FrameHeader.parse(header.encoded) == nil)
+}
+
 enum FrameExamples {
     static let idr = hex(
         "000001000000030001e24000530100500000001840010c01ffff01600000030090000003000003003cba02400000002642010101600000030090000003000003003ca0884596e96f0b9a020000030002000003003c10000000064401c0718112000001432801ac1ae0f33d5fdcfddf03600717810da9f57f7bb115b7924631e1020000cacc5d6c1c47cdb924cb879dd8cd3e9efad4eb38f5abc256ca0d205c7abc3897c1456af493a979ed56e5d4411b5d6d972bad41ed61679250c54bd927454a389f0ce54ba83c5be0ba8b8ff2ea1e0aa497e49ec2fa2d3d272d6e188d578c2f27e6f449751f96f27ff5ae8352f2988bf52c1aa503dce248121b4042e5b3faf9c3adf9fe7ee3c06bfe1199fa8b9dbfd30090fed9f9eeee3be33dc398516216bdafea5bbbeaac3ec37adc7fa611e4a3b589aee7e0fbe17cadea66770a486e9ae25821bd4b8925e02d311d842c4ffda14eb6c4f1b1598211604264759329ef4c1e7fb35f201bdfb25e12f9b0778d61e5eb242bf2202706106410a5ad36084f2cf64b27a9a039ed2f3c5c784c2129387bf43ee726767425c27a3a514fde71cef2456b108e7a27c0"

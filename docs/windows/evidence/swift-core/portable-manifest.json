@@ -1,0 +1,151 @@
+{
+    "status":  "passed",
+    "swift":  "6.4.0",
+    "files":  [
+                  {
+                      "name":  "_FoundationICU.dll",
+                      "bytes":  38234112,
+                      "sha256":  "3ca21e4bea066483c81e85fda43da9f70671b435396b989f8b7676bbae24c105"
+                  },
+                  {
+                      "name":  "BlocksRuntime.dll",
+                      "bytes":  11776,
+                      "sha256":  "a7b0433ef9c1315388d5cd526f6a1e77506fa9570a9dc3fa9c1818add5f4e22a"
+                  },
+                  {
+                      "name":  "core_abi_probe.exe",
+                      "bytes":  259072,
+                      "sha256":  "2555e5d4f19ac86b18126617dd2417cad0acde9b5f0821eccce20228dfa6a050"
+                  },
+                  {
+                      "name":  "dispatch.dll",
+                      "bytes":  236032,
+                      "sha256":  "3b2bf951e308b135c7467477722b3ae694a518d25e5b48c93a9a78b3a7043057"
+                  },
+                  {
+                      "name":  "Foundation.dll",
+                      "bytes":  4680192,
+                      "sha256":  "1641656145c1cc386ffd75dbc2627a95e2ec28a492b1b565b9f02aa3db14dad0"
+                  },
+                  {
+                      "name":  "FoundationEssentials.dll",
+                      "bytes":  5712896,
+                      "sha256":  "c622b8aa08c4b0f2fac7bf0b6d60642c3fbb8ec1db91b3e8231ca39b012ab932"
+                  },
+                  {
+                      "name":  "FoundationInternationalization.dll",
+                      "bytes":  1473024,
+                      "sha256":  "26ee3761e6ced903c704eda872f15966f445b819f4b777b101f56ce7f3fcf8ab"
+                  },
+                  {
+                      "name":  "LightrayCoreProbe.dll",
+                      "bytes":  16156672,
+                      "sha256":  "d028f0598103cc22ac6aa52a75c96b6d83abf731da02bd57190ee92ef0c43e6e"
+                  },
+                  {
+                      "name":  "MSVCP140.dll",
+                      "bytes":  575592,
+                      "sha256":  "9057d39b36b6c7d054865ee2bf9cde7a490fe3b01ec4e82514687e24f576269f"
+                  },
+                  {
+                      "name":  "swift_Concurrency.dll",
+                      "bytes":  522752,
+                      "sha256":  "b85a4f0817981a4455d5324dbd626a40206328f6066767b5483c46fd5c852ec6"
+                  },
+                  {
+                      "name":  "swift_RegexParser.dll",
+                      "bytes":  858624,
+                      "sha256":  "f518e90801a9c3af3ff541a44aad55adfdd2aac7c5d7babb744cbe358c14d682"
+                  },
+                  {
+                      "name":  "swift_StringProcessing.dll",
+                      "bytes":  700928,
+                      "sha256":  "4c46e0e0300a1b954892dd8e596f0d2d2f8f133c8c6d8b7a152e66aaab3cdce0"
+                  },
+                  {
+                      "name":  "swiftCore.dll",
+                      "bytes":  6064128,
+                      "sha256":  "3c881efbcddbca632d2dce2f4d59f6b3d53d7a02782ca1ba7a3cb5d9c698f0fa"
+                  },
+                  {
+                      "name":  "swiftCRT.dll",
+                      "bytes":  38912,
+                      "sha256":  "1739c6e1370812bbb78b6cb6f5a8943e23e3a23b804123141039fb7d636c94c9"
+                  },
+                  {
+                      "name":  "swiftDispatch.dll",
+                      "bytes":  145408,
+                      "sha256":  "e49fb75a23452e321f90fd7518e0787874e78029365f30ec18531c44cab7a4da"
+                  },
+                  {
+                      "name":  "swiftObservation.dll",
+                      "bytes":  120320,
+                      "sha256":  "1a6616a1acb1ea1df44ea590d7944936996894de7ed481414cb37d0eb1a52166"
+                  },
+                  {
+                      "name":  "swiftSynchronization.dll",
+                      "bytes":  76288,
+                      "sha256":  "454420b6252d5807195f3d3ad29977c9d7c73c0f3fbeacd4653c20f0ab35c0c9"
+                  },
+                  {
+                      "name":  "swiftWinSDK.dll",
+                      "bytes":  34816,
+                      "sha256":  "4a8ecfbdce840fd89fa98f850a0d82619b8f97e04f43449937533c608e447ffe"
+                  },
+                  {
+                      "name":  "VCRUNTIME140.dll",
+                      "bytes":  120432,
+                      "sha256":  "da72e6677bd1bcd01c453c1998aaa19aeaf6659f4774cf6848409da8232a95b2"
+                  },
+                  {
+                      "name":  "VCRUNTIME140_1.dll",
+                      "bytes":  49744,
+                      "sha256":  "26e470b29bed3d873e0c328186e53f95e9edbfe0b0fd0cda44743a0b1a04a828"
+                  }
+              ],
+    "system_dependencies":  [
+                                "ADVAPI32.dll",
+                                "api-ms-win-core-debug-l1-1-0.dll",
+                                "api-ms-win-core-errorhandling-l1-1-0.dll",
+                                "api-ms-win-core-handle-l1-1-0.dll",
+                                "api-ms-win-core-interlocked-l1-1-0.dll",
+                                "api-ms-win-core-libraryloader-l1-2-0.dll",
+                                "api-ms-win-core-path-l1-1-0.dll",
+                                "api-ms-win-core-processthreads-l1-1-0.dll",
+                                "api-ms-win-core-processthreads-l1-1-1.dll",
+                                "api-ms-win-core-profile-l1-1-0.dll",
+                                "api-ms-win-core-realtime-l1-1-1.dll",
+                                "api-ms-win-core-rtlsupport-l1-1-0.dll",
+                                "api-ms-win-core-synch-l1-1-0.dll",
+                                "api-ms-win-core-synch-l1-2-0.dll",
+                                "api-ms-win-core-sysinfo-l1-1-0.dll",
+                                "api-ms-win-core-sysinfo-l1-2-0.dll",
+                                "api-ms-win-crt-convert-l1-1-0.dll",
+                                "api-ms-win-crt-environment-l1-1-0.dll",
+                                "api-ms-win-crt-filesystem-l1-1-0.dll",
+                                "api-ms-win-crt-heap-l1-1-0.dll",
+                                "api-ms-win-crt-locale-l1-1-0.dll",
+                                "api-ms-win-crt-math-l1-1-0.dll",
+                                "api-ms-win-crt-runtime-l1-1-0.dll",
+                                "api-ms-win-crt-stdio-l1-1-0.dll",
+                                "api-ms-win-crt-string-l1-1-0.dll",
+                                "api-ms-win-crt-time-l1-1-0.dll",
+                                "api-ms-win-crt-utility-l1-1-0.dll",
+                                "bcrypt.dll",
+                                "dbghelp.dll",
+                                "IPHLPAPI.DLL",
+                                "KERNEL32.dll",
+                                "ole32.dll",
+                                "Secur32.dll",
+                                "SHELL32.dll",
+                                "SHLWAPI.dll",
+                                "USER32.dll",
+                                "USERENV.dll",
+                                "WINMM.dll",
+                                "WS2_32.dll"
+                            ],
+    "limits":  [
+                   "App-local runtime load on the development machine; not a clean Windows installation",
+                   "Licensing, signing, installer and minimum OS validation remain pending"
+               ]
+}

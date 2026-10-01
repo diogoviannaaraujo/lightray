@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "run_id": "b93f2fe6-1c8f-49f5-af95-c522cffd9762",
+  "started_at": "2026-09-29T02:53:05.107152+00:00",
+  "action": "verify-swift-tests",
+  "source": {
+    "commit": "5002116872492da705aa6252f26482b02e3df5b5",
+    "dirty": true,
+    "implementation_sha256": "736abf52a6d670b5ca24d052b45f24d1e1be251b33e3eb714db586b098db62e6"
+  },
+  "status": "passed",
+  "exit_code": 0,
+  "tests": 80,
+  "minimum_tests": 80,
+  "reason": "test_count_verified"
+}

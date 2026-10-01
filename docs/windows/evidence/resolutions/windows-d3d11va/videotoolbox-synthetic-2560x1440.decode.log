@@ -1,0 +1,83 @@
+[D3D11VA @ 0000021ae1087380] Selecting d3d11va adapter 0
+[D3D11VA @ 0000021ae1087380] Using device 10de:2684 (NVIDIA GeForce RTX 4090).
+Input #0, hevc, from '<CHECKOUT>\tools\windows\results\resolution-corpus-001\videotoolbox-synthetic-2560x1440.hevc':
+  Duration: N/A, bitrate: N/A
+  Stream #0:0: Video: hevc (Main), 1 reference frame, yuv420p(tv, left), 2560x1440 [SAR 1:1 DAR 16:9], 25 fps, 1200k tbr, 1200k tbn
+[out#0/framehash @ 0000021ae114ee80] Adding streams from explicit maps...
+[vost#0:0/rawvideo @ 0000021ae840d500] Created video stream from input stream 0:0
+Stream mapping:
+  Stream #0:0 -> #0:0 (hevc (native) -> rawvideo (native))
+[vost#0:0/rawvideo @ 0000021ae840d500] Starting thread...
+[vf#0:0 @ 0000021ae840ddc0] Starting thread...
+[vist#0:0/hevc @ 0000021ae108dd40] [dec:hevc @ 0000021ae82d1880] Starting thread...
+[in#0/hevc @ 0000021ae108c600] Starting thread...
+[hevc @ 0000021ae108f6c0] Decoder GUIDs reported as supported:
+[hevc @ 0000021ae108f6c0] {86695f12-340e-4f04-9fd3-9253dd327460} 103 106
+[hevc @ 0000021ae108f6c0] {ee27417f-5e28-4e65-beea-1d26b508adc9} 103 106
+[hevc @ 0000021ae108f6c0] {6f3ec719-3735-42cc-8063-65cc3cb36616} 103 106
+[hevc @ 0000021ae108f6c0] {1b81bea4-a0c7-11d3-b984-00c04f2e73c5} 103 106
+[hevc @ 0000021ae108f6c0] {1b81bea3-a0c7-11d3-b984-00c04f2e73c5} 103 106
+[hevc @ 0000021ae108f6c0] {32fcfe3f-de46-4a49-861b-ac71110649d5} 103 106
+[hevc @ 0000021ae108f6c0] {d79be8da-0cf1-4c81-b82a-69a4e236f43d} 103 106
+[hevc @ 0000021ae108f6c0] {f9aaccbb-c2b6-4cfc-8779-5707b1760552} 103 106
+[hevc @ 0000021ae108f6c0] {1b81be68-a0c7-11d3-b984-00c04f2e73c5} 103 106
+[hevc @ 0000021ae108f6c0] {5b11d51b-2f4c-4452-bcc3-09f2a1160cc0} 103 106
+[hevc @ 0000021ae108f6c0] {107af0e0-ef1a-4d19-aba8-67a163073d13} 104 106
+[hevc @ 0000021ae108f6c0] {1a72925f-0c2c-4f15-96fb-b17d1473603f} 104 106
+[hevc @ 0000021ae108f6c0] {15df9b21-06c4-47f1-841e-a67c97d7f312} 103 106
+[hevc @ 0000021ae108f6c0] {4008018f-f537-4b36-98cf-61af8a2c1a33} 100 106
+[hevc @ 0000021ae108f6c0] {0dabeffa-4458-4602-bc03-0795659d617c} 101 106
+[hevc @ 0000021ae108f6c0] {9798634d-fe9d-48e5-b4da-dbec45b3df01} 102 106
+[hevc @ 0000021ae108f6c0] {efd64d74-c9e8-41d7-a5e9-e9b0e39fa319} 103 106
+[hevc @ 0000021ae108f6c0] {ed418a9f-010d-4eda-9ae3-9a65358d8d2e} 103 106
+[hevc @ 0000021ae108f6c0] {9947ec6f-689b-11dc-a320-0019dbbc4184} 103 106
+[hevc @ 0000021ae108f6c0] {33fcfe41-de46-4a49-861b-ac71110649d5} 103 106 107
+[hevc @ 0000021ae108f6c0] {463707f8-a1d0-4585-876d-83aa6d60b89e} 103 106
+[hevc @ 0000021ae108f6c0] {a4c749ef-6ecf-48aa-8448-50a7a1165ff7} 104 106
+[hevc @ 0000021ae108f6c0] {dda19dc7-93b5-49f5-a9b3-2bda28a2ce6e} 104 106
+[hevc @ 0000021ae108f6c0] {b8be4ccb-cf53-46ba-8d59-d6b8a6da5d2a} 103 104 106
+[hevc @ 0000021ae108f6c0] {6affd11e-1d96-42b1-a215-93a31f09a53d} 103 106
+[hevc @ 0000021ae108f6c0] {914c84a3-4078-4fa9-984c-e2f262cb5c9c} 103 106
+[hevc @ 0000021ae108f6c0] {8a1a1031-29bc-46d0-a007-e9b092ca6767} 103 106
+[graph -1 input from stream 0:0 @ 0000021ae1108580] w:2560 h:1440 pixfmt:d3d11 tb:1/1200000 fr:25/1 sar:1/1 csp:unknown range:tv alpha:unspecified
+[auto_scale_0 @ 0000021ae1108240] w:iw h:ih flags:'' interl:0
+[Parsed_format_2 @ 0000021ae1108880] auto-inserting filter 'auto_scale_0' between the filter 'Parsed_format_1' and the filter 'Parsed_format_2'
+[auto_scale_0 @ 0000021ae1108240] w:2560 h:1440 fmt:nv12 csp:unknown range:tv sar:1/1 -> w:2560 h:1440 fmt:yuv420p csp:unknown range:tv sar:1/1 flags:0x00000004
+[auto_scale_0 @ 0000021ae1108240] [framesync @ 0000021ae82c6c10] Selected 1/1200000 time base
+[auto_scale_0 @ 0000021ae1108240] [framesync @ 0000021ae82c6c10] Sync level 1
+[graph -1 input from stream 0:0 @ 0000021ae1108580] video frame properties congruent with link at pts_time: 0
+Output #0, framehash, to 'tools\windows\results\resolution-d3d11va-001\videotoolbox-synthetic-2560x1440.framehash':
+  Metadata:
+    encoder         : Lavf62.12.100
+  Stream #0:0: Video: rawvideo, 1 reference frame (I420 / 0x30323449), yuv420p(tv, progressive), 2560x1440 [SAR 1:1 DAR 16:9], q=2-31, 1105920 kb/s, 25 fps, 25 tbn
+    Metadata:
+      encoder         : Lavc62.28.100 rawvideo
+[out#0/framehash @ 0000021ae114ee80] Starting thread...
+frame=   31 fps=0.0 q=-0.0 size=       3KiB time=00:00:01.56 bitrate=  18.4kbits/s speed=3.07x elapsed=0:00:00.50    
+frame=   67 fps= 65 q=-0.0 size=       7KiB time=00:00:02.96 bitrate=  20.6kbits/s speed=2.88x elapsed=0:00:01.02    
+[in#0/hevc @ 0000021ae108c600] EOF while reading input
+[in#0/hevc @ 0000021ae108c600] Terminating thread with return code 0 (success)
+[vist#0:0/hevc @ 0000021ae108dd40] [dec:hevc @ 0000021ae82d1880] Decoder thread received EOF packet
+frame=  103 fps= 67 q=-0.0 size=      11KiB time=00:00:04.40 bitrate=  21.2kbits/s speed=2.85x elapsed=0:00:01.54    
+[vist#0:0/hevc @ 0000021ae108dd40] [dec:hevc @ 0000021ae82d1880] Decoder returned EOF, finishing
+[vist#0:0/hevc @ 0000021ae108dd40] [dec:hevc @ 0000021ae82d1880] Terminating thread with return code 0 (success)
+[auto_scale_0 @ 0000021ae1108240] [framesync @ 0000021ae82c6c10] Sync level 0
+[vf#0:0 @ 0000021ae840ddc0] Filtergraph returned EOF, finishing
+[vf#0:0 @ 0000021ae840ddc0] All consumers returned EOF
+[vf#0:0 @ 0000021ae840ddc0] Terminating thread with return code 0 (success)
+[vost#0:0/rawvideo @ 0000021ae840d500] [enc:rawvideo @ 0000021ae8357740] Encoder thread received EOF
+[vost#0:0/rawvideo @ 0000021ae840d500] Terminating thread with return code 0 (success)
+[out#0/framehash @ 0000021ae114ee80] All streams finished
+[out#0/framehash @ 0000021ae114ee80] Terminating thread with return code 0 (success)
+[AVIOContext @ 0000021ae8001cc0] Statistics: 13660 bytes written, 0 seeks, 1 writeouts
+[out#0/framehash @ 0000021ae114ee80] Output file #0 (tools\windows\results\resolution-d3d11va-001\videotoolbox-synthetic-2560x1440.framehash):
+[out#0/framehash @ 0000021ae114ee80]   Output stream #0:0 (video): 120 frames encoded; 120 packets muxed (663552000 bytes); 
+[out#0/framehash @ 0000021ae114ee80]   Total: 120 packets (663552000 bytes) muxed
+[out#0/framehash @ 0000021ae114ee80] video:648000KiB audio:0KiB subtitle:0KiB other streams:0KiB global headers:0KiB muxing overhead: unknown
+frame=  120 fps= 67 q=-0.0 Lsize=      13KiB time=00:00:04.76 bitrate=  23.0kbits/s speed=2.65x elapsed=0:00:01.79    
+[in#0/hevc @ 0000021ae108c600] Input file #0 (<CHECKOUT>\tools\windows\results\resolution-corpus-001\videotoolbox-synthetic-2560x1440.hevc):
+[in#0/hevc @ 0000021ae108c600]   Input stream #0:0 (video): 120 packets read (5073265 bytes); 120 frames decoded; 0 decode errors; 
+[in#0/hevc @ 0000021ae108c600]   Total: 120 packets (5073265 bytes) demuxed
+[AVIOContext @ 0000021ae1095840] Statistics: 5073265 bytes read, 0 seeks
+
+Exiting with exit code 0

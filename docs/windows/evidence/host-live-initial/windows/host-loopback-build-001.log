@@ -1,0 +1,21 @@
+udp_loopback_tests.cpp
+host_abi_probe.cpp
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3630): error C2220: the following warning is treated as an error
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3630): warning C4244: 'argument': conversion from '_Ty' to 'uint16_t', possible loss of data
+        with
+        [
+            _Ty=int
+        ]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3630): note: the template instantiation context (the oldest one first) is
+C:\Users\vhccruz\AppData\Local\LightrayLab\client-probe-20260928\repo\tools\windows\src\host_abi_probe.cpp(112): note: see reference to function template instantiation 'std::unique_ptr<lightray::LoopbackSocket,std::default_delete<lightray::LoopbackSocket>> std::make_unique<lightray::LoopbackSocket,int,0>(int &&)' being compiled
+nvenc_encoder.cpp
+Generating Code...
+Compilation failed: host_abi_probe
+At C:\Users\vhccruz\AppData\Local\LightrayLab\client-probe-20260928\repo\tools\windows\run-host-lo
+opback.ps1:27 char:36
++ ...   if ($LASTEXITCODE -ne 0) { throw ('Compilation failed: ' + $name) }
++                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (Compilation failed: host_abi_probe:String) [], R 
+   untimeException
+    + FullyQualifiedErrorId : Compilation failed: host_abi_probe
+ 

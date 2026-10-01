@@ -1,0 +1,45 @@
+{
+  "run": "desktop-018",
+  "method": "CUA actions and accessibility/screenshot inspection on the actual Mac client; Windows test result read over SSH. These are recorded observations, not an automated replay.",
+  "checks": {
+    "overlay_visible": true,
+    "overlay_fullscreen_visible": true,
+    "overlay_hotkey_hides_and_shows": true,
+    "example_overlay": {
+      "network_rtt_ms": 5.16,
+      "decode_ms": 2.3,
+      "queue_ms": 0.06,
+      "resolution": "3840x2160"
+    },
+    "command_copy_paste": {
+      "before_paste_text_matches": false,
+      "after_paste_text_matches": true,
+      "control_a_count": 2,
+      "copy_count": 1,
+      "paste_count": 1
+    },
+    "released_input": {
+      "typing_ignored": true,
+      "host_held_keys": 0,
+      "hud_state": "Input released · click video to resume"
+    },
+    "resume_by_menu": true,
+    "alt_tab": {
+      "before_test_foreground": true,
+      "after_test_foreground": false,
+      "focus_losses_incremented": true
+    },
+    "windows_key_start_menu_visually_opened": true,
+    "start_menu_closed_with_escape": true,
+    "resume_click": {
+      "first_click_remote_button_count": 0,
+      "second_click_remote_button_count": 1
+    },
+    "local_quit_exit_code": 0
+  },
+  "limits": [
+    "No physical input-to-photon measurement.",
+    "No held-key focus-loss UI automation; deterministic keyboard-state tests cover releases.",
+    "Windows source was 60 Hz; this was a functional validation with UI activity, not a clean 4K90 benchmark."
+  ]
+}

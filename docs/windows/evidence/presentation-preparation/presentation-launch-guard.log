@@ -1,0 +1,10 @@
+Coordinate desktop use with the user before passing -DesktopApproved
+At <USERPROFILE>\AppData\Local\LightrayLab\client-probe-20260928\repo\tools\windows\run-present
+ation-probe.ps1:3 char:30
++ ... Approved) { throw 'Coordinate desktop use with the user before passin ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (Coordinate desk...DesktopApproved:String) [], Ru 
+   ntimeException
+    + FullyQualifiedErrorId : Coordinate desktop use with the user before passing -DesktopApprove 
+   d
+ 

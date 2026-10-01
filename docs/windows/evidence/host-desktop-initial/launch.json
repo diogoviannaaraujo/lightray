@@ -1,0 +1,10 @@
+{
+    "seconds":  240,
+    "bind":  "192.168.15.5",
+    "task":  "LightrayLab-2d327c8163ce406ba58d99edd6289345",
+    "run":  "desktop-005",
+    "executable_sha256":  "883b13a809e775aec69d9010657cdd7035a324848fd841917dd733594d04d128",
+    "peer":  "192.168.15.13",
+    "port":  37373,
+    "core_sha256":  "5f71e68c6047c42df88f2faa9bfb640b1356eeb3532fcb668ae5aa09850aec8c"
+}

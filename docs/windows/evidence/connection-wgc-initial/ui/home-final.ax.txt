@@ -1,0 +1,23 @@
+Window: "Lightray — Computers", App: Lightray Windows Lab.
+0 standard window Lightray — Computers, Secondary Actions: Raise
+	1 text Lightray Your remote desktop, with your settings. Computers
+	2 pop up button Description: Paired computers, Value: New computer
+	3 text field (settable) Description: Computer name, Value: Windows host
+	4 text field (settable) Description: Host address, Value: 192.168.15.5:37373, Placeholder: Address or hostname:port
+	5 text Open the session on
+	6 pop up button Description: Local display, Value: U28E590 · up to 60 FPS
+	7 button Import pairing file…
+	8 text Pairing ready for this connection.
+	9 checkbox (disabled) Remember this computer, Value: 0
+	10 button Connect
+	11 button (disabled) Forget selected computer
+	12 text Availability is checked when you connect.
+	13 close button
+	14 zoom button (disabled)
+	15 minimize button
+	16 text Lightray — Computers
+17 menu bar
+	18 Lightray Windows Lab
+	19 Edit
+
+The focused UI element is 2 pop up button Description: Paired computers, Value: New computer

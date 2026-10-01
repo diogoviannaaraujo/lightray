@@ -29,7 +29,7 @@ let package = Package(
             dependencies: ["LightrayCore", "LightrayMac"],
             swiftSettings: [.swiftLanguageMode(.v5)]
         ),
-        .testTarget(name: "LightrayCoreTests", dependencies: ["LightrayCore"]),
+        .testTarget(name: "LightrayCoreTests", dependencies: ["LightrayCore"], resources: [.copy("Fixtures")]),
         .testTarget(name: "LightrayMacTests", dependencies: ["LightrayCore", "LightrayMac"]),
     ]
 )

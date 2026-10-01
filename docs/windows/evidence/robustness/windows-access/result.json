@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "run_id": "d59a5fe9-380f-4d8f-bf18-9eea11a6373f",
+  "started_at": "2026-09-29T00:17:34.553112+00:00",
+  "action": "inventory",
+  "source": {
+    "commit": "5002116872492da705aa6252f26482b02e3df5b5",
+    "dirty": true,
+    "implementation_sha256": "5a4ba4a4e860907bf9f59475964052c144c2ca7ffbc6de758d5413138ee96e1c"
+  },
+  "status": "blocked",
+  "reason": "ssh_host_identity_unverified",
+  "exit_code": 255
+}

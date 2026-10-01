@@ -1,0 +1,22 @@
+{
+  "probe": "tailscale-disco",
+  "exit_code": 0,
+  "samples": [
+    {
+      "route": "direct",
+      "rtt_ms": 1.0
+    },
+    {
+      "route": "direct",
+      "rtt_ms": 1.0
+    },
+    {
+      "route": "direct",
+      "rtt_ms": 1.0
+    }
+  ],
+  "limits": [
+    "Discovery ping only; not Lightray UDP media RTT or a path MTU measurement"
+  ],
+  "version_warning": false
+}

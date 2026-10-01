@@ -1,0 +1,15 @@
+{
+  "recorded_at_utc": "2026-10-01T11:46:19.115098+00:00",
+  "base_git": "5002116872492da705aa6252f26482b02e3df5b5",
+  "branch": "codex/windows-foundation",
+  "working_tree_dirty": true,
+  "source_sha256": {
+    "tools/windows/src/capture_recovery.hpp": "1f8b7b03e8cc8f603024159ae19cd43e6478d3c5d0230016c493249681cac81b",
+    "tools/windows/src/capture_recovery_tests.cpp": "93cbef74142c8fe686f9707c2d1ef24b8f26132e40e1b11938927ea41f7a0190",
+    "tools/windows/src/desktop_capture.hpp": "59d4faf0656d57cf9c994e9cf7a944517e276ab13a602432a846d7e1c4b67d8d",
+    "tools/windows/src/windows_host.cpp": "05f1fe3b31ed4be41ac10d0786746f5454458741fbb6cc1e6f2b6a9dda6373a9",
+    "tools/windows/build-desktop-host.ps1": "ead69334cbed48ab2fa4bf15f304e5507b82f6dbb3ae201cc9ba1999e79e2f9b"
+  },
+  "mac_release_executable_sha256": "ef9549d5a5f9a5e5502d95c0baf936c40e35dc4c6d21b020ac6bc47aefc8c961",
+  "claim_boundary": "Current review snapshot; historical run binaries are not retroactively assigned these source hashes."
+}

@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "run_id": "8d9a177b-13f2-4eeb-a21e-62a6984bb5c9",
+  "started_at": "2026-09-29T02:25:52.745464+00:00",
+  "action": "decode-reference",
+  "source": {
+    "commit": "5002116872492da705aa6252f26482b02e3df5b5",
+    "dirty": true,
+    "implementation_sha256": "5d0413e3fd1d6b44d94d50cd2dcf37a634089e86e15bc4c9a34ecde3c4d6b731"
+  },
+  "status": "passed",
+  "backend": "ffmpeg-hevc-software",
+  "adapter_index": null,
+  "adapter": null,
+  "ffmpeg": "ffmpeg version 8.0.1 Copyright (c) 2000-2025 the FFmpeg developers",
+  "ffprobe": "ffprobe version 8.0.1 Copyright (c) 2007-2025 the FFmpeg developers",
+  "clips": [
+    {
+      "clip": "videotoolbox-synthetic-2560x1440",
+      "input_sha256": "83a06d9b095e4aba1e518714fd9f2aac5b9fc0dce2a449f82849e5ccc7db5e50",
+      "format": {
+        "codec_name": "hevc",
+        "profile": "Main",
+        "width": 2560,
+        "height": 1440,
+        "pix_fmt": "yuv420p"
+      },
+      "probe_metrics": null,
+      "frames": 120,
+      "framehash_file": "videotoolbox-synthetic-2560x1440.framehash",
+      "framehash_sha256": "80c1558472cd5a03a3db14a439ba06f76d6e3c736d777883f0bde15b5a87987b",
+      "wall_seconds": 1.386804
+    },
+    {
+      "clip": "videotoolbox-synthetic-3840x2160",
+      "input_sha256": "0b787f0a7f73261514d1f5e0292d5de392e66cfdf4d6c6d374d13d298e8543bb",
+      "format": {
+        "codec_name": "hevc",
+        "profile": "Main",
+        "width": 3840,
+        "height": 2160,
+        "pix_fmt": "yuv420p"
+      },
+      "probe_metrics": null,
+      "frames": 120,
+      "framehash_file": "videotoolbox-synthetic-3840x2160.framehash",
+      "framehash_sha256": "5028921564b15243ea81a904a033516842196a9f609f72e2b90fcc8dd2e494bb",
+      "wall_seconds": 3.163354
+    }
+  ],
+  "limits": [
+    "Full clips decoded without simulated loss",
+    "Decode correctness only; no presentation, FPS or latency qualification",
+    "Hardware probes use GPU-to-CPU download for pixel hashing; this is not the final rendering path",
+    "Wall time includes process startup, conversion and hashing"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "status": "passed",
+  "runs": [
+    {
+      "width": 1920,
+      "height": 1080,
+      "frames": 120,
+      "mismatches": 0,
+      "first_mismatch_indices": [],
+      "media_fragments": 325
+    },
+    {
+      "width": 2560,
+      "height": 1440,
+      "frames": 120,
+      "mismatches": 0,
+      "first_mismatch_indices": [],
+      "media_fragments": 431
+    },
+    {
+      "width": 3840,
+      "height": 2160,
+      "frames": 120,
+      "mismatches": 0,
+      "first_mismatch_indices": [],
+      "media_fragments": 1065
+    }
+  ],
+  "result_sha256": "87d4c3881c73e8396d799a4487c3764cdb5b572c6e90db5623db4badc7164dca"
+}

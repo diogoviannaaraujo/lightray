@@ -1,0 +1,10 @@
+# Preserve audited evidence and pinned third-party headers byte for byte.
+docs/windows/evidence/** -text -whitespace
+docs/reviews/**/evidence/** -text -whitespace
+tools/windows/vendor/** -text -whitespace
+
+# These artifacts must never be treated as text or have line endings converted.
+*.hevc binary
+*.png binary
+*.pdf binary
+*.pptx binary

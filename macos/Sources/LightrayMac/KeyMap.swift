@@ -93,6 +93,34 @@ public enum KeyMap {
         }
     }
 
+    /// Accessibility-generated flags may omit side-specific device bits.
+    public static func isDown(_ modifier: Modifier, flags: UInt64) -> Bool {
+        let family = Modifier.allCases.filter { flag($0) == flag(modifier) }
+        let sides = family.reduce(UInt64(0)) { $0 | deviceMask($1) }
+        if flags & sides != 0 { return flags & deviceMask(modifier) != 0 }
+        return flags & flag(modifier) != 0
+    }
+
+    /// Reconcile key events from input sources that omit separate flagsChanged events.
+    public static func reconciledModifiers(flags: UInt64, held: Set<UInt16>) -> Set<UInt16> {
+        var result = Set<UInt16>()
+        for left: UInt16 in 0xE0...0xE3 {
+            let right = left + 4
+            let leftModifier = modifier(forUsage: left)!
+            let rightModifier = modifier(forUsage: right)!
+            guard flags & flag(leftModifier) != 0 else { continue }
+            let sides = deviceMask(leftModifier) | deviceMask(rightModifier)
+            if flags & sides != 0 {
+                if flags & deviceMask(leftModifier) != 0 { result.insert(left) }
+                if flags & deviceMask(rightModifier) != 0 { result.insert(right) }
+            } else {
+                let previous = held.intersection([left, right])
+                result.formUnion(previous.isEmpty ? [left] : previous)
+            }
+        }
+        return result
+    }
+
     /// Keys a Mac keyboard reports with the numeric-pad flag: the keypad and the arrows.
     public static func isNumericPad(_ usage: UInt16) -> Bool { (0x53...0x63).contains(usage) || usage == 0x67 || (0x4F...0x52).contains(usage) }
 

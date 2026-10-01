@@ -1,0 +1,13 @@
+process_session=1 console_session=1
+window_station=WinSta0
+thread_desktop=Default
+input_desktop=Default
+dwm_hresult=0 composition=1
+adapter=0 vendor=4318 software=0 name=NVIDIA GeForce RTX 4090
+output=0 device=\\.\DISPLAY1 attached=1 rotation=1 rect=0,0,3840,2160
+adapter=1 vendor=4318 software=0 name=NVIDIA GeForce RTX 4090
+adapter=2 vendor=5140 software=1 name=Microsoft Basic Render Driver
+device_hresult=0
+duplicate_hresult=0
+mode=3840x2160 refresh=60/1 format=87
+capture_frames=0 desktop_updates=0 pointer_only=0 acquisition_timeouts=227 last_hresult=-2005270489 device_removed_hresult=0 elapsed_ms=5016

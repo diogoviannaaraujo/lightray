@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "run_id": "31694bdd-0e2b-43b1-b668-52825910013f",
+  "started_at": "2026-09-29T00:42:34.108131+00:00",
+  "action": "decode-reference",
+  "source": {
+    "commit": "5002116872492da705aa6252f26482b02e3df5b5",
+    "dirty": true,
+    "implementation_sha256": "51c19ff2c549f840dd3d8b5c3c9881c1dab4d5ce27ba4790d7176c2d22fbf124"
+  },
+  "status": "failed",
+  "reason": "ValueError"
+}

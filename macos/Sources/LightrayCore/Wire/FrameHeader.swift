@@ -10,6 +10,8 @@ public struct FrameHeader: Equatable, Sendable {
 
     public enum Extension {
         public static let codecConfig: UInt8 = 1
+        /// Provisional local extension; reserve with the protocol before standardizing.
+        public static let hostTimings: UInt8 = 0xF0
     }
 
     public var frameType: FrameType
@@ -19,10 +21,11 @@ public struct FrameHeader: Equatable, Sendable {
     public var captureTimeMicros: UInt32
     public var refFrameID: UInt32?
     public var codecConfig: CodecConfig?
+    public var hostTimings: HostFrameTimings?
 
     public init(
         frameType: FrameType, refKind: RefKind, flags: UInt8 = 0, configGeneration: UInt32 = 0,
-        captureTimeMicros: UInt32, refFrameID: UInt32? = nil, codecConfig: CodecConfig? = nil
+        captureTimeMicros: UInt32, refFrameID: UInt32? = nil, codecConfig: CodecConfig? = nil, hostTimings: HostFrameTimings? = nil
     ) {
         self.frameType = frameType
         self.refKind = refKind
@@ -31,6 +34,7 @@ public struct FrameHeader: Equatable, Sendable {
         self.captureTimeMicros = captureTimeMicros
         self.refFrameID = refFrameID
         self.codecConfig = codecConfig
+        self.hostTimings = hostTimings
     }
 
     public var encoded: Bytes {
@@ -43,6 +47,7 @@ public struct FrameHeader: Equatable, Sendable {
         if refKind == .ltr { w.u32(refFrameID ?? 0) }
         var ext = ByteWriter()
         if let codecConfig { ext.tlv(Extension.codecConfig, codecConfig.encoded) }
+        if let hostTimings, ext.count + 20 <= Int(UInt16.max) { ext.tlv(Extension.hostTimings, hostTimings.encoded) }
         w.u16(UInt16(ext.count))
         w.append(ext.bytes)
         return w.bytes
@@ -64,6 +69,8 @@ public struct FrameHeader: Equatable, Sendable {
         }
         guard let extLength = try? r.u16(), let ext = try? r.take(Int(extLength)) else { return nil }
         var codecConfig: CodecConfig?
+        var hostTimings: HostFrameTimings?
+        var timingExtensions = 0
         var e = ByteReader(ext)
         while !e.isAtEnd {
             guard let t = try? e.u8(), let length = try? e.u16(), let value = try? e.take(Int(length)) else {
@@ -72,12 +79,15 @@ public struct FrameHeader: Equatable, Sendable {
             if t == Extension.codecConfig {
                 guard let config = CodecConfig.parse(value) else { return nil }
                 codecConfig = config
+            } else if t == Extension.hostTimings {
+                timingExtensions += 1
+                hostTimings = timingExtensions == 1 ? HostFrameTimings.parse(value) : nil
             }
         }
         if frameType == .idr, codecConfig == nil { return nil }
         let header = FrameHeader(
             frameType: frameType, refKind: refKind, flags: flags, configGeneration: generation,
-            captureTimeMicros: capture, refFrameID: refFrameID, codecConfig: codecConfig)
+            captureTimeMicros: capture, refFrameID: refFrameID, codecConfig: codecConfig, hostTimings: hostTimings)
         return (header, r.offset)
     }
 }
@@ -107,7 +117,7 @@ public struct CodecConfig: Equatable, Sendable {
         var r = ByteReader(value)
         var sets: [Bytes] = []
         for _ in 0..<3 {
-            guard let length = try? r.u32(), let nal = try? r.take(Int(length)) else { return nil }
+            guard let length = try? r.u32(), length > 0, let nal = try? r.take(Int(length)) else { return nil }
             sets.append(Bytes(nal))
         }
         return CodecConfig(vps: sets[0], sps: sets[1], pps: sets[2])

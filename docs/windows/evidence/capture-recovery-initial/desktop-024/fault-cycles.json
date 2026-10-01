@@ -1,0 +1,72 @@
+[
+    {
+        "observed_recovery_ms":  236,
+        "working_set_bytes":  120553472,
+        "private_bytes":  277245952,
+        "cycle":  1,
+        "handles":  358
+    },
+    {
+        "observed_recovery_ms":  220,
+        "working_set_bytes":  120655872,
+        "private_bytes":  277409792,
+        "cycle":  2,
+        "handles":  360
+    },
+    {
+        "observed_recovery_ms":  223,
+        "working_set_bytes":  120905728,
+        "private_bytes":  277721088,
+        "cycle":  3,
+        "handles":  360
+    },
+    {
+        "observed_recovery_ms":  254,
+        "working_set_bytes":  120983552,
+        "private_bytes":  277794816,
+        "cycle":  4,
+        "handles":  360
+    },
+    {
+        "observed_recovery_ms":  221,
+        "working_set_bytes":  121024512,
+        "private_bytes":  277831680,
+        "cycle":  5,
+        "handles":  360
+    },
+    {
+        "observed_recovery_ms":  223,
+        "working_set_bytes":  121118720,
+        "private_bytes":  277921792,
+        "cycle":  6,
+        "handles":  362
+    },
+    {
+        "observed_recovery_ms":  225,
+        "working_set_bytes":  121192448,
+        "private_bytes":  277921792,
+        "cycle":  7,
+        "handles":  362
+    },
+    {
+        "observed_recovery_ms":  224,
+        "working_set_bytes":  121237504,
+        "private_bytes":  277966848,
+        "cycle":  8,
+        "handles":  362
+    },
+    {
+        "observed_recovery_ms":  232,
+        "working_set_bytes":  121286656,
+        "private_bytes":  278024192,
+        "cycle":  9,
+        "handles":  362
+    },
+    {
+        "observed_recovery_ms":  222,
+        "working_set_bytes":  121294848,
+        "private_bytes":  278024192,
+        "cycle":  10,
+        "handles":  362
+    }
+]

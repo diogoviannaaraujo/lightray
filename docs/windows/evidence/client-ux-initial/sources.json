@@ -1,0 +1,38 @@
+[
+  {
+    "id": "parsec-overlay",
+    "url": "https://support.parsec.app/hc/en-us/articles/32381603663636-Stream-Overlay-Stats-and-Logging",
+    "accessed": "2026-09-29",
+    "supports": "Per-stage latency, RTT, overlay and graphs."
+  },
+  {
+    "id": "parsec-swap",
+    "url": "https://support.parsec.app/hc/en-us/articles/32361367389972-Swap-Command-and-Ctrl-for-MacOS",
+    "accessed": "2026-09-29",
+    "supports": "Physical mapping and optional Command/Control swap."
+  },
+  {
+    "id": "parsec-hotkeys",
+    "url": "https://support.parsec.app/hc/en-us/articles/32381778420372-Configure-Hotkeys",
+    "accessed": "2026-09-29",
+    "supports": "Configurable local shortcuts and detach input."
+  },
+  {
+    "id": "parsec-macos",
+    "url": "https://support.parsec.app/hc/en-us/articles/32381394408596-Parsec-App-for-macOS",
+    "accessed": "2026-09-29",
+    "supports": "HID, immersive mode, focus and accessibility permission."
+  },
+  {
+    "id": "parsec-latency",
+    "url": "https://support.parsec.app/hc/en-us/articles/32381352822804-Troubleshooting-Lag-Latency-and-Quality-Issues",
+    "accessed": "2026-09-29",
+    "supports": "Limitations of overlay timings and differing refresh rates."
+  },
+  {
+    "id": "microsoft-sendinput",
+    "url": "https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-sendinput",
+    "accessed": "2026-09-29",
+    "supports": "Input injection and integrity/UIPI restrictions."
+  }
+]

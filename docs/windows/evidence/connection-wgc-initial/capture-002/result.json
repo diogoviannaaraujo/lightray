@@ -1,0 +1,8 @@
+{
+    "run":  "capture-002",
+    "exit_code":  2,
+    "motion":  true,
+    "captured_pixels_saved":  false,
+    "input_injected":  false,
+    "executable_sha256":  "efbe63ad5da2bcfe99272eac6c5445698f5de59902f13727c6ad9029d4972467"
+}

@@ -1,0 +1,23 @@
+host_ready width=3840 height=2160 fps_target=90 bitrate_mbps=80 source_refresh_hz=60 capture_backend=wgc native_nvenc=true desktop=true input=true
+frames=0 keyframes=0 tx=0 rx=0 input=0 held=0 queue=0 skipped=0 desktop_updates=0 cached_frames=0
+frames=0 keyframes=0 tx=0 rx=0 input=0 held=0 queue=0 skipped=0 desktop_updates=0 cached_frames=0
+frames=0 keyframes=0 tx=0 rx=0 input=0 held=0 queue=0 skipped=0 desktop_updates=0 cached_frames=0
+frames=0 keyframes=0 tx=0 rx=0 input=0 held=0 queue=0 skipped=0 desktop_updates=0 cached_frames=0
+frames=0 keyframes=0 tx=0 rx=0 input=0 held=0 queue=0 skipped=0 desktop_updates=0 cached_frames=0
+frames=0 keyframes=0 tx=0 rx=0 input=0 held=0 queue=0 skipped=0 desktop_updates=0 cached_frames=0
+frames=0 keyframes=0 tx=0 rx=0 input=0 held=0 queue=0 skipped=0 desktop_updates=0 cached_frames=0
+frames=0 keyframes=0 tx=0 rx=0 input=0 held=0 queue=0 skipped=0 desktop_updates=0 cached_frames=0
+frames=0 keyframes=0 tx=0 rx=0 input=0 held=0 queue=0 skipped=0 desktop_updates=0 cached_frames=0
+frames=0 keyframes=0 tx=0 rx=0 input=0 held=0 queue=0 skipped=0 desktop_updates=0 cached_frames=0
+frames=0 keyframes=0 tx=0 rx=0 input=0 held=0 queue=0 skipped=0 desktop_updates=0 cached_frames=0
+session_started count=1
+capture_ready epoch=1 recovery_us=0 recreations=0 source_refresh_hz=60
+capture_idr epoch=1 sample=0
+frames=167 keyframes=2 tx=1292 rx=106 input=0 held=0 queue=0 skipped=10 desktop_updates=114 cached_frames=53
+frames=583 keyframes=2 tx=4505 rx=354 input=0 held=0 queue=0 skipped=36 desktop_updates=401 cached_frames=182
+frames=1009 keyframes=2 tx=7799 rx=601 input=0 held=0 queue=0 skipped=54 desktop_updates=688 cached_frames=321
+frames=1424 keyframes=2 tx=11045 rx=850 input=0 held=0 queue=0 skipped=80 desktop_updates=971 cached_frames=453
+frames=1850 keyframes=2 tx=14310 rx=1098 input=0 held=0 queue=0 skipped=99 desktop_updates=1259 cached_frames=591
+frames=2276 keyframes=2 tx=17417 rx=1347 input=0 held=0 queue=0 skipped=118 desktop_updates=1546 cached_frames=730
+frames=2702 keyframes=2 tx=20743 rx=1595 input=0 held=0 queue=0 skipped=138 desktop_updates=1834 cached_frames=868
+frames=3143 keyframes=2 tx=24117 rx=1843 input=0 held=0 queue=0 skipped=141 desktop_updates=2129 cached_frames=1014

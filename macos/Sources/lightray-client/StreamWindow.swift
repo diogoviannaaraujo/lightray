@@ -3,80 +3,63 @@ import AppKit
 import LightrayCore
 import LightrayMac
 
-/// Decoding for one video stream, on a queue of its own. It is created on the network queue the
-/// moment its stream delivers a frame, so that no frame waits for a window; the picture reaches
-/// the window's view once there is one.
-///
-/// Frames that arrive in a burst, after a Wi-Fi stall say, are all decoded, since each refers to
-/// the one before, but only the newest is shown: the window catches up at once instead of
-/// replaying the stall.
+/// Connects the bounded decoder to a view, rejecting output from invalidated epochs.
 final class StreamDecoder: @unchecked Sendable {
     let stream: UInt8
-    let queue: DispatchQueue
-    private let decoder = VideoDecoder()
-    private let lock = NSLock()
-    private var decodedCount = 0
-    private var waiting = 0
-
-    // On `queue`.
+    private let worker: BoundedVideoDecoder
     private var view: VideoView?
-    private var pending: CVPixelBuffer?
+    private var pending: (pixels: CVPixelBuffer, epoch: UInt64)?
     private var size: CGSize?
-    /// Called on `queue` with each result, to report it to the endpoint.
-    var onResult: ((VideoDecoder.Result) -> Void)?
-    /// Called on `queue` when the picture's size changes.
-    var onSize: ((CGSize) -> Void)?
-    /// Called on `queue` with each picture.
-    var onPicture: ((CVPixelBuffer) -> Void)?
+    var onResult: ((VideoDecoder.Result, UInt64) -> Void)?
+    var onSize: ((CGSize, UInt64) -> Void)?
+    var onPicture: ((CVPixelBuffer, UInt64) -> Void)?
 
     init(stream: UInt8) {
         self.stream = stream
-        queue = DispatchQueue(label: "lightray.decode.\(stream)", qos: .userInteractive)
+        worker = BoundedVideoDecoder(stream: stream)
+        worker.onResult = { [weak self] result, epoch, present in
+            guard let self, worker.isCurrent(epoch) else { return }
+            if case .picture(let pixels, _, _) = result {
+                if let view {
+                    if present { view.enqueue(pixels) }
+                } else {
+                    pending = (pixels, epoch)
+                }
+                let newSize = CGSize(width: CVPixelBufferGetWidth(pixels), height: CVPixelBufferGetHeight(pixels))
+                if newSize != size {
+                    size = newSize
+                    onSize?(newSize, epoch)
+                }
+                onPicture?(pixels, epoch)
+            }
+            onResult?(result, epoch)
+        }
     }
 
-    var decoded: Int { lock.withLock { decodedCount } }
+    var decoded: Int { worker.decoded }
+    var dropped: Int { worker.dropped }
+    func takeTimings() -> DecodeTimings { worker.takeTimings() }
+    var isActive: Bool { worker.isActive }
+    func isCurrent(_ epoch: UInt64) -> Bool { worker.isCurrent(epoch) }
 
-    func submit(_ frame: DeliveredFrame) {
-        lock.withLock { waiting += 1 }
-        queue.async { [self] in decode(frame) }
-    }
+    @discardableResult
+    func submit(_ frame: DeliveredFrame) -> UInt32? { worker.submit(frame) }
 
     func attach(_ view: VideoView) {
-        queue.async { [self] in
+        worker.queue.async { [self] in
+            guard worker.isActive else { return }
             self.view = view
-            if let pending { view.enqueue(pending) }
+            if let pending, worker.isCurrent(pending.epoch) { view.enqueue(pending.pixels) }
             pending = nil
         }
     }
 
     func invalidate() {
-        queue.async { [self] in
-            decoder.invalidate()
+        worker.cancel()
+        worker.queue.async { [self] in
             view = nil
+            pending = nil
         }
-    }
-
-    private func decode(_ frame: DeliveredFrame) {
-        let result = decoder.decode(frame)
-        let newerWaiting = lock.withLock {
-            waiting -= 1
-            return waiting > 0
-        }
-        if case .picture(let pixels, _, _) = result {
-            lock.withLock { decodedCount += 1 }
-            if let view {
-                if !newerWaiting { view.enqueue(pixels) }
-            } else {
-                pending = pixels
-            }
-            let newSize = CGSize(width: CVPixelBufferGetWidth(pixels), height: CVPixelBufferGetHeight(pixels))
-            if newSize != size {
-                size = newSize
-                onSize?(newSize)
-            }
-            onPicture?(pixels)
-        }
-        onResult?(result)
     }
 }
 
@@ -108,6 +91,7 @@ final class StreamWindow: NSObject, NSWindowDelegate {
         super.init()
         window.contentView = view
         window.collectionBehavior = [.fullScreenPrimary]
+        window.contentMinSize = NSSize(width: 420, height: 260)
         window.isReleasedWhenClosed = false
         window.delegate = self
         view.onInput = onInput
@@ -127,6 +111,7 @@ final class StreamWindow: NSObject, NSWindowDelegate {
     }
 
     func windowWillClose(_ notification: Notification) {
+        view.releaseEverything()
         if !closedByHost { onUserClose?(stream) }
     }
 

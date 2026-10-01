@@ -1,0 +1,11 @@
+[   0.000] stream 1: presentation screen id=5 max_fps=60
+[   0.001] socket buffers: receive 4194304, send 4194304 bytes
+[   0.002] connecting to 192.168.15.5:37373 from port 51402, with 1 video streams
+[   0.004] session 75b7905b established, datagrams up to 1200 bytes, no FEC, video streams [1]
+[   5.011] stream 1: 90 decoded fps · 6.1 connection Mb/s · RTT 4.5 ms · lost 6 · keyframes 3 · FEC-repaired 0 · NACKed 0 · capture/convert — · encode — · decode 2.26 ms · decode wait 0.05 ms · decode queue drops 6 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  10.025] stream 1: 81 decoded fps · 5.2 connection Mb/s · RTT 5.6 ms · lost 6 · keyframes 3 · FEC-repaired 0 · NACKed 0 · capture/convert — · encode — · decode 2.28 ms · decode wait 0.05 ms · decode queue drops 6 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  15.041] stream 1: 89 decoded fps · 6.1 connection Mb/s · RTT 5.8 ms · lost 6 · keyframes 3 · FEC-repaired 0 · NACKed 0 · capture/convert — · encode — · decode 2.36 ms · decode wait 0.06 ms · decode queue drops 6 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  20.074] stream 1: 90 decoded fps · 6.0 connection Mb/s · RTT 6.0 ms · lost 6 · keyframes 3 · FEC-repaired 0 · NACKed 0 · capture/convert — · encode — · decode 2.30 ms · decode wait 0.06 ms · decode queue drops 6 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  25.101] stream 1: 80 decoded fps · 5.1 connection Mb/s · RTT 5.3 ms · lost 6 · keyframes 3 · FEC-repaired 0 · NACKed 0 · capture/convert — · encode — · decode 2.30 ms · decode wait 0.05 ms · decode queue drops 6 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  30.110] stream 1: 91 decoded fps · 6.2 connection Mb/s · RTT 5.1 ms · lost 6 · keyframes 3 · FEC-repaired 0 · NACKed 0 · capture/convert — · encode — · decode 2.13 ms · decode wait 0.04 ms · decode queue drops 6 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  32.098] disconnected: the host closed the session (goingAway)

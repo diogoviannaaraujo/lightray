@@ -1,0 +1,10 @@
+{
+  "status": "passed",
+  "corpus_bitstreams_payloads_configs_identical": [
+    "native-nvenc-003",
+    "native-nvenc-004",
+    "native-nvenc-005"
+  ],
+  "final_source_hashes_match": true,
+  "scope": "Functional NVENC/ABI/IPv4 loopback with simulated protocol clock; no desktop or display"
+}

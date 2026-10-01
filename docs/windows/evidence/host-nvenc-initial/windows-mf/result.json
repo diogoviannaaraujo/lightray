@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "run_id": "bbb9de20-c474-455a-8cf2-ca0d3af255b5",
+  "started_at": "2026-09-29T13:00:07.528179+00:00",
+  "action": "decode-reference",
+  "source": {
+    "commit": "5002116872492da705aa6252f26482b02e3df5b5",
+    "dirty": true,
+    "implementation_sha256": "46127c822a58d19cf044d2beb39a8867ea2d40b879d43845c23db2db31ff0f14"
+  },
+  "status": "passed",
+  "backend": "media-foundation-d3d11",
+  "adapter_index": 0,
+  "adapter": {
+    "index": 0,
+    "name": "NVIDIA GeForce RTX 4090",
+    "vendor_id": 4318,
+    "software": false,
+    "dedicated_video_bytes": 25310527488,
+    "device_hresult": 0,
+    "feature_level": 45056,
+    "video_interface_hresult": 0,
+    "hevc_main_profile": true,
+    "configurations": [
+      {
+        "width": 1920,
+        "height": 1080,
+        "hresult": 0,
+        "count": 2
+      },
+      {
+        "width": 2560,
+        "height": 1440,
+        "hresult": 0,
+        "count": 2
+      },
+      {
+        "width": 3840,
+        "height": 2160,
+        "hresult": 0,
+        "count": 2
+      }
+    ]
+  },
+  "ffmpeg": "ffmpeg version 8.1-essentials_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers",
+  "ffprobe": "ffprobe version 8.1-essentials_build-www.gyan.dev Copyright (c) 2007-2026 the FFmpeg developers",
+  "clips": [
+    {
+      "clip": "native-nvenc-1920x1080",
+      "input_sha256": "604a82a7a1453bf0d143d78d45e70974782d39f81b654e00066e279224afcb26",
+      "format": {
+        "codec_name": "hevc",
+        "profile": "Main",
+        "width": 1920,
+        "height": 1080,
+        "pix_fmt": "yuv420p"
+      },
+      "probe_metrics": {
+        "schema_version": 1,
+        "backend": "media-foundation-d3d11",
+        "adapter_index": 0,
+        "width": 1920,
+        "height": 1080,
+        "gpu_frames": 120,
+        "read_sample_p50_ms": 0.055,
+        "read_sample_p95_ms": 0.0869,
+        "read_sample_p99_ms": 0.112,
+        "limits": [
+          "ReadSample timing includes demux and decoder waits; excludes GPU download and hashing",
+          "Staging allocation and readback per frame are for correctness only",
+          "No presentation or input-to-photon measurement"
+        ]
+      },
+      "frames": 120,
+      "framehash_file": "native-nvenc-1920x1080.framehash",
+      "framehash_sha256": "c36ceb7ed0bbd9bc4fe910a346e876e48eeb32628cf0f38ce960c1c25ab5ebdf",
+      "wall_seconds": 0.64
+    },
+    {
+      "clip": "native-nvenc-2560x1440",
+      "input_sha256": "6ff7fb1b277aec901bdff940a674919557986f6ab38ae0b3710fa3a478acf8de",
+      "format": {
+        "codec_name": "hevc",
+        "profile": "Main",
+        "width": 2560,
+        "height": 1440,
+        "pix_fmt": "yuv420p"
+      },
+      "probe_metrics": {
+        "schema_version": 1,
+        "backend": "media-foundation-d3d11",
+        "adapter_index": 0,
+        "width": 2560,
+        "height": 1440,
+        "gpu_frames": 120,
+        "read_sample_p50_ms": 0.0621,
+        "read_sample_p95_ms": 0.1066,
+        "read_sample_p99_ms": 0.1221,
+        "limits": [
+          "ReadSample timing includes demux and decoder waits; excludes GPU download and hashing",
+          "Staging allocation and readback per frame are for correctness only",
+          "No presentation or input-to-photon measurement"
+        ]
+      },
+      "frames": 120,
+      "framehash_file": "native-nvenc-2560x1440.framehash",
+      "framehash_sha256": "9e919f7aa0bcfccb5e966da131981fc5d45289eeb3d0b941a8d006eb0a6dca1a",
+      "wall_seconds": 1.015
+    },
+    {
+      "clip": "native-nvenc-3840x2160",
+      "input_sha256": "034cd0cac2cc3466e2eb05ea9f13b1cf695e3fb9a2f65697353c5003b3ad392e",
+      "format": {
+        "codec_name": "hevc",
+        "profile": "Main",
+        "width": 3840,
+        "height": 2160,
+        "pix_fmt": "yuv420p"
+      },
+      "probe_metrics": {
+        "schema_version": 1,
+        "backend": "media-foundation-d3d11",
+        "adapter_index": 0,
+        "width": 3840,
+        "height": 2160,
+        "gpu_frames": 120,
+        "read_sample_p50_ms": 0.084,
+        "read_sample_p95_ms": 0.1273,
+        "read_sample_p99_ms": 0.2123,
+        "limits": [
+          "ReadSample timing includes demux and decoder waits; excludes GPU download and hashing",
+          "Staging allocation and readback per frame are for correctness only",
+          "No presentation or input-to-photon measurement"
+        ]
+      },
+      "frames": 120,
+      "framehash_file": "native-nvenc-3840x2160.framehash",
+      "framehash_sha256": "e62e3c9a5275077652b3d1c4e84fd3ca7982c49d9d06a81c1201c273c38da52c",
+      "wall_seconds": 1.547
+    }
+  ],
+  "limits": [
+    "Full clips decoded without simulated loss",
+    "Decode correctness only; no presentation, FPS or latency qualification",
+    "Hardware probes use GPU-to-CPU download for pixel hashing; this is not the final rendering path",
+    "Wall time includes process startup, conversion and hashing"
+  ]
+}

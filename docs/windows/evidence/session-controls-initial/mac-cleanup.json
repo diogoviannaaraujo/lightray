@@ -1,0 +1,8 @@
+{
+  "observed_at_utc": "2026-10-01T11:46:19.115098+00:00",
+  "method": "pgrep exact executable name",
+  "processes": {
+    "lightray-client": 0,
+    "lightray-host": 0
+  }
+}

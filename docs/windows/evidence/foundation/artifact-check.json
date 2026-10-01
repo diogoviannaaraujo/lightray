@@ -1,0 +1,18 @@
+{
+  "baseline_commit": "5002116872492da705aa6252f26482b02e3df5b5",
+  "branch": "codex/windows-foundation",
+  "original_files_checked": 73,
+  "original_files_changed": [],
+  "markdown_files_checked": 6,
+  "broken_local_links": [],
+  "hevc_files_checked": 6,
+  "hevc_differences": [],
+  "git_diff_check_passed": true,
+  "product_tests": {
+    "core": 68,
+    "mac": 7,
+    "total": 75
+  },
+  "vector_tests": 11,
+  "windows_validation": "not_run_ssh_host_identity_pending"
+}

@@ -1,0 +1,27 @@
+{
+  "source_sha256": {
+    "macos/Sources/LightrayCore/Wire/HostFrameTimings.swift": "14a7cb43dc7826299ff8fab1ac511e52cb085f36189590bd64ead28b8c7048e3",
+    "macos/Sources/LightrayCore/Wire/FrameHeader.swift": "977c59f46e6ff23b735aae880c22068d661769adcb7fa1e67943bafa2c003f60",
+    "macos/Sources/LightrayCore/Media/VideoSender.swift": "5ac46aceb960c48b2493afd34bb9da2f7f7ecfecd330fb73e13ba05c12ab2a71",
+    "macos/Sources/LightrayMac/DecodeTimings.swift": "ccff5d1c763e14f9fc1e994f7c1258ca555f673c1874a78fc142a3c1c662fd94",
+    "macos/Sources/LightrayMac/BoundedVideoDecoder.swift": "4d29ff5aec06c7194aba77363d1dc505b6367eb25319f4bc3ca1722d03fb0491",
+    "macos/Sources/lightray-client/ClientApp.swift": "8dd3075033ce190a1a4008139934e90a3e8d2221d55309fb769534a016c7a6a5",
+    "macos/Sources/lightray-client/StatisticsOverlay.swift": "b188802a30fd941caaa86a8267f51279f79bdf6ce18a8160ba85824a22ba409a",
+    "macos/Sources/lightray-client/VideoView.swift": "6bf8ff90f7442dd83479fdfe1cd7b7386b8ce112a03d5ea3b418dae80e553015",
+    "macos/Tests/LightrayCoreTests/HostTimingsTests.swift": "21a66c58aa037882c9e208d15a1d9b1c3cd544238ebd6728b9fabce010199bfb",
+    "macos/Tests/LightrayMacTests/DecodeTimingsTests.swift": "f790647935b94f6a7096f346d1fa6679ca12928078187be3647801bdcf215271",
+    "tools/windows/src/host_bridge.swift": "7c9925d8a9b8afabfe887180e9e2fa51179cd02def3832bed7542cb7b4ba2880",
+    "tools/windows/src/host_bridge.h": "7249e4a0f4a38948159699c19b6719a5ac67306c869299a3d9842e555454c2ef",
+    "tools/windows/src/host_bridge_tests.swift": "0b0aefc3c8f2031a19ee6153724a96f7e8e362c26881c417a847ac88dd14a580",
+    "tools/windows/src/windows_host.cpp": "11a284f2958216bad117ac1ab44bead5fb92aeac5c1a88ae55930d2ea55d3ae4",
+    "tools/windows/src/desktop_capture.hpp": "e0f9a4b89209825dfb4d3e492e8b79ea4bb3dbd06b02a93cf0fb8d9dc45e421c",
+    "tools/windows/start-desktop-host-test.ps1": "781313280f4f16865e198c2c28563dbc52ab4746bcf2d5d09fcf54850025b8f7",
+    "tools/windows/verify-host-timings.py": "2286db120bad18cbd877dbff3ae03ae9245687f8a94741015b925b0315555884",
+    "tools/windows/tests/test_host_timings.py": "948232328a97a57f25d39dd419d8878c5e3cfbc3a8ce598ee17f96c73969fc47"
+  },
+  "mac_executable_sha256": "304e25a15905e96ea4df754adb7f00114f1d9db4f56dae5b1480d98d4c073717",
+  "legacy_mac_executable_sha256": "fd0f08cb29f8a2406531c620ac7af8f07a2802315baa0eb620fb9908b6b4d665",
+  "windows_executable_sha256": "d12f96f83c149a27a2a9f929e4e3453cb7cb21ee9454ab8bcf5a068e33742be7",
+  "windows_legacy_executable_sha256": "994e229acc38c68990f8cee7da87857781d7e18f94c11794122b6af4c3dfd95d",
+  "windows_core_sha256": "5164d1d0a9f5c14079c432a4dec9c221c1203aeab6318ae9f95fd7d9a2642264"
+}

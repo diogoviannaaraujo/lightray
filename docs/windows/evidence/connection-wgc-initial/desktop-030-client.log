@@ -1,0 +1,16 @@
+[   0.000] stream 1: presentation screen id=4 max_fps=60
+[   0.002] socket buffers: receive 4194304, send 4194304 bytes
+[   0.002] connecting to 192.168.15.5:37373 from port 52083, with 1 video streams
+[   0.007] session 285bd322 established, datagrams up to 1200 bytes, no FEC, video streams [1]
+[   0.016] display id=1 native=3840x2160 refresh_millihertz=60000
+[   0.130] stream 1: first_decoded_frame_us=124040 after_authenticated_connection
+[   5.045] stream 1: 83 decoded fps · 5.9 connection Mb/s · RTT 4.7 ms · lost 0 · keyframes 2 · FEC-repaired 0 · NACKed 0 · capture/convert 0.17 ms · encode 6.55 ms · decode 2.31 ms · decode wait 0.05 ms · host sample 420 capture_us 18 encode_us 6858 · decode queue drops 3 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  10.068] stream 1: 85 decoded fps · 5.3 connection Mb/s · RTT 5.6 ms · lost 0 · keyframes 2 · FEC-repaired 0 · NACKed 0 · capture/convert 0.14 ms · encode 6.69 ms · decode 2.28 ms · decode wait 0.05 ms · host sample 839 capture_us 178 encode_us 13613 · decode queue drops 3 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  15.095] stream 1: 80 decoded fps · 5.7 connection Mb/s · RTT 6.0 ms · lost 0 · keyframes 2 · FEC-repaired 0 · NACKed 0 · capture/convert 0.14 ms · encode 6.57 ms · decode 2.31 ms · decode wait 0.05 ms · host sample 1261 capture_us 141 encode_us 7466 · decode queue drops 3 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  20.129] stream 1: 80 decoded fps · 5.6 connection Mb/s · RTT 5.3 ms · lost 0 · keyframes 2 · FEC-repaired 0 · NACKed 0 · capture/convert 0.13 ms · encode 6.71 ms · decode 2.24 ms · decode wait 0.05 ms · host sample 1682 capture_us 150 encode_us 10891 · decode queue drops 3 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  25.161] stream 1: 88 decoded fps · 5.8 connection Mb/s · RTT 6.5 ms · lost 0 · keyframes 2 · FEC-repaired 0 · NACKed 0 · capture/convert 0.11 ms · encode 6.31 ms · decode 2.16 ms · decode wait 0.05 ms · host sample 2113 capture_us 17 encode_us 6534 · decode queue drops 3 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  30.188] stream 1: 81 decoded fps · 5.4 connection Mb/s · RTT 4.7 ms · lost 0 · keyframes 2 · FEC-repaired 0 · NACKed 0 · capture/convert 0.11 ms · encode 6.88 ms · decode 2.08 ms · decode wait 0.04 ms · host sample 2537 capture_us 154 encode_us 7909 · decode queue drops 3 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  35.217] stream 1: 90 decoded fps · 6.1 connection Mb/s · RTT 4.5 ms · lost 0 · keyframes 2 · FEC-repaired 0 · NACKed 0 · capture/convert 0.10 ms · encode 4.10 ms · decode 2.16 ms · decode wait 0.04 ms · host sample 2973 capture_us 113 encode_us 4416 · decode queue drops 3 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  40.235] stream 1: 87 decoded fps · 5.6 connection Mb/s · RTT 5.5 ms · lost 0 · keyframes 2 · FEC-repaired 0 · NACKed 0 · capture/convert 0.13 ms · encode 6.74 ms · decode 2.19 ms · decode wait 0.04 ms · host sample 3421 capture_us 122 encode_us 5640 · decode queue drops 3 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  41.972] disconnected: the host closed the session (goingAway)
+[  52.074] disconnected: no response from the host

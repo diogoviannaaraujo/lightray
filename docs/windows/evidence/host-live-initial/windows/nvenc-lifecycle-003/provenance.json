@@ -1,0 +1,23 @@
+{
+  "status": "failed",
+  "kind": "native-nvenc-lifecycle",
+  "desktop_captured": false,
+  "executable_sha256": "95c6da8447c1613d5a75e5d2d958d101c5e1877d2a74b032914d9c8706497b79",
+  "inputs": {
+    "src/nvenc_encoder.hpp": "96d312175d7b848cbe8acbb602728fdd20d7062efccb9d55ebd8c81fbf7c409c",
+    "src/nvenc_encoder.cpp": "55dbf5144b5fa094a061bfa9612d0068018be0e2ce416df759551321da0850ac",
+    "src/nvenc_lifecycle_probe.cpp": "7649a9fef02975673d8222eca393627926e160ab07404a2cde53765f8e44de3c",
+    "src/hevc_annexb.hpp": "e3b24d3fe79332b4fce334876ae7f0f58d6edc1b80ea886e38a8b0b15b5f2d0c",
+    "vendor/nv-codec-headers/nvEncodeAPI.h": "4fe4094541ef0f8a13249d97a8692dc5f835a6e9dd42eeadb3e2f7321d54dc7e",
+    "run-nvenc-lifecycle.py": "3a62c6d55956e5ead7558363be4811fae53f8714abbed84f5b131c37982250fa",
+    "build-nvenc-probe.ps1": "55d7595416383a005408fd8f28c836efdf197b12b87365fbf05fbd0ed64de688"
+  },
+  "exit_code": 0,
+  "frames": {
+    "frames": 600,
+    "idr_frames": 400,
+    "resolution_changes": 100,
+    "independent_decode_verified": true
+  },
+  "reason": "Resource trend exceeds declared guardrail: private_bytes"
+}

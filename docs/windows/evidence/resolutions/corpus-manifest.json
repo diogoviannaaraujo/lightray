@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "kind": "synthetic-videotoolbox",
+  "created_at": "2026-09-29T02:25:32.828230+00:00",
+  "source_commit": "5002116872492da705aa6252f26482b02e3df5b5",
+  "ffmpeg": "ffmpeg version 8.0.1 Copyright (c) 2000-2025 the FFmpeg developers",
+  "source": "lavfi testsrc2; no user screen captured",
+  "limits": [
+    "Encoder output may vary between OS and hardware; use recorded byte hashes for comparisons",
+    "Synthetic P-frame corpus; not an end-to-end Lightray stream"
+  ],
+  "commands": [
+    [
+      "ffmpeg",
+      "-hide_banner",
+      "-loglevel",
+      "error",
+      "-nostdin",
+      "-f",
+      "lavfi",
+      "-i",
+      "testsrc2=size=2560x1440:rate=60",
+      "-frames:v",
+      "120",
+      "-c:v",
+      "hevc_videotoolbox",
+      "-profile:v",
+      "main",
+      "-pix_fmt",
+      "yuv420p",
+      "-allow_sw",
+      "0",
+      "-realtime",
+      "1",
+      "-bf",
+      "0",
+      "-g",
+      "60",
+      "-b:v",
+      "20M",
+      "-f",
+      "hevc",
+      "-n",
+      "<CHECKOUT>/tools/windows/results/resolution-corpus-001/videotoolbox-synthetic-2560x1440.hevc"
+    ],
+    [
+      "ffmpeg",
+      "-hide_banner",
+      "-loglevel",
+      "error",
+      "-nostdin",
+      "-f",
+      "lavfi",
+      "-i",
+      "testsrc2=size=3840x2160:rate=60",
+      "-frames:v",
+      "120",
+      "-c:v",
+      "hevc_videotoolbox",
+      "-profile:v",
+      "main",
+      "-pix_fmt",
+      "yuv420p",
+      "-allow_sw",
+      "0",
+      "-realtime",
+      "1",
+      "-bf",
+      "0",
+      "-g",
+      "60",
+      "-b:v",
+      "40M",
+      "-f",
+      "hevc",
+      "-n",
+      "<CHECKOUT>/tools/windows/results/resolution-corpus-001/videotoolbox-synthetic-3840x2160.hevc"
+    ]
+  ],
+  "files": [
+    {
+      "path": "tools/windows/results/resolution-corpus-001/videotoolbox-synthetic-2560x1440.hevc",
+      "bytes": 5073265,
+      "sha256": "83a06d9b095e4aba1e518714fd9f2aac5b9fc0dce2a449f82849e5ccc7db5e50"
+    },
+    {
+      "path": "tools/windows/results/resolution-corpus-001/videotoolbox-synthetic-2560x1440.json",
+      "bytes": 7235,
+      "sha256": "86e2f0dd45b0e8ddac3221732c59be5035701d8519479bd781cc2d68bd86dd5c"
+    },
+    {
+      "path": "tools/windows/results/resolution-corpus-001/videotoolbox-synthetic-3840x2160.hevc",
+      "bytes": 10058380,
+      "sha256": "0b787f0a7f73261514d1f5e0292d5de392e66cfdf4d6c6d374d13d298e8543bb"
+    },
+    {
+      "path": "tools/windows/results/resolution-corpus-001/videotoolbox-synthetic-3840x2160.json",
+      "bytes": 7235,
+      "sha256": "c92d3a8167a10c875ed4d8189d464fcb32fc2caacfbc52cea8f70257adb6cdc1"
+    }
+  ]
+}

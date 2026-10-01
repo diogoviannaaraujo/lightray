@@ -1,0 +1,12 @@
+﻿{
+    "invalid_adapter_created":  false,
+    "schema_version":  1,
+    "overwrite_exit":  1,
+    "invalid_size_exit":  1,
+    "driver":  "NVIDIA GeForce RTX 4090, 591.86",
+    "invalid_size_created":  false,
+    "build_exit":  0,
+    "tests_exit":  0,
+    "invalid_adapter_exit":  1,
+    "remaining_processes":  0
+}

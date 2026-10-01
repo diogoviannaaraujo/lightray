@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "platform": "native-windows",
+  "encoder_executable_sha256": "90e34550a7ed8f2dc356a2a7f65b92365e182c1ca2c9adda6b95114f7c53af39",
+  "source_files": [
+    {
+      "path": "tools/windows/src/nvenc_encode_probe.cpp",
+      "sha256": "66593ea4335e00922fb39e309ad43eb469d1e6e255e3e96e1ccb700d8b02992c"
+    },
+    {
+      "path": "tools/windows/src/hevc_annexb.hpp",
+      "sha256": "e3b24d3fe79332b4fce334876ae7f0f58d6edc1b80ea886e38a8b0b15b5f2d0c"
+    },
+    {
+      "path": "tools/windows/src/hevc_annexb_tests.cpp",
+      "sha256": "f95959206551205b2f8c456e7acf18a536b1566fd885e258fadca0313886189c"
+    },
+    {
+      "path": "tools/windows/build-nvenc-probe.ps1",
+      "sha256": "f42c4ebc77e5b3b47d57c6f6079b8e915785bf0d706398b5ac4df7486f16e0b4"
+    },
+    {
+      "path": "tools/windows/run-nvenc-probe.py",
+      "sha256": "dee8ae9a7369350eb09816e56c54ac68b19ddbd9ace033457d9b8284b60b677e"
+    },
+    {
+      "path": "tools/windows/vendor/nv-codec-headers/nvEncodeAPI.h",
+      "sha256": "4fe4094541ef0f8a13249d97a8692dc5f835a6e9dd42eeadb3e2f7321d54dc7e"
+    }
+  ],
+  "runs": [
+    {
+      "resolution": [
+        1920,
+        1080
+      ],
+      "exit_code": 0,
+      "native_summary": {
+        "schema_version": 1,
+        "status": "passed",
+        "backend": "native-nvenc-d3d11",
+        "driver_api": 208,
+        "header_api_major": 13,
+        "adapter_index": 0,
+        "vendor_id": 4318,
+        "device_id": 9860,
+        "width": 1920,
+        "height": 1080,
+        "fps": 60,
+        "frames": 120,
+        "idr_frames": 2,
+        "bitrate": 20000000,
+        "wall_seconds": 0.403325,
+        "capture": "synthetic_cpu_nv12_upload",
+        "software_encoder_fallback": false,
+        "desktop_captured": false,
+        "limits": [
+          "Synchronous synthetic encode only; no network or desktop capture",
+          "Encode/lock span includes waits; not end-to-end latency or displayed FPS"
+        ]
+      },
+      "framing_verified": true,
+      "independent_profile_verified": true
+    },
+    {
+      "resolution": [
+        2560,
+        1440
+      ],
+      "exit_code": 0,
+      "native_summary": {
+        "schema_version": 1,
+        "status": "passed",
+        "backend": "native-nvenc-d3d11",
+        "driver_api": 208,
+        "header_api_major": 13,
+        "adapter_index": 0,
+        "vendor_id": 4318,
+        "device_id": 9860,
+        "width": 2560,
+        "height": 1440,
+        "fps": 60,
+        "frames": 120,
+        "idr_frames": 2,
+        "bitrate": 20000000,
+        "wall_seconds": 0.667927,
+        "capture": "synthetic_cpu_nv12_upload",
+        "software_encoder_fallback": false,
+        "desktop_captured": false,
+        "limits": [
+          "Synchronous synthetic encode only; no network or desktop capture",
+          "Encode/lock span includes waits; not end-to-end latency or displayed FPS"
+        ]
+      },
+      "framing_verified": true,
+      "independent_profile_verified": true
+    },
+    {
+      "resolution": [
+        3840,
+        2160
+      ],
+      "exit_code": 0,
+      "native_summary": {
+        "schema_version": 1,
+        "status": "passed",
+        "backend": "native-nvenc-d3d11",
+        "driver_api": 208,
+        "header_api_major": 13,
+        "adapter_index": 0,
+        "vendor_id": 4318,
+        "device_id": 9860,
+        "width": 3840,
+        "height": 2160,
+        "fps": 60,
+        "frames": 120,
+        "idr_frames": 2,
+        "bitrate": 40000000,
+        "wall_seconds": 1.23738,
+        "capture": "synthetic_cpu_nv12_upload",
+        "software_encoder_fallback": false,
+        "desktop_captured": false,
+        "limits": [
+          "Synchronous synthetic encode only; no network or desktop capture",
+          "Encode/lock span includes waits; not end-to-end latency or displayed FPS"
+        ]
+      },
+      "framing_verified": true,
+      "independent_profile_verified": true
+    }
+  ],
+  "status": "passed"
+}

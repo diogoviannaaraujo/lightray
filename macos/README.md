@@ -1,5 +1,9 @@
 # Lightray for macOS
 
+The client now has an in-video performance HUD and optional Command/Control swapping for Windows hosts; see [metrics, keyboard shortcuts, and validation](../docs/windows/client-ux-progress.md).
+Use `--swap-command-control` for Command+C/V in Windows, `--no-stats` to start without the HUD, or the View and Input menus to change these settings per window.
+Control+Option+Command+Esc releases remote input; click the video to resume, and Control+Option+Command+M toggles the HUD.
+
 A first implementation of the protocol in [`docs/`](../docs/README.md), Mac to Mac: video from the
 host, any number of its displays at once, and keyboard and mouse from the client. Audio, the
 microphone, park and resume, and the other things listed under [Not yet](#not-yet) come later.
@@ -21,6 +25,17 @@ parse and re-encode the hex examples in the version 0 documents, decode the IDR 
 [`video.md`](../docs/video.md) with VideoToolbox, and run a host against a client over a simulated
 path with loss, jitter and address changes. The names of the conformance tests they cover are in
 the test files.
+
+## Graphical client
+
+Start `macos/.build/release/lightray-client` without a host to open Computers.
+Enter a hostname/IP and port, import the pairing file supplied by the host, choose a local display, and connect.
+Remember this computer stores public metadata separately from the protected pairing file.
+The session menu offers Disconnect, which returns to Computers; closing the last stream does the same in this mode.
+The launcher returns to Computers with guidance if authentication does not succeed within 12 seconds after network setup.
+`--launcher` forces this mode with optional CLI defaults; `--no-host-catalog --no-preferences` isolates laboratory runs from saved hosts/settings.
+Monitor preferences use persistent display UUIDs, with an available-display fallback after disconnection.
+See the [connection and WGC validation report](../docs/windows/connection-capture-progress-2026-10-01.md) for tested behavior and open onboarding/compatibility gates.
 
 ## Run
 
@@ -66,7 +81,7 @@ is hidden over the window.
 Each window shows one of the host's displays on a video stream of its own
 ([displays.md](../docs/displays.md)). The **Displays** menu opens another display in a new window,
 brings forward the one showing it, or switches the current window to a different display. Closing
-a window stops its stream; closing the last one quits. Two windows can show the same display.
+a window stops its stream; closing the last one quits in direct CLI mode or returns to Computers in launcher mode. Two windows can show the same display.
 
 `--all-displays` opens every display at start, and `--show ID` a given one, by the id the host logs
 when it starts. The client proposes 4 video streams, so 4 windows at once; `--streams N` changes
@@ -231,6 +246,7 @@ None of these is on the wire.
 | Keepalive | `PING` after 250 ms without sending |
 | Client silent | host stops media after 2 s, keeping capture and the encoders warm; resumes with a keyframe on each stream at the next packet; forgets the session after 60 s |
 | Host silent | client starts a new handshake after 5 s |
+| Reliable input queue full | pending pointer motion is retained and coalesced; a refused key, button, or scroll ends the session and reports the reason, so CLOSE, a replacement handshake, or host silence resets held input |
 | Sessions | one at a time; a new handshake replaces the current session |
 | Pacing | each video stream paces itself: it drains its backlog within a frame interval of its last frame, at least 1.25 × the bitrate, in bursts of 32 datagrams; the order the streams drain in rotates |
 
@@ -259,3 +275,19 @@ queue of its own: for capture and encoding on the host, and for decoding on the 
   streams, the same for all.
 - The cursor channel, relative pointer motion, gamepads and text input.
 - Capturing system shortcuts on the client.
+
+Windows hosts can now report capture/convert and encode durations in the HUD; see [host telemetry semantics and validation](../docs/windows/host-telemetry-progress.md).
+
+## Session controls and host preferences
+
+The client exposes a Lightray session button in windowed and full-screen mode, also available through View → Session Menu or Control+Option+Command+S.
+Opening it releases remote input; closing it keeps input released until explicit resume or a consumed click on the video.
+The panel offers statistics, optional Command/Control swapping, local pointer, full screen, Alt+Tab, Windows key and preference reset.
+Remote actions require live decoded video; waiting or interrupted video cannot forward input.
+The cursor remains visible locally while input cannot be forwarded.
+
+Preferences persist by public pairing ID and contain no pairing key or clipboard data.
+Explicit CLI choices override the initial saved values without saving them at launch: `--stats`/`--no-stats`, `--physical-keys`/`--swap-command-control`, and `--host-cursor`/`--local-cursor`.
+Use `--no-preferences` to isolate a lab run and `--screen-id N` to select a local presentation monitor after checking the current screen inventory.
+Successful decodes drive a local waiting/live/interrupted state; two seconds without progress after live video pause input, without attributing the cause to capture or network.
+See [implementation, evidence and remaining validation](../docs/windows/session-controls-progress.md).

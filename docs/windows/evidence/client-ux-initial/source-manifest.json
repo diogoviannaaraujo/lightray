@@ -1,0 +1,18 @@
+{
+  "source_sha256": {
+    "macos/Sources/LightrayMac/RemoteKeyboard.swift": "bc64a4da057a215a6eb589a955e21c9a68189e008f81c52a1cabfee51bdbabbe",
+    "macos/Sources/LightrayMac/DecodeTimings.swift": "8ea584caaa70cd6c60a017647c91644660ea7c7d7e12a112f95da738ccdbc62a",
+    "macos/Sources/LightrayMac/BoundedVideoDecoder.swift": "7de430536d4c82d94fab7184c0ee31a382dec54c2e7ed3b552e69b9ab3812fd5",
+    "macos/Sources/lightray-client/StatisticsOverlay.swift": "7fa0247a286efdc4c26a3761c59df17f55450e8bd68568d1d82a937ef8363e02",
+    "macos/Sources/lightray-client/VideoView.swift": "277ef7b1c7a11fc0a6eaec7a9a3accc358e7d8ea575e1b6b3b28ff092a601447",
+    "macos/Sources/lightray-client/StreamWindow.swift": "38b5a408e05717499f01139c0ccd9e4f9396f32c5a9a0372986fb1e0653894f8",
+    "macos/Sources/lightray-client/ClientApp.swift": "fcdbedb45f3a9526781c8cc87588c633afa63510cc31ba161eb07f848ed3afc6",
+    "macos/Sources/lightray-client/main.swift": "b47f827057d8dda844fb6806afa9a186be730bdfd84ef464f86f6b4a2db42c47",
+    "macos/Tests/LightrayMacTests/RemoteKeyboardTests.swift": "5bbf8dbe028a797cd659cced314b8ff1633074a2abecc67cd0590facd987f31e",
+    "macos/Tests/LightrayMacTests/DecodeTimingsTests.swift": "e1b82b20c3c813eafb249b3d7be9946be9b7e0103391e58335f5493b311c1ecc",
+    "macos/Tests/LightrayMacTests/MacTests.swift": "4476f5cd83f8ed5da474285d775e1d9a230c63f1417462f6853a33d0e1d59910",
+    "tools/windows/src/desktop_test_window.cpp": "c4ec57416828f803d4d2ff0bc588a93ce2317c1ee2722c4be8e0f5cc6568a978"
+  },
+  "mac_app_executable_sha256": "fd0f08cb29f8a2406531c620ac7af8f07a2802315baa0eb620fb9908b6b4d665",
+  "windows_executable_sha256": "994e229acc38c68990f8cee7da87857781d7e18f94c11794122b6af4c3dfd95d"
+}

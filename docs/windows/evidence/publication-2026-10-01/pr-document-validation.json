@@ -1,0 +1,41 @@
+{
+  "missing_links": [],
+  "local_only_links": [],
+  "manifests": [
+    {
+      "manifest": "docs/windows/reports/MANIFEST.sha256",
+      "entries": 2,
+      "errors": []
+    },
+    {
+      "manifest": "docs/windows/evidence/host-nvenc-initial/MANIFEST.sha256",
+      "entries": 57,
+      "errors": []
+    },
+    {
+      "manifest": "docs/windows/evidence/capture-recovery-initial/MANIFEST.sha256",
+      "entries": 57,
+      "errors": []
+    },
+    {
+      "manifest": "docs/windows/evidence/connection-wgc-initial/MANIFEST.sha256",
+      "entries": 63,
+      "errors": []
+    },
+    {
+      "manifest": "docs/windows/evidence/host-live-initial/MANIFEST.sha256",
+      "entries": 82,
+      "errors": []
+    },
+    {
+      "manifest": "docs/windows/evidence/host-bridge-initial/MANIFEST.sha256",
+      "entries": 31,
+      "errors": []
+    },
+    {
+      "manifest": "docs/windows/evidence/session-controls-initial/MANIFEST.sha256",
+      "entries": 17,
+      "errors": []
+    }
+  ]
+}

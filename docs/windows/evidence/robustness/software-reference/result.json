@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "run_id": "1fb3afc4-193d-4ed9-99c8-4275463dedd5",
+  "started_at": "2026-09-29T00:16:15.123177+00:00",
+  "action": "decode-reference",
+  "source": {
+    "commit": "5002116872492da705aa6252f26482b02e3df5b5",
+    "dirty": true
+  },
+  "status": "passed",
+  "backend": "ffmpeg-hevc-software",
+  "ffmpeg": "ffmpeg version 8.0.1 Copyright (c) 2000-2025 the FFmpeg developers",
+  "ffprobe": "ffprobe version 8.0.1 Copyright (c) 2007-2025 the FFmpeg developers",
+  "clips": [
+    {
+      "clip": "videotoolbox-idr",
+      "input_sha256": "a66e182e0493de105012d13be38e117d1546338b58e18214a6d0e5dc09022070",
+      "format": {
+        "codec_name": "hevc",
+        "profile": "Main",
+        "width": 1920,
+        "height": 1080,
+        "pix_fmt": "yuv420p"
+      },
+      "frames": 120,
+      "framehash_file": "videotoolbox-idr.framehash",
+      "framehash_sha256": "87643d7045c3bbfca60d089f9efeedc24590cfbf1f0af0310a85cfbd2da3eaa1",
+      "wall_seconds": 0.728748
+    },
+    {
+      "clip": "videotoolbox-ltr-ack-every-250ms",
+      "input_sha256": "a7eb5752edea734e560e6d0f4a4c7a0810da619e9a89c327edfa3d0f8f22b0b2",
+      "format": {
+        "codec_name": "hevc",
+        "profile": "Main",
+        "width": 1920,
+        "height": 1080,
+        "pix_fmt": "yuv420p"
+      },
+      "frames": 120,
+      "framehash_file": "videotoolbox-ltr-ack-every-250ms.framehash",
+      "framehash_sha256": "14212a0efe062158d07c4e6f90f78ccfa6d8c5a0167c2300406213d658f70db6",
+      "wall_seconds": 0.693978
+    },
+    {
+      "clip": "videotoolbox-ltr-ack-every-frame",
+      "input_sha256": "09e68901868a21e597bd0a7e51e3354654cf5d12488d6a851476ea946689c531",
+      "format": {
+        "codec_name": "hevc",
+        "profile": "Main",
+        "width": 1920,
+        "height": 1080,
+        "pix_fmt": "yuv420p"
+      },
+      "frames": 120,
+      "framehash_file": "videotoolbox-ltr-ack-every-frame.framehash",
+      "framehash_sha256": "b6f98cbd778020bec3ef82c19864063bc25d55768fa3331ff095c1680e11a0ae",
+      "wall_seconds": 0.696928
+    }
+  ],
+  "limits": [
+    "Full clips decoded without simulated loss",
+    "Software reference only; no Windows, hardware, presentation, FPS or latency qualification",
+    "Wall time includes process startup, conversion and hashing"
+  ]
+}

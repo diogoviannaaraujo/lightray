@@ -1,0 +1,229 @@
+{
+  "schema_version": 1,
+  "run_id": "67f72972-1c38-4a6e-b703-22b396bfc9d0",
+  "started_at": "2026-09-29T00:32:34.058615+00:00",
+  "action": "inventory",
+  "source": {
+    "commit": "5002116872492da705aa6252f26482b02e3df5b5",
+    "dirty": true,
+    "implementation_sha256": "9f443a4479696e485419a6c62b21e1cf34af8006750d302adf0bfa43d7242515"
+  },
+  "status": "collected",
+  "inventory": {
+    "schema_version": 1,
+    "platform": "windows",
+    "powershell": "5.1.26100.9444",
+    "interactive": false,
+    "process_session_id": 0,
+    "os": {
+      "Caption": "Microsoft Windows 11 Home",
+      "Version": "10.0.26200",
+      "BuildNumber": "26200",
+      "OSArchitecture": "64-bit"
+    },
+    "cpu": [
+      {
+        "Name": "12th Gen Intel(R) Core(TM) i7-12700KF",
+        "NumberOfCores": 12,
+        "NumberOfLogicalProcessors": 20
+      }
+    ],
+    "ram_bytes": 68545658880,
+    "gpu": [
+      {
+        "Name": "Parsec Virtual Display Adapter",
+        "DriverVersion": "0.45.0.0",
+        "VideoProcessor": null,
+        "CurrentHorizontalResolution": null,
+        "CurrentVerticalResolution": null,
+        "CurrentRefreshRate": null
+      },
+      {
+        "Name": "NVIDIA GeForce RTX 4090",
+        "DriverVersion": "32.0.15.9186",
+        "VideoProcessor": "NVIDIA GeForce RTX 4090",
+        "CurrentHorizontalResolution": 3840,
+        "CurrentVerticalResolution": 2160,
+        "CurrentRefreshRate": 60
+      }
+    ],
+    "network": [
+      {
+        "InterfaceDescription": "Hyper-V Virtual Ethernet Container Adapter",
+        "Status": "Up",
+        "LinkSpeed": "10 Gbps"
+      },
+      {
+        "InterfaceDescription": "Bluetooth Device (Personal Area Network)",
+        "Status": "Disconnected",
+        "LinkSpeed": "3 Mbps"
+      },
+      {
+        "InterfaceDescription": "Realtek PCIe GbE Family Controller",
+        "Status": "Up",
+        "LinkSpeed": "1 Gbps"
+      },
+      {
+        "InterfaceDescription": "Tailscale Tunnel",
+        "Status": "Up",
+        "LinkSpeed": "100 Gbps"
+      },
+      {
+        "InterfaceDescription": "Intel(R) Wi-Fi 6E AX211 160MHz",
+        "Status": "Disconnected",
+        "LinkSpeed": "0 bps"
+      }
+    ],
+    "mtu": [
+      {
+        "AddressFamily": 23,
+        "NlMtu": 1500,
+        "ConnectionState": 0
+      },
+      {
+        "AddressFamily": 23,
+        "NlMtu": 1500,
+        "ConnectionState": 0
+      },
+      {
+        "AddressFamily": 23,
+        "NlMtu": 1500,
+        "ConnectionState": 0
+      },
+      {
+        "AddressFamily": 23,
+        "NlMtu": 1492,
+        "ConnectionState": 1
+      },
+      {
+        "AddressFamily": 23,
+        "NlMtu": 1500,
+        "ConnectionState": 0
+      },
+      {
+        "AddressFamily": 23,
+        "NlMtu": 1280,
+        "ConnectionState": 1
+      },
+      {
+        "AddressFamily": 23,
+        "NlMtu": 4294967295,
+        "ConnectionState": 1
+      },
+      {
+        "AddressFamily": 2,
+        "NlMtu": 1500,
+        "ConnectionState": 0
+      },
+      {
+        "AddressFamily": 2,
+        "NlMtu": 1500,
+        "ConnectionState": 0
+      },
+      {
+        "AddressFamily": 2,
+        "NlMtu": 1500,
+        "ConnectionState": 0
+      },
+      {
+        "AddressFamily": 2,
+        "NlMtu": 1500,
+        "ConnectionState": 1
+      },
+      {
+        "AddressFamily": 2,
+        "NlMtu": 1500,
+        "ConnectionState": 0
+      },
+      {
+        "AddressFamily": 2,
+        "NlMtu": 1280,
+        "ConnectionState": 1
+      },
+      {
+        "AddressFamily": 2,
+        "NlMtu": 4294967295,
+        "ConnectionState": 1
+      }
+    ],
+    "sdk_versions": [
+      "10.0.26100.0"
+    ],
+    "tools": [
+      {
+        "name": "git",
+        "available_on_path": true,
+        "file_version": "2.54.0.windows.1"
+      },
+      {
+        "name": "cmake",
+        "available_on_path": false,
+        "file_version": null
+      },
+      {
+        "name": "ninja",
+        "available_on_path": false,
+        "file_version": null
+      },
+      {
+        "name": "cl",
+        "available_on_path": false,
+        "file_version": null
+      },
+      {
+        "name": "swift",
+        "available_on_path": false,
+        "file_version": null
+      },
+      {
+        "name": "ffmpeg",
+        "available_on_path": true,
+        "file_version": null
+      },
+      {
+        "name": "ffprobe",
+        "available_on_path": true,
+        "file_version": null
+      },
+      {
+        "name": "nvidia-smi",
+        "available_on_path": true,
+        "file_version": "8.17.15.9186"
+      }
+    ],
+    "visual_studio": [
+      {
+        "installationVersion": "17.14.37614.0",
+        "isComplete": true,
+        "isLaunchable": true
+      }
+    ],
+    "nvidia": [
+      {
+        "model": "NVIDIA GeForce RTX 4090",
+        "vram_mib": "24564",
+        "driver_version": "591.86"
+      }
+    ],
+    "displays": [
+      {
+        "width": 1024,
+        "height": 768,
+        "primary": true,
+        "bits_per_pixel": 0
+      }
+    ],
+    "unmeasured": [
+      "physical console topology",
+      "HDR",
+      "VRR",
+      "DPI",
+      "active power plan",
+      "direct versus DERP path",
+      "UDP path MTU",
+      "GPU decode availability",
+      "SDK and compiler build smoke"
+    ],
+    "warnings": []
+  }
+}

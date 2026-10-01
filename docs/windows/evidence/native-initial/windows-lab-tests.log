@@ -1,0 +1,19 @@
+test_changed_pixels_and_missing_frames_fail (test_lab.ComparisonTests.test_changed_pixels_and_missing_frames_fail) ... ok
+test_identical_pixels_and_separate_runs (test_lab.ComparisonTests.test_identical_pixels_and_separate_runs) ... ok
+test_tampered_artifact_is_rejected (test_lab.ComparisonTests.test_tampered_artifact_is_rejected) ... ok
+test_unmatched_inputs_and_invalid_manifests_are_rejected (test_lab.ComparisonTests.test_unmatched_inputs_and_invalid_manifests_are_rejected) ... ok
+test_adapter_selection_rejects_missing_software_and_unusable_devices (test_lab.LabTests.test_adapter_selection_rejects_missing_software_and_unusable_devices) ... ok
+test_audited_corpus (test_lab.LabTests.test_audited_corpus) ... ok
+test_checksum_and_path_traversal_rejected (test_lab.LabTests.test_checksum_and_path_traversal_rejected) ... ok
+test_dedicated_verified_host_file_is_forwarded (test_lab.LabTests.test_dedicated_verified_host_file_is_forwarded) ... ok
+test_frame_hash_parser_rejects_empty_and_malformed_output (test_lab.LabTests.test_frame_hash_parser_rejects_empty_and_malformed_output) ... ok
+test_hardware_backend_and_adapter_guards (test_lab.LabTests.test_hardware_backend_and_adapter_guards) ... ok
+test_partial_inventory_does_not_pass (test_lab.LabTests.test_partial_inventory_does_not_pass) ... ok
+test_remote_keeps_strict_identity_and_no_shell (test_lab.LabTests.test_remote_keeps_strict_identity_and_no_shell) ... ok
+test_timeout_authentication_and_bad_output (test_lab.LabTests.test_timeout_authentication_and_bad_output) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.094s
+
+OK
+Tests exit: 0

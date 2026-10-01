@@ -1,0 +1,91 @@
+{
+  "status": "passed",
+  "kind": "native-nvenc-lifecycle",
+  "desktop_captured": false,
+  "executable_sha256": "490543a7b17c93324464027060e0852913151472bb9aa69c682ca11594781bba",
+  "inputs": {
+    "src/nvenc_encoder.hpp": "96d312175d7b848cbe8acbb602728fdd20d7062efccb9d55ebd8c81fbf7c409c",
+    "src/nvenc_encoder.cpp": "55dbf5144b5fa094a061bfa9612d0068018be0e2ce416df759551321da0850ac",
+    "src/nvenc_lifecycle_probe.cpp": "1a27641d56a1b5120c2655ea5253ffb9967745590623a2259a541e70f4a0b4db",
+    "src/hevc_annexb.hpp": "e3b24d3fe79332b4fce334876ae7f0f58d6edc1b80ea886e38a8b0b15b5f2d0c",
+    "vendor/nv-codec-headers/nvEncodeAPI.h": "4fe4094541ef0f8a13249d97a8692dc5f835a6e9dd42eeadb3e2f7321d54dc7e",
+    "run-nvenc-lifecycle.py": "c43492408fb6177e6e89011c07ce19aa03ea10be0ef5dff1d25d262559f88b0e",
+    "build-nvenc-probe.ps1": "55d7595416383a005408fd8f28c836efdf197b12b87365fbf05fbd0ed64de688"
+  },
+  "exit_code": 0,
+  "frames": {
+    "frames": 600,
+    "idr_frames": 400,
+    "resolution_changes": 100,
+    "independent_decode_verified": true
+  },
+  "resources": {
+    "private_bytes": {
+      "cold_baseline": 127610880,
+      "warmup_growth": 362057728,
+      "baseline": 489668608,
+      "first_20_median": 500901888.0,
+      "last_20_median": 503939072.0,
+      "growth": 3037184.0,
+      "maximum": 507523072,
+      "final": 492818432,
+      "growth_limit": 33554432
+    },
+    "gpu_local_bytes": {
+      "cold_baseline": 20725760,
+      "warmup_growth": 43032576,
+      "baseline": 63758336,
+      "first_20_median": 63758336.0,
+      "last_20_median": 63758336.0,
+      "growth": 0.0,
+      "maximum": 63758336,
+      "final": 63758336,
+      "growth_limit": 16777216
+    },
+    "gpu_nonlocal_bytes": {
+      "cold_baseline": 2048000,
+      "warmup_growth": 35856384,
+      "baseline": 37904384,
+      "first_20_median": 37904384.0,
+      "last_20_median": 37904384.0,
+      "growth": 0.0,
+      "maximum": 37904384,
+      "final": 37904384,
+      "growth_limit": 16777216
+    },
+    "handles": {
+      "cold_baseline": 400,
+      "warmup_growth": 11,
+      "baseline": 411,
+      "first_20_median": 411.0,
+      "last_20_median": 411.0,
+      "growth": 0.0,
+      "maximum": 411,
+      "final": 411,
+      "growth_limit": 8
+    },
+    "working_set_bytes": {
+      "cold_baseline": 59035648,
+      "warmup_growth": 23908352,
+      "baseline": 82944000,
+      "first_20_median": 82989056.0,
+      "last_20_median": 83070976.0,
+      "growth": 81920.0,
+      "maximum": 83111936,
+      "final": 83087360,
+      "growth_limit": null
+    }
+  },
+  "native_summary": {
+    "status": "passed",
+    "cycles": 100,
+    "reconfigurations": 100,
+    "warmup_cycles": 30,
+    "warmup_sessions": 60,
+    "frames": 600,
+    "wall_seconds": 6.02123,
+    "desktop_captured": false,
+    "gpu_input": "synthetic_nv12",
+    "resource_samples": 131
+  }
+}

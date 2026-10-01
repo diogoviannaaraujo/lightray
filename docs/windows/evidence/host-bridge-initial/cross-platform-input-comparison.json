@@ -1,0 +1,9 @@
+{
+  "status": "passed",
+  "core_sources_identical": true,
+  "bridge_and_build_inputs_identical": true,
+  "public_vectors_json_equal": true,
+  "public_vectors_only_difference": "Windows CRLF vs Mac LF; both original hashes retained",
+  "mac_vectors_sha256": "74c4326679772ec98b3a4d831c67d8f70a9e37e9b2b1d2b1a455fa87b84cbec0",
+  "windows_vectors_sha256": "864ec6988b49d5fff6c4b321bda8ff7a695f88df8898608fa41b31787b7488f0"
+}

@@ -1,0 +1,21 @@
+{
+  "recorded_at_utc": "2026-10-01T11:46:19.115098+00:00",
+  "base_git": "5002116872492da705aa6252f26482b02e3df5b5",
+  "branch": "codex/windows-foundation",
+  "working_tree_dirty": true,
+  "source_sha256": {
+    "macos/Sources/LightrayMac/SessionPreferences.swift": "3689b4c179176b6050150c1fbd67bc7261095fdc72b862f695052b55a555ac83",
+    "macos/Sources/LightrayMac/StreamActivity.swift": "f0749d975358dc03323c7da065ce3675906fb28e83df0acf5f0bf61566d15b65",
+    "macos/Sources/LightrayMac/RemoteKeyboard.swift": "0041267583a5b5e3db9faca19e151ffe0b32b928187182d7c1107425ef468dcb",
+    "macos/Sources/lightray-client/ClientApp.swift": "07d4a705725315ee50066a8f82bf748e0555eb438c27ac1f7a1c26860840118d",
+    "macos/Sources/lightray-client/SessionControls.swift": "f3193ac49e40d97604926360292c4fa9cb55d7bca002167a25407768f546e40d",
+    "macos/Sources/lightray-client/VideoView.swift": "7da46bb2d7a956a8f45a03ee8386dee392559e2c0c5500b349ee8cdbc7309d23",
+    "macos/Sources/lightray-client/main.swift": "b8fd9841212319ba78125680fa68cd5a2acc17e0361349f18903dd068b09bb19",
+    "macos/Tests/LightrayMacTests/SessionPreferencesTests.swift": "394d14428422c7d8e57107b007f9217396b84bec6391cf16c12cf75c7c5dd6e1",
+    "macos/Tests/LightrayMacTests/RemoteKeyboardTests.swift": "cb3340273f4524b43fb06a65e67ce35a3bf410a7939dd7adb9696580e0fd3a00",
+    "tools/windows/src/windows_input.hpp": "c37330920d17b1682aa4c33f34e1ca83b975afe21e20c879e2740abc61f44ae4",
+    "tools/windows/src/windows_input_tests.cpp": "aa9ec4f9de5f0979653d818ea9376268f62774dabeab1aa24a7f933d2423fe61"
+  },
+  "mac_release_executable_sha256": "ef9549d5a5f9a5e5502d95c0baf936c40e35dc4c6d21b020ac6bc47aefc8c961",
+  "claim_boundary": "Current review snapshot; historical run binaries are not retroactively assigned these source hashes."
+}

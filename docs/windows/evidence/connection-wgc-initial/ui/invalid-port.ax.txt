@@ -1,0 +1,4 @@
+The following is a diff from the previous accessibility tree for Window: "Lightray — Computers" with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+~	4 text field (settable) Description: Host address, Value: 192.168.15.5:bad, Placeholder: Address or hostname:port
+~	12 text Use a port between 1 and 65535, for example 192.168.1.2:7373.
+The focused UI element is 4 text field (settable) Description: Host address, Value: 192.168.15.5:bad, Placeholder: Address or hostname:port

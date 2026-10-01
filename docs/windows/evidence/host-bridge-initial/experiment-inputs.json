@@ -1,0 +1,24 @@
+{
+  "base_commit": "5002116872492da705aa6252f26482b02e3df5b5",
+  "working_tree": "uncommitted changes; identify sources by hashes",
+  "inputs": {
+    "tools/windows/prepare-swift-core.py": "e98ccc0e4499704282f995f194c1c0fb0c8c894127d3dabbfbd8df12bb4c3628",
+    "tools/windows/build-swift-core-probe.ps1": "01f7641a069fb754f29b1816e14e0bb05c957f1d775326ee54da841aec79a8d5",
+    "tools/windows/lab.py": "2b9f34131c42b58d62803cb2631977fe14e4237d98bbc7bb479c063f00b597a6",
+    "tools/windows/tests/test_lab.py": "0c65a44cd4813ab0c1471ddfa72e3e8e1bc387080618685879624f4f484dd599",
+    "tools/windows/src/host_bridge.swift": "cc9c85123dfbe7c314eb9128d21282bf4924c1a3930833b6d0a0d9e5475e216f",
+    "tools/windows/src/host_bridge.h": "f85a2530e30a408e172e58178531f7fb33c4f8afff1921767adb780ec9e0d615",
+    "tools/windows/src/host_bridge_tests.swift": "610c01869e28e9aff857ed7bce5a69bf81c8526e36f574b72972829a27a42a09",
+    "tools/windows/src/host_probe_client.swift": "7f43b08a8c2d2db823299275e8418cf8e701d260a6cf8a112c9ec0dcecee4cd5",
+    "tools/windows/src/host_abi_probe.cpp": "7d740beb674ad818abd8a384c260067d9e3c97d60480fc94f613096fc461774f"
+  },
+  "corpus_run": "native-nvenc-003",
+  "corpus_records": {
+    "3840x2160/native-nvenc.payloads": "e08bca9d24033a1783a8a8c22143b38d0d96ded340a370e26446ed9c8540355a",
+    "2560x1440/native-nvenc.payloads": "9f92557593f129edff9e48b37f0cf8c6ef2306f8051df0ea74b023fe04c62a49",
+    "1920x1080/native-nvenc.payloads": "9dc33ab3778a1fca439bcd79085b1b7d8a1c736476e0a05876c3da567439f38d",
+    "3840x2160/native-nvenc.configs": "6502df3981bcb5ecdba1eca207a7d35b71dd88f0e3eedddb8f6323b3213f6fd8",
+    "2560x1440/native-nvenc.configs": "f8ab035261dea7b9b87d4cc614ed7cf5565f8f8429071c27afbad35c033126a7",
+    "1920x1080/native-nvenc.configs": "19b2c3b6ffecc3df2e48433e79cdd25f9c86e70e3ecdcb0781ea6eb1ea5be182"
+  }
+}

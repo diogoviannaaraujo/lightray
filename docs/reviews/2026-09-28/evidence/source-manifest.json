@@ -1,0 +1,298 @@
+{
+  "date": "2026-09-28",
+  "git_available": false,
+  "files": [
+    {
+      "path": "docs/README.md",
+      "sha256": "f093eb5e30ea26e0632c21d209c123482d2e723f3f8ca70742131f46d1bc2be2"
+    },
+    {
+      "path": "docs/audio.md",
+      "sha256": "4958489840c751fa6fe28d0c088b302c370a0e4ff05292f96912a0c703281c97"
+    },
+    {
+      "path": "docs/conformance.md",
+      "sha256": "7fa2c51a5d34a008487c2f690bbe56f71c3e1e18fcc0052e00fa5944ff4e3603"
+    },
+    {
+      "path": "docs/control.md",
+      "sha256": "b2e83300015e00a1cbd3a638a85b96a539775ed61f8640f73ae567b7394c1703"
+    },
+    {
+      "path": "docs/displays.md",
+      "sha256": "5487dfe8af6e918768fed54fef3f5a4d51f4471aba212b08f3fe6d656d9813a2"
+    },
+    {
+      "path": "docs/feedback.md",
+      "sha256": "6c7f6ae76b91eef9bdfa63175a638be3db4200bcddf0f6836b818d6252dddfce"
+    },
+    {
+      "path": "docs/gaps.md",
+      "sha256": "84ef101acab84f479bc7971f009cf1b14eef5397fd4142c043ae2495c2f2cc20"
+    },
+    {
+      "path": "docs/handshake.md",
+      "sha256": "b69c6ff5aa181dd6d6a7709df1e68f05d3ef88cf8d87e49db54f762bdc7a32ff"
+    },
+    {
+      "path": "docs/input.md",
+      "sha256": "fa4d28a3dcce1a52bd2bcf25a3c70cbe1f8673edc57129c9d55bda7914ba37d3"
+    },
+    {
+      "path": "docs/modes.md",
+      "sha256": "cfb5dc0dd572ece644302a253cabc46db91c9c8fa334b795ce0fc14d08812a2c"
+    },
+    {
+      "path": "docs/packets.md",
+      "sha256": "e1c525f6054f53203d149a3a598dd2be90cb0bd98dd3d77bdfd562a9d538fa51"
+    },
+    {
+      "path": "docs/rate-control.md",
+      "sha256": "f694cb40add99572ca748276568a4ef01de7e89dc2560e3b87827773b82e8db9"
+    },
+    {
+      "path": "docs/reconnect.md",
+      "sha256": "1f56f74ef35f6565a28b76f9a9ae688ebd4def0fa13f8836f9f327a5d1b00e5e"
+    },
+    {
+      "path": "docs/registries.md",
+      "sha256": "cbe1ae144a4822a4becd715ba77896d5028c1e5b492c947039cc155a46be4571"
+    },
+    {
+      "path": "docs/session.md",
+      "sha256": "b654b9863af8636f05c47e0f9ea52bfd63ecab34d914d4f524f0f496388d8c4d"
+    },
+    {
+      "path": "docs/video.md",
+      "sha256": "cffa8cd6f4e59c5103f75761a3c1a21f42cd8818380c272feaf8a2e706dc5479"
+    },
+    {
+      "path": "macos/Package.swift",
+      "sha256": "2ef3f900b9eaa729c8c4cfacd56e9e7405bfea27168acf968b5ced85e362f301"
+    },
+    {
+      "path": "macos/README.md",
+      "sha256": "3745465af1ed547625cd2d3da78deb97681f74988b0ba4ad73846279a1e8fa9d"
+    },
+    {
+      "path": "macos/Sources/LightrayCore/Control/ControlMessages.swift",
+      "sha256": "4b7aee2f338d58bea3f193cb1ee31ed8aa5c1ec6bb8b6166a81b8d902be6b4c2"
+    },
+    {
+      "path": "macos/Sources/LightrayCore/Input/InputMessages.swift",
+      "sha256": "ee75440f52c38e33380c461e95bf7803206a410575530f0cc80304356241ad9a"
+    },
+    {
+      "path": "macos/Sources/LightrayCore/Media/ReedSolomon.swift",
+      "sha256": "be41da6d274ddb868ec5420b195b4403ee6843e15b56ab22e8a6b46728762db6"
+    },
+    {
+      "path": "macos/Sources/LightrayCore/Media/VideoReceiver.swift",
+      "sha256": "6c0518914fa0e732ab83b32b26c79031e81c636550511e963b976ad13ea8f179"
+    },
+    {
+      "path": "macos/Sources/LightrayCore/Media/VideoSender.swift",
+      "sha256": "e4c64b4b8dc445a774bd7e74110b6c074db9c4f48a8ad83e13c7aca90bedb20e"
+    },
+    {
+      "path": "macos/Sources/LightrayCore/Session/ClientEndpoint.swift",
+      "sha256": "224d56d57a9824aa5b62316c6f9ff1cefd1c11a03b0ba65700b35d489541cfa2"
+    },
+    {
+      "path": "macos/Sources/LightrayCore/Session/HostEndpoint.swift",
+      "sha256": "3d5dd85015b5b55b464b9b6199a956c61efccbb50958897f4adada0d6778f49c"
+    },
+    {
+      "path": "macos/Sources/LightrayCore/Transport/Connection.swift",
+      "sha256": "c53fdbf7cb4b720ddbc0ec89526da925b4015cef0917cd4abd5992f31649ba4f"
+    },
+    {
+      "path": "macos/Sources/LightrayCore/Transport/Reliable.swift",
+      "sha256": "55980b23ff222b8795b8bb8247f77b339b0ab97c8792ecb0742be926a5c1bb02"
+    },
+    {
+      "path": "macos/Sources/LightrayCore/Wire/Bytes.swift",
+      "sha256": "6ff70bbd1be4476500e5d354222c312b0321ecbaaa513c8e74c8af536b993f41"
+    },
+    {
+      "path": "macos/Sources/LightrayCore/Wire/Chunks.swift",
+      "sha256": "5c3064eccec69f7cc56a25c4d87d38d40896d206003140a183ceebb9a9cadbaf"
+    },
+    {
+      "path": "macos/Sources/LightrayCore/Wire/FrameHeader.swift",
+      "sha256": "53c401925293cb752bde32ceb667474a531ad80c402e318098263556810ad3b7"
+    },
+    {
+      "path": "macos/Sources/LightrayCore/Wire/Handshake.swift",
+      "sha256": "e5f3ae29c928b2a9fa0352cee7a707324a348ebb1bde6a55731680bff8728921"
+    },
+    {
+      "path": "macos/Sources/LightrayCore/Wire/Noise.swift",
+      "sha256": "069355c46232645695ebeb3eca784cf226aac51a776fe2499d4d5e33d85ebf79"
+    },
+    {
+      "path": "macos/Sources/LightrayCore/Wire/Packet.swift",
+      "sha256": "68ee8a18aff1409b2b7017b2109905acf20ae3bc07a5e3e88c4097be1fb9d052"
+    },
+    {
+      "path": "macos/Sources/LightrayMac/KeyMap.swift",
+      "sha256": "c03badc7ae39ad039d89e2bec8d38784d2acf25ea9c590c90b54bc4c0bf3997b"
+    },
+    {
+      "path": "macos/Sources/LightrayMac/Log.swift",
+      "sha256": "42ad8e79e0d5f2bb4baccd803fa67f40c9e675d931c4c4eb8cd84205fbfa264f"
+    },
+    {
+      "path": "macos/Sources/LightrayMac/Pairing.swift",
+      "sha256": "2acedde1741884bf627defb62781a57913d846e108a4c331ceaa1acf6b8f073f"
+    },
+    {
+      "path": "macos/Sources/LightrayMac/UDPSocket.swift",
+      "sha256": "feb42db0e503c2f4a34a44481f2bb07fa182caea359adbb4d79a35f027935e57"
+    },
+    {
+      "path": "macos/Sources/LightrayMac/VideoDecoder.swift",
+      "sha256": "8dcb9aa2749071e9bc249db0ea5e680746591fc56c010ea279220eeca272c9fe"
+    },
+    {
+      "path": "macos/Sources/LightrayMac/VideoEncoder.swift",
+      "sha256": "49f8e05a4a10a672a09558347e61fd70f14aea985dd28b5522560469396dce24"
+    },
+    {
+      "path": "macos/Sources/lightray-client/ClientApp.swift",
+      "sha256": "b5b8c9b1f7c20a7ded86e6b427925dabf6f310e7aa1cb187acb8892cef840dd7"
+    },
+    {
+      "path": "macos/Sources/lightray-client/StreamWindow.swift",
+      "sha256": "122aae091d8ea7b89be14f3bba1c19883070875efbcccfa1acaad540f7937ab0"
+    },
+    {
+      "path": "macos/Sources/lightray-client/VideoView.swift",
+      "sha256": "286c66b0efd84618fc38bdcaa0fa484fc38a7d43eafb389db0e9813f409b06e7"
+    },
+    {
+      "path": "macos/Sources/lightray-client/main.swift",
+      "sha256": "becc64fe0075a586a0c3634e7c54c134a3780fdfd3169c275b080189b267c56c"
+    },
+    {
+      "path": "macos/Sources/lightray-host/Capture.swift",
+      "sha256": "815c7a2aed0ee27f18b6274ce2de17dab27775d197898b69f282a4725ad9aec8"
+    },
+    {
+      "path": "macos/Sources/lightray-host/HostApp.swift",
+      "sha256": "13f20823307947fb435d5aa145053e3712b016b5568be853cc1a657258f22972"
+    },
+    {
+      "path": "macos/Sources/lightray-host/Injector.swift",
+      "sha256": "fe90f6911d2f858d7dad049f4a7daa51076217a17cb74cd031408d48bc7d4bfd"
+    },
+    {
+      "path": "macos/Sources/lightray-host/Pipeline.swift",
+      "sha256": "5cee38232236608ea7fd5c0f8b602b5a9ba0694f4eb163e0cb71ff5b5541dafb"
+    },
+    {
+      "path": "macos/Sources/lightray-host/TestPattern.swift",
+      "sha256": "4173593a8c40b5a1020671553773b21b058e58d9e1ba3ed2735e3fbfb702c490"
+    },
+    {
+      "path": "macos/Sources/lightray-host/main.swift",
+      "sha256": "1bf78a20aa39ca6ce8cbd4c3c4b1fb65ce3ccd45e06fac70683dc63a0ed08893"
+    },
+    {
+      "path": "macos/Tests/LightrayCoreTests/FECTests.swift",
+      "sha256": "1787d906cc448d2406cdffcc36e18bcf6693b47d38f4abf1d6f5f8531713cbf3"
+    },
+    {
+      "path": "macos/Tests/LightrayCoreTests/MediaTests.swift",
+      "sha256": "6c59a61c310d178d7218bdeca11c8f2fb85a87bb8f8e78df95c061e8f4357cc8"
+    },
+    {
+      "path": "macos/Tests/LightrayCoreTests/SessionTests.swift",
+      "sha256": "2a43d2ac2fd6bd7d9025aa2d2b29df5d161e1286fd8bf3587da7d363aa91a088"
+    },
+    {
+      "path": "macos/Tests/LightrayCoreTests/VectorTests.swift",
+      "sha256": "9777366148812b5888625cac3a181ca02bb10066e5f7b3cfcd29dd5191a9a86f"
+    },
+    {
+      "path": "macos/Tests/LightrayCoreTests/WireTests.swift",
+      "sha256": "d78dd7709813d74edd89bcd344fb29a98adbc1fe20105cbb6be91063e02564c0"
+    },
+    {
+      "path": "macos/Tests/LightrayMacTests/MacTests.swift",
+      "sha256": "b042403e5229ab0e23327a107b6b2cbfff4846a27e47f05c09d295cfbedb7161"
+    },
+    {
+      "path": "notes/README.md",
+      "sha256": "0f1a1d1fb397442a71f7c06defd788392e4d6c124367be2db3350b26e2da3551"
+    },
+    {
+      "path": "notes/ipados-client.md",
+      "sha256": "2280800f31d1563ff8d41cfd2963aa915f33677b4391e71e98e5428c745d9f89"
+    },
+    {
+      "path": "notes/macos-host.md",
+      "sha256": "7a59ef49321597c3bb79752f0251ea4c6d7d3846a054b7782a7759a42bf3018f"
+    },
+    {
+      "path": "notes/recovery-and-resume.md",
+      "sha256": "4a7e24204880e81ea666f066923b1298ee1cf3bd6d73ae58b5a23e0e63e7933d"
+    },
+    {
+      "path": "tools/vectors/Package.swift",
+      "sha256": "2267d552ec704a6bf3bc56be4801d2aa54d518cac072c108ac03a3ba36f0ff9f"
+    },
+    {
+      "path": "tools/vectors/README.md",
+      "sha256": "e5111b7946b0c1dbd8183d1076d82e273805003ca1bd91e979cfc724fe405c87"
+    },
+    {
+      "path": "tools/vectors/Sources/LightrayVectors/Bytes.swift",
+      "sha256": "146f59439332fd22cf8d8b94a390ae8797c6b91dee0d9f6ddccf6a36262c1340"
+    },
+    {
+      "path": "tools/vectors/Sources/LightrayVectors/Catalog.swift",
+      "sha256": "f99b946b59d03ac6083d683d7ac8b7ec8f3c99601ed492a194b5342b3588f1e1"
+    },
+    {
+      "path": "tools/vectors/Sources/LightrayVectors/Docs.swift",
+      "sha256": "86e50fa45b6889845592c3c6b16b546d33ae95d3e6b9caf74a9d8c75bcb2798a"
+    },
+    {
+      "path": "tools/vectors/Sources/LightrayVectors/Handshake.swift",
+      "sha256": "2fe9c01516e19b09db5cd27f22f926eab5d8b57cd9e1232fc996b2dc83fe4c08"
+    },
+    {
+      "path": "tools/vectors/Sources/LightrayVectors/JSON.swift",
+      "sha256": "7fc52c3a72e038cfcb5f8ca0e2c5444d8b92f94c1d4b1a32c073bdaf5c120272"
+    },
+    {
+      "path": "tools/vectors/Sources/LightrayVectors/Noise.swift",
+      "sha256": "d9ee94aa35a70b9abdbc93f0a78f5e469a73a531548669071b38c2fd3bdb83aa"
+    },
+    {
+      "path": "tools/vectors/Sources/LightrayVectors/Packets.swift",
+      "sha256": "2faac148d9feab746cc666501e1a5572546cc1f87491cfd812d4922740bdd876"
+    },
+    {
+      "path": "tools/vectors/Sources/lightray-vectors/main.swift",
+      "sha256": "26bd8520788464b9efd2b92f38afac3f6e61a5260cf57a7d5c2b80f24da0db3e"
+    },
+    {
+      "path": "tools/vectors/Tests/LightrayVectorsTests/Fixtures/cacophony-Noise_NNpsk0_25519_AESGCM_SHA256.json",
+      "sha256": "5d015b3cbe032e00a2a5988d69303f9b77978b85bbaa5f12d5e518064d8f5aee"
+    },
+    {
+      "path": "tools/vectors/Tests/LightrayVectorsTests/NoiseTests.swift",
+      "sha256": "ae89355f018624ae0a8a86bd9693bd8b6b52025c46bd42c5d24a73704eb5023d"
+    },
+    {
+      "path": "tools/vectors/Tests/LightrayVectorsTests/WireTests.swift",
+      "sha256": "52ab16b7f67e2edfdc040f7a6d3f1eacee96a7fee55ac53942b6921babd329eb"
+    },
+    {
+      "path": "tools/vectors/vectors.json",
+      "sha256": "74c4326679772ec98b3a4d831c67d8f70a9e37e9b2b1d2b1a455fa87b84cbec0"
+    }
+  ]
+}

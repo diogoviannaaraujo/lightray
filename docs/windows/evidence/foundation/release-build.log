@@ -1,0 +1,36 @@
+Building for production...
+[Planning deferred tasks]
+[34 / 59] LightrayCore
+[45 / 97]
+[53 / 97]
+[55 / 97]
+[59 / 97]
+[62 / 97]
+[68 / 97]
+[69 / 97]
+[70 / 97]
+[71 / 97]
+[73 / 97] LightrayCore
+[80 / 98] LightrayCore
+[81 / 98] LightrayMac
+[94 / 148]
+[102 / 148]
+[105 / 148]
+[110 / 148]
+[114 / 148]
+[119 / 148]
+[122 / 148]
+[123 / 148]
+[128 / 148]
+[130 / 148]
+[132 / 148] LightrayMac
+[140 / 150] lightray-client-product
+[158 / 177]
+[162 / 177]
+[163 / 177]
+[166 / 177]
+[169 / 177] lightray-client-product
+[171 / 177] lightray-host-product
+[173 / 177] lightray-client-product
+[175 / 177] lightray-client-product
+Build complete! (16,71 seg)

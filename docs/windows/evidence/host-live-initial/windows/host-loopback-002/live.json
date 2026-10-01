@@ -1,0 +1,1 @@
+{"status":"passed","lifecycle_cycles":100,"concurrent_callers":4,"host_limit":16,"authenticated_handshakes":3,"nvenc_frames_delivered":360,"udp_sockets":true,"live_nvenc":true,"datagrams_sent":2179,"datagrams_received":2179,"clock":"simulated","desktop_captured":false}

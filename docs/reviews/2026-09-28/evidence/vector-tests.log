@@ -1,0 +1,36 @@
+Building for debugging...
+[1 / 5]
+Build complete! (0,24 seg)
+Test Suite 'All tests' started at 2026-09-28 19:52:05.270.
+Test Suite 'All tests' passed at 2026-09-28 19:52:05.271.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
+◇ Test run started.
+↳ Testing Library Version: 2084
+↳ Target Platform: arm64e-apple-macos14.0
+◇ Test slugsFollowGitHub() started.
+◇ Test initFailsUnderAnotherPSK() started.
+◇ Test protocolNameIsExactlyOneHashLong() started.
+◇ Test noiseMatchesThePublishedVector() started.
+◇ Test everyCleartextInitByteIsAuthenticated(offset:) started.
+◇ Test sealedPacketsOpenOnlyWhenUntouched() started.
+◇ Test x25519MatchesVersion0Example() started.
+◇ Test case passing 1 argument offset → 2 to everyCleartextInitByteIsAuthenticated(offset:) started.
+◇ Test packetNumbersReconstruct() started.
+◇ Test case passing 1 argument offset → 3 to everyCleartextInitByteIsAuthenticated(offset:) started.
+◇ Test case passing 1 argument offset → 4 to everyCleartextInitByteIsAuthenticated(offset:) started.
+◇ Test case passing 1 argument offset → 11 to everyCleartextInitByteIsAuthenticated(offset:) started.
+◇ Test blockNamesAreUnique() started.
+◇ Test x25519MatchesRFC7748() started.
+◇ Test exampleHandshakeHoldsTogether() started.
+✔ Test packetNumbersReconstruct() passed after 0.001 seconds.
+✔ Test protocolNameIsExactlyOneHashLong() passed after 0.001 seconds.
+✔ Test x25519MatchesVersion0Example() passed after 0.001 seconds.
+✔ Test x25519MatchesRFC7748() passed after 0.001 seconds.
+✔ Test sealedPacketsOpenOnlyWhenUntouched() passed after 0.001 seconds.
+✔ Test slugsFollowGitHub() passed after 0.001 seconds.
+✔ Test exampleHandshakeHoldsTogether() passed after 0.001 seconds.
+✔ Test noiseMatchesThePublishedVector() passed after 0.001 seconds.
+✔ Test initFailsUnderAnotherPSK() passed after 0.001 seconds.
+✔ Test everyCleartextInitByteIsAuthenticated(offset:) with 4 test cases passed after 0.001 seconds.
+✔ Test blockNamesAreUnique() passed after 0.001 seconds.
+✔ Test run with 11 tests in 0 suites passed after 0.002 seconds.

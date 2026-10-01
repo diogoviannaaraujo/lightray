@@ -1,0 +1,9 @@
+mf_decode_probe.cpp
+Build exit: 0
+{"status":"passed","geometry_cases":8}
+MFCreateSourceReaderFromURL HRESULT=-2147024894
+Missing input exit (expected 1): 1
+{"action": "decode-reference", "status": "passed", "run_id": "0096f5b9-cb57-4db8-bc32-db571cd65fef"}
+Invalid adapter exit (expected 2): 0
+
+After enforcing DXGI enumeration in the runner: invalid adapter 15 returned exit 2; valid adapter 0 passed D3D11VA and Media Foundation.

@@ -1,0 +1,26 @@
+[   0.000] stream 1: presentation screen id=5 max_fps=60
+[   0.002] socket buffers: receive 4194304, send 4194304 bytes
+[   0.002] connecting to 192.168.15.5:37373 from port 51487, with 1 video streams
+[   9.104] disconnected: no response from the host
+[  19.207] disconnected: no response from the host
+[  29.309] disconnected: no response from the host
+[  39.412] disconnected: no response from the host
+[  49.514] disconnected: no response from the host
+[  59.619] disconnected: no response from the host
+[  69.722] disconnected: no response from the host
+[  79.824] disconnected: no response from the host
+[  89.927] disconnected: no response from the host
+[ 100.029] disconnected: no response from the host
+[ 110.132] disconnected: no response from the host
+[ 120.241] disconnected: no response from the host
+[ 130.345] disconnected: no response from the host
+[ 140.448] disconnected: no response from the host
+[ 150.550] disconnected: no response from the host
+[ 160.653] disconnected: no response from the host
+[ 170.756] disconnected: no response from the host
+[ 180.859] disconnected: no response from the host
+[ 190.961] disconnected: no response from the host
+[ 201.064] disconnected: no response from the host
+[ 211.243] disconnected: no response from the host
+[ 221.348] disconnected: no response from the host
+[ 231.457] disconnected: no response from the host

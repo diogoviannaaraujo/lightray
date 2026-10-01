@@ -1,0 +1,7 @@
+{
+  "status": "passed",
+  "host_rows": 20811,
+  "client_samples": 8,
+  "mismatched_sample_ids": [],
+  "scope": "Exact sampled durations, not every frame and not end-to-end latency"
+}

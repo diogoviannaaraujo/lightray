@@ -1,0 +1,31 @@
+Building for production...
+[Planning deferred tasks]
+[21 / 40] LightrayCore
+[34 / 78]
+[40 / 78]
+[42 / 78]
+[46 / 78]
+[49 / 78]
+[55 / 78]
+[56 / 78]
+[57 / 78]
+[58 / 78]
+[60 / 78] LightrayCore
+[67 / 79] LightrayMac
+[80 / 129]
+[88 / 129]
+[91 / 129]
+[96 / 129]
+[100 / 129]
+[105 / 129]
+[108 / 129]
+[109 / 129]
+[114 / 129]
+[116 / 129]
+[118 / 129] LightrayMac
+[125 / 130] Interop-product
+[127 / 131] Interop-product
+[129 / 131] Interop-product
+[130 / 131] Interop-product
+Build complete! (11,44 seg)
+Native Mac VideoDecoder accepted 360 NVENC frames after reference media fragmentation/reassembly

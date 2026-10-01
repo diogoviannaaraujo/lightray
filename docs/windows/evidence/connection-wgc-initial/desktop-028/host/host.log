@@ -1,0 +1,39 @@
+host_ready width=1920 height=1080 fps_target=30 bitrate_mbps=20 source_refresh_hz=60 capture_backend=wgc native_nvenc=true desktop=true input=true
+frames=0 keyframes=0 tx=0 rx=0 input=0 held=0 queue=0 skipped=0 desktop_updates=0 cached_frames=0
+frames=0 keyframes=0 tx=0 rx=0 input=0 held=0 queue=0 skipped=0 desktop_updates=0 cached_frames=0
+frames=0 keyframes=0 tx=0 rx=0 input=0 held=0 queue=0 skipped=0 desktop_updates=0 cached_frames=0
+session_started count=1
+capture_ready epoch=1 recovery_us=0 recreations=0 source_refresh_hz=60
+capture_idr epoch=1 sample=0
+frames=140 keyframes=1 tx=205 rx=147 input=0 held=0 queue=0 skipped=0 desktop_updates=19 cached_frames=121
+frames=291 keyframes=1 tx=422 rx=302 input=0 held=0 queue=0 skipped=0 desktop_updates=38 cached_frames=253
+frames=441 keyframes=1 tx=643 rx=456 input=0 held=0 queue=0 skipped=0 desktop_updates=57 cached_frames=384
+frames=591 keyframes=1 tx=881 rx=610 input=0 held=0 queue=0 skipped=0 desktop_updates=77 cached_frames=514
+frames=736 keyframes=1 tx=1082 rx=758 input=0 held=0 queue=0 skipped=1 desktop_updates=96 cached_frames=640
+frames=886 keyframes=1 tx=1310 rx=912 input=0 held=0 queue=0 skipped=1 desktop_updates=115 cached_frames=771
+frames=1036 keyframes=1 tx=1551 rx=1066 input=0 held=0 queue=0 skipped=1 desktop_updates=134 cached_frames=902
+frames=1186 keyframes=1 tx=1758 rx=1218 input=0 held=0 queue=0 skipped=1 desktop_updates=154 cached_frames=1032
+frames=1336 keyframes=1 tx=1956 rx=1371 input=0 held=0 queue=0 skipped=1 desktop_updates=173 cached_frames=1163
+frames=1487 keyframes=1 tx=2146 rx=1522 input=0 held=0 queue=0 skipped=1 desktop_updates=192 cached_frames=1295
+frames=1637 keyframes=1 tx=2391 rx=1678 input=0 held=0 queue=0 skipped=1 desktop_updates=212 cached_frames=1425
+frames=1782 keyframes=1 tx=2592 rx=1826 input=1 held=0 queue=0 skipped=3 desktop_updates=230 cached_frames=1552
+frames=1927 keyframes=2 tx=3367 rx=2149 input=47 held=0 queue=0 skipped=5 desktop_updates=375 cached_frames=1552
+frames=2046 keyframes=2 tx=4026 rx=2326 input=47 held=0 queue=0 skipped=13 desktop_updates=494 cached_frames=1552
+frames=2196 keyframes=2 tx=4835 rx=2539 input=47 held=0 queue=0 skipped=13 desktop_updates=644 cached_frames=1552
+frames=2347 keyframes=2 tx=5705 rx=2748 input=47 held=0 queue=0 skipped=13 desktop_updates=795 cached_frames=1552
+frames=2497 keyframes=2 tx=6559 rx=2957 input=47 held=0 queue=0 skipped=13 desktop_updates=945 cached_frames=1552
+frames=2647 keyframes=2 tx=7438 rx=3237 input=117 held=0 queue=0 skipped=13 desktop_updates=1095 cached_frames=1552
+frames=2797 keyframes=2 tx=8285 rx=3449 input=117 held=0 queue=0 skipped=13 desktop_updates=1245 cached_frames=1552
+frames=2947 keyframes=2 tx=9184 rx=3663 input=117 held=0 queue=0 skipped=13 desktop_updates=1395 cached_frames=1552
+frames=3097 keyframes=2 tx=10043 rx=3874 input=117 held=0 queue=0 skipped=13 desktop_updates=1545 cached_frames=1552
+frames=3247 keyframes=2 tx=10887 rx=4090 input=117 held=0 queue=0 skipped=13 desktop_updates=1695 cached_frames=1552
+frames=3397 keyframes=2 tx=11741 rx=4296 input=117 held=0 queue=0 skipped=13 desktop_updates=1845 cached_frames=1552
+frames=3547 keyframes=2 tx=12601 rx=4503 input=117 held=0 queue=0 skipped=13 desktop_updates=1995 cached_frames=1552
+frames=3697 keyframes=2 tx=13407 rx=4716 input=117 held=0 queue=0 skipped=13 desktop_updates=2145 cached_frames=1552
+frames=3848 keyframes=2 tx=14291 rx=4927 input=117 held=0 queue=0 skipped=13 desktop_updates=2296 cached_frames=1552
+session_ended held=0
+frames=3967 keyframes=2 tx=14946 rx=5097 input=117 held=0 queue=0 skipped=13 desktop_updates=2415 cached_frames=1552
+session_started count=2
+frames=4095 keyframes=3 tx=15694 rx=5284 input=117 held=0 queue=0 skipped=15 desktop_updates=2543 cached_frames=1552
+capture_fault_injected mechanism=release_capture backend=wgc
+capture_recovering held=0 losses=1

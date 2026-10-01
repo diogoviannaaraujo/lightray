@@ -1,0 +1,146 @@
+{
+  "host_bridge": true,
+  "minimum_tests": 88,
+  "crypto_version": "5.0.0",
+  "crypto_revision": "a9d1d5ab8951ada40cafff8c8e2b551dfde4f390",
+  "transformation": "Replace import CryptoKit with import Crypto in isolated copies only",
+  "files": [
+    {
+      "path": "macos/Sources/LightrayCore/Control/ControlMessages.swift",
+      "source_sha256": "4b7aee2f338d58bea3f193cb1ee31ed8aa5c1ec6bb8b6166a81b8d902be6b4c2",
+      "probe_sha256": "4b7aee2f338d58bea3f193cb1ee31ed8aa5c1ec6bb8b6166a81b8d902be6b4c2"
+    },
+    {
+      "path": "macos/Sources/LightrayCore/Input/InputMessages.swift",
+      "source_sha256": "ee75440f52c38e33380c461e95bf7803206a410575530f0cc80304356241ad9a",
+      "probe_sha256": "ee75440f52c38e33380c461e95bf7803206a410575530f0cc80304356241ad9a"
+    },
+    {
+      "path": "macos/Sources/LightrayCore/Media/DecodeQueue.swift",
+      "source_sha256": "588be2a9c94f6fc1e844520c6ccc917548521d743839396b593a5d92b14f7d5e",
+      "probe_sha256": "588be2a9c94f6fc1e844520c6ccc917548521d743839396b593a5d92b14f7d5e"
+    },
+    {
+      "path": "macos/Sources/LightrayCore/Media/ReedSolomon.swift",
+      "source_sha256": "a602157ff2f3a0002b4816765e7f8c5101bda6d4ef40b314243ce5e2495f1370",
+      "probe_sha256": "a602157ff2f3a0002b4816765e7f8c5101bda6d4ef40b314243ce5e2495f1370"
+    },
+    {
+      "path": "macos/Sources/LightrayCore/Media/VideoReceiver.swift",
+      "source_sha256": "a97711aa7232ee34735241fef1ec4c7398b4dfe26ac17c4281e7772e5e6dd896",
+      "probe_sha256": "a97711aa7232ee34735241fef1ec4c7398b4dfe26ac17c4281e7772e5e6dd896"
+    },
+    {
+      "path": "macos/Sources/LightrayCore/Media/VideoSender.swift",
+      "source_sha256": "e4c64b4b8dc445a774bd7e74110b6c074db9c4f48a8ad83e13c7aca90bedb20e",
+      "probe_sha256": "e4c64b4b8dc445a774bd7e74110b6c074db9c4f48a8ad83e13c7aca90bedb20e"
+    },
+    {
+      "path": "macos/Sources/LightrayCore/Session/ClientEndpoint.swift",
+      "source_sha256": "5632d60788eb0825eb13546c6f9562c85bfc5ffd48d75e1f97d40bd738608700",
+      "probe_sha256": "5632d60788eb0825eb13546c6f9562c85bfc5ffd48d75e1f97d40bd738608700"
+    },
+    {
+      "path": "macos/Sources/LightrayCore/Session/HostEndpoint.swift",
+      "source_sha256": "3d5dd85015b5b55b464b9b6199a956c61efccbb50958897f4adada0d6778f49c",
+      "probe_sha256": "6f509fc435eaba078f8dea724afb137e96307b8f518bcefc21e9c934b0e3c983"
+    },
+    {
+      "path": "macos/Sources/LightrayCore/Transport/Connection.swift",
+      "source_sha256": "8720ea25b8780ffcb614e9d29d47b21e41a5a8c2491574c97b1c600312143aa2",
+      "probe_sha256": "8720ea25b8780ffcb614e9d29d47b21e41a5a8c2491574c97b1c600312143aa2"
+    },
+    {
+      "path": "macos/Sources/LightrayCore/Transport/MemoryBudget.swift",
+      "source_sha256": "bd610fbd808158f5bebfeb820b5fabb2b331fea49e0d64fbfd2d07dd511c7af9",
+      "probe_sha256": "bd610fbd808158f5bebfeb820b5fabb2b331fea49e0d64fbfd2d07dd511c7af9"
+    },
+    {
+      "path": "macos/Sources/LightrayCore/Transport/Reliable.swift",
+      "source_sha256": "f43b08f3c6108f609ef6097d2017d6f507add88a6c721f9cf5f220c3b7831157",
+      "probe_sha256": "f43b08f3c6108f609ef6097d2017d6f507add88a6c721f9cf5f220c3b7831157"
+    },
+    {
+      "path": "macos/Sources/LightrayCore/Wire/Bytes.swift",
+      "source_sha256": "6ff70bbd1be4476500e5d354222c312b0321ecbaaa513c8e74c8af536b993f41",
+      "probe_sha256": "6ff70bbd1be4476500e5d354222c312b0321ecbaaa513c8e74c8af536b993f41"
+    },
+    {
+      "path": "macos/Sources/LightrayCore/Wire/Chunks.swift",
+      "source_sha256": "b7dfc199da3e3931529d38a1f6c5d533f4cd2294cdb8ed8022442c30e3564fbc",
+      "probe_sha256": "b7dfc199da3e3931529d38a1f6c5d533f4cd2294cdb8ed8022442c30e3564fbc"
+    },
+    {
+      "path": "macos/Sources/LightrayCore/Wire/FrameHeader.swift",
+      "source_sha256": "30e4697d1b9abbc6b1a56d0378308a519b6c1abe00c4318df625b7b7657f8996",
+      "probe_sha256": "30e4697d1b9abbc6b1a56d0378308a519b6c1abe00c4318df625b7b7657f8996"
+    },
+    {
+      "path": "macos/Sources/LightrayCore/Wire/Handshake.swift",
+      "source_sha256": "e5f3ae29c928b2a9fa0352cee7a707324a348ebb1bde6a55731680bff8728921",
+      "probe_sha256": "d7a4a168f2c3eccc25e13836a485f4e2f1e930c7b1dfb03539ec5297baf5620b"
+    },
+    {
+      "path": "macos/Sources/LightrayCore/Wire/Noise.swift",
+      "source_sha256": "069355c46232645695ebeb3eca784cf226aac51a776fe2499d4d5e33d85ebf79",
+      "probe_sha256": "b398d310197b767a608afa7f801bfc06e90c0a936df6b8500931066682ace69f"
+    },
+    {
+      "path": "macos/Sources/LightrayCore/Wire/Packet.swift",
+      "source_sha256": "68ee8a18aff1409b2b7017b2109905acf20ae3bc07a5e3e88c4097be1fb9d052",
+      "probe_sha256": "2c5be409302363ef67a94c1ad0a7cd2be067e88dfd061c040f3b6b5b5762bffd"
+    },
+    {
+      "path": "macos/Tests/LightrayCoreTests/DecodeQueueTests.swift",
+      "source_sha256": "eff127441e116f49b7cf992586e7370be63225a09203fa5466d7da8376138de9",
+      "probe_sha256": "eff127441e116f49b7cf992586e7370be63225a09203fa5466d7da8376138de9"
+    },
+    {
+      "path": "macos/Tests/LightrayCoreTests/FECTests.swift",
+      "source_sha256": "5e9d8e61bb4eb41aec4d148943229906e1d5ddea73e6a65bfe2f16055846f93c",
+      "probe_sha256": "5e9d8e61bb4eb41aec4d148943229906e1d5ddea73e6a65bfe2f16055846f93c"
+    },
+    {
+      "path": "macos/Tests/LightrayCoreTests/Fixtures/fec-reference.json",
+      "source_sha256": "69324bc5042d3233640fbeed6d5875e45849e5aec8f487deee493fdb7764fdae",
+      "probe_sha256": "69324bc5042d3233640fbeed6d5875e45849e5aec8f487deee493fdb7764fdae"
+    },
+    {
+      "path": "macos/Tests/LightrayCoreTests/MediaTests.swift",
+      "source_sha256": "a8552657d61ff8c3aff5f5b50007dfd6881ecc2ee4267ca1cae7bd20afd63424",
+      "probe_sha256": "a8552657d61ff8c3aff5f5b50007dfd6881ecc2ee4267ca1cae7bd20afd63424"
+    },
+    {
+      "path": "macos/Tests/LightrayCoreTests/MemoryTests.swift",
+      "source_sha256": "2af0d537572563446ca6b1ead47f1531e3dd3b1fc41658479e0eec47563f8bb2",
+      "probe_sha256": "2af0d537572563446ca6b1ead47f1531e3dd3b1fc41658479e0eec47563f8bb2"
+    },
+    {
+      "path": "macos/Tests/LightrayCoreTests/SessionTests.swift",
+      "source_sha256": "b0b2eab8dae4bb218fd01ab9975f0a567265546ecaf3e6312ea7244b204a6ee4",
+      "probe_sha256": "b0b2eab8dae4bb218fd01ab9975f0a567265546ecaf3e6312ea7244b204a6ee4"
+    },
+    {
+      "path": "macos/Tests/LightrayCoreTests/VectorTests.swift",
+      "source_sha256": "9777366148812b5888625cac3a181ca02bb10066e5f7b3cfcd29dd5191a9a86f",
+      "probe_sha256": "14a7e2738d24a62e29c53d149c0a067bd3bfc43e82ff2836c0772ef2e08ca37b"
+    },
+    {
+      "path": "macos/Tests/LightrayCoreTests/WireTests.swift",
+      "source_sha256": "c2ccd14f0baf6b7212980968d981b5035bf554c0e5867751504b4a5c4b5a600d",
+      "probe_sha256": "c2ccd14f0baf6b7212980968d981b5035bf554c0e5867751504b4a5c4b5a600d"
+    }
+  ],
+  "other_inputs_sha256": {
+    "tools/vectors/vectors.json": "864ec6988b49d5fff6c4b321bda8ff7a695f88df8898608fa41b31787b7488f0",
+    "tools/windows/src/core_bridge.swift": "e9f11931ff6b2a2ab5ecec8bf975deec6c8cfb46c085822d15411a60941d1a9a",
+    "tools/windows/src/core_abi_probe.cpp": "c767944a56cce3035a8c2ff2db59d19800dc74db3c43a1b167f620518f919241",
+    "tools/windows/reference/swift-core-package.resolved": "fc52b1b2e0ab598529919d39f2df4e440a676aa866b4ed852f5b0b002a714dab",
+    "tools/windows/build-swift-core-probe.ps1": "01f7641a069fb754f29b1816e14e0bb05c957f1d775326ee54da841aec79a8d5",
+    "tools/windows/src/host_bridge.swift": "cc9c85123dfbe7c314eb9128d21282bf4924c1a3930833b6d0a0d9e5475e216f",
+    "tools/windows/src/host_bridge_tests.swift": "610c01869e28e9aff857ed7bce5a69bf81c8526e36f574b72972829a27a42a09",
+    "tools/windows/src/host_bridge.h": "f85a2530e30a408e172e58178531f7fb33c4f8afff1921767adb780ec9e0d615",
+    "tools/windows/src/host_probe_client.swift": "7f43b08a8c2d2db823299275e8418cf8e701d260a6cf8a112c9ec0dcecee4cd5",
+    "tools/windows/src/host_abi_probe.cpp": "7d740beb674ad818abd8a384c260067d9e3c97d60480fc94f613096fc461774f"
+  }
+}

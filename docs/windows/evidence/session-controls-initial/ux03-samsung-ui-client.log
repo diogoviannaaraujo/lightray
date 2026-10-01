@@ -1,0 +1,33 @@
+[   0.000] stream 1: presentation screen id=4 max_fps=60
+[   0.002] socket buffers: receive 4194304, send 4194304 bytes
+[   0.002] connecting to 192.168.15.5:37373 from port 59573, with 1 video streams
+[   9.104] disconnected: no response from the host
+[  19.206] disconnected: no response from the host
+[  29.310] disconnected: no response from the host
+[  39.412] disconnected: no response from the host
+[  49.515] disconnected: no response from the host
+[  59.618] disconnected: no response from the host
+[  69.722] disconnected: no response from the host
+[  79.824] disconnected: no response from the host
+[  89.929] disconnected: no response from the host
+[ 100.032] disconnected: no response from the host
+[ 110.134] disconnected: no response from the host
+[ 120.237] disconnected: no response from the host
+[ 122.752] session 5dd5d49 established, datagrams up to 1200 bytes, no FEC, video streams [1]
+[ 132.568] disconnected: nothing from the host for 5 s
+[ 141.672] disconnected: no response from the host
+[ 151.774] disconnected: no response from the host
+[ 161.878] disconnected: no response from the host
+[ 171.983] disconnected: no response from the host
+[ 182.086] disconnected: no response from the host
+[ 192.189] disconnected: no response from the host
+[ 202.291] disconnected: no response from the host
+[ 212.396] disconnected: no response from the host
+[ 222.499] disconnected: no response from the host
+[ 232.604] disconnected: no response from the host
+[ 242.712] disconnected: no response from the host
+[ 252.815] disconnected: no response from the host
+[ 262.917] disconnected: no response from the host
+[ 273.020] disconnected: no response from the host
+[ 283.123] disconnected: no response from the host
+[ 293.230] disconnected: no response from the host

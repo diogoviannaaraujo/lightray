@@ -1,0 +1,22 @@
+﻿{
+    "swift":  "Swift version 6.4 (swift-6.4-RELEASE)\r\nTarget: x86_64-unknown-windows-msvc\r\nBuild config: +assertions",
+    "platform":  "Windows native x64",
+    "remaining_probe_processes":  0,
+    "files":  [
+                  {
+                      "sha256":  "5f71e68c6047c42df88f2faa9bfb640b1356eeb3532fcb668ae5aa09850aec8c",
+                      "name":  "LightrayCoreProbe.dll",
+                      "bytes":  16304640
+                  },
+                  {
+                      "sha256":  "996a1540316f3c70952a8ac2add8ec14e47c4deae091a393513c0d18e8b29ee3",
+                      "name":  "host_abi_probe.exe",
+                      "bytes":  300032
+                  },
+                  {
+                      "sha256":  "87305be3222b53db84a4494ec4039a9dd88a91400ec2b5299f74f62e569174ef",
+                      "name":  "core_abi_probe.exe",
+                      "bytes":  259072
+                  }
+              ]
+}

@@ -186,3 +186,27 @@ amplification opportunity and there is nothing to negotiate.
 
 Versions 2–239 are reserved for future revisions of this protocol. Versions 240–255 are
 reserved for private use and MUST NOT be assigned by a future revision.
+
+## Windows client work
+
+Para revisar o trabalho publicado, começar pelo [guia do pull request](windows/pull-request-review.md), com mapa dos fontes, testes, evidências, relatórios e pendências de integração.
+
+Incremento de experiência Mac → Windows: [painel em milissegundos e atalhos de teclado](windows/client-ux-progress.md), orientado pela [investigação do Parsec e plano de evolução](reviews/parsec-reference-2026-09-29.md).
+
+Prioridade atual desde 29/09/2026: [host Windows nativo com NVENC](windows/host-implementation-plan.md), com a [primeira campanha de encoding e interoperabilidade](windows/host-nvenc-progress.md) concluída no laboratório.
+Etapa mais recente: [componente NVENC e integração UDP local](windows/host-live-progress.md), com lifecycle, memória e limites documentados.
+Incremento anterior: [ponte C do host e transporte autenticado](windows/host-bridge-progress.md), ainda em pacote isolado de laboratório.
+O trabalho do cliente abaixo permanece preservado e não deve ser confundido com encoding do host.
+
+Relatório para revisão e repasse ao desenvolvedor: [resultados Windows e próximos passos, 29/09/2026](windows/developer-report-2026-09-29.md).
+
+The [implementation plan](windows/implementation-plan.md), [compatibility profile](windows/compatibility-profile.md), [validation plan](windows/validation-plan.md), and [foundation progress](windows/foundation-progress.md) distinguish the implemented desktop subset from future protocol features.
+
+Execução mais recente do cliente Windows: [apresentação D3D11](windows/presentation-probe-progress.md), após [core Swift x64](windows/swift-core-progress.md), [decode 1440p/4K](windows/resolution-validation-progress.md), [primeira validação nativa](windows/native-validation-progress.md) e [correções de robustez](windows/robustness-progress.md).
+
+Telemetria Windows → Mac: [captura/conversão, encode e conciliação de amostras](windows/host-telemetry-progress.md).
+
+Atualização de 01/10/2026 para o desenvolvedor: [relatório consolidado](windows/developer-report-2026-10-01.md) e [plano detalhado de produto e validação](windows/product-validation-plan-2026-10-01.md).
+Os incrementos mais recentes são [recuperação limitada de captura](windows/capture-recovery-progress.md) e [menu de sessão, preferências e teclado](windows/session-controls-progress.md), com o Samsung reservado aos testes visuais.
+
+Conexão gráfica e alternativa de captura: [execução F01/F02 com Windows Graphics Capture e NVENC](windows/connection-capture-progress-2026-10-01.md), com vídeo/input reais no Samsung e teste 4K com alvo de 90 FPS.

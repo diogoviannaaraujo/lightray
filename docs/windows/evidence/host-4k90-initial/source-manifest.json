@@ -1,0 +1,13 @@
+{
+  "note": "Current source after recovery attempts. Runs desktop-006 and desktop-007 used earlier binaries identified in their launch.json; these hashes do not reconstruct those earlier sources. Runs desktop-016 and desktop-017 used the final recovery build.",
+  "sha256": {
+    "tools/windows/src/windows_host.cpp": "15ea6b79f300042c971616889b8254b8f64ff0b2f8d4af2478fb25b9753b1186",
+    "tools/windows/src/desktop_capture.hpp": "e0f9a4b89209825dfb4d3e492e8b79ea4bb3dbd06b02a93cf0fb8d9dc45e421c",
+    "tools/windows/src/desktop_test_window.cpp": "7e6eda5e16067a48a80a3edd456d2b183e831f1b39aa30b5bd6d1ad6d4dbfa77",
+    "tools/windows/src/display_modes_probe.cpp": "4503d0eb17920ee888c428126922d795adb121bdbe53f4804b1e9caff75c2956",
+    "tools/windows/start-desktop-host-test.ps1": "930f163d92cf7c7ca46774cc5ab9a4e029d8b4c3305d2d113fdb510cbf57750f",
+    "tools/windows/build-desktop-host.ps1": "7ba61fedde49394f1d2fe4894aec55117467590e4e5bbc7e3969963fa76f0844",
+    "macos/Sources/lightray-client/ClientApp.swift": "78bbce5f813984cbda3b74a045db87d4ca45c67ced7a8b3d893dac821633a959",
+    "macos/Sources/lightray-client/main.swift": "f74889e3e4d02a9f4e90ae6212e7407e276a5ca556884214b7ffa9df1ff68132"
+  }
+}

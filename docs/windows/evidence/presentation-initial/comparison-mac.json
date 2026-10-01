@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "run_id": "6f5e9259-6de5-4802-ae2d-834e9d6abca3",
+  "started_at": "2026-09-29T10:08:52.589617+00:00",
+  "action": "compare-presentation",
+  "source": {
+    "commit": "5002116872492da705aa6252f26482b02e3df5b5",
+    "dirty": true,
+    "implementation_sha256": "917b337375291a37e4dceced6e7464baaf84c40fb27f27a9299f1dcc65efaad0"
+  },
+  "status": "passed",
+  "qualification": "synthetic_submission_smoke_only",
+  "runs": [
+    {
+      "maximum_frame_latency": 1,
+      "buffer_width": 1920,
+      "buffer_height": 1080,
+      "frames_submitted": 600,
+      "wall_seconds": 9.97603,
+      "present_calls_per_second": 60.144165564858966,
+      "submit_interval_p50_ms": 16.6656,
+      "submit_interval_p95_ms": 16.8962,
+      "submit_interval_p99_ms": 17.0128,
+      "wait_p95_ms": 16.781,
+      "present_call_p95_ms": 0.1184,
+      "interval_min_ms": 9.4303,
+      "interval_max_ms": 17.725,
+      "intervals_over_25_ms": 0,
+      "summary_sha256": "836dca7793ec6030dec8f06b97d2409579ec837110bdf7b3b956044229166cdc",
+      "csv_sha256": "4efa26cef44704c8d6e55f7d8c18f34307d8082e4147b3a258e1fd3a3f2cc53b"
+    },
+    {
+      "maximum_frame_latency": 2,
+      "buffer_width": 1920,
+      "buffer_height": 1080,
+      "frames_submitted": 600,
+      "wall_seconds": 9.95325,
+      "present_calls_per_second": 60.28181749679752,
+      "submit_interval_p50_ms": 16.6636,
+      "submit_interval_p95_ms": 16.8401,
+      "submit_interval_p99_ms": 16.9542,
+      "wait_p95_ms": 16.7444,
+      "present_call_p95_ms": 0.11,
+      "interval_min_ms": 0.2792,
+      "interval_max_ms": 17.357,
+      "intervals_over_25_ms": 0,
+      "summary_sha256": "e7cf7c31dbcd4a97303308e0660d5aa5e1cd787d5499db5dcf52b1c5a56ee5dc",
+      "csv_sha256": "bacceaf451eb480953a437101cfa2c23857635ade76dd836cdb2e05451311845"
+    }
+  ],
+  "queue_2_minus_1_p99_ms": -0.05859999999999843,
+  "winner": null,
+  "limits": [
+    "One sequential run per queue depth; no statistical performance winner",
+    "Submission timing is not displayed FPS or end-to-end latency",
+    "Synthetic content in a 1280x720 window; no decoder or network integration",
+    "CSV validation checks consistency, not independent proof of display output"
+  ]
+}

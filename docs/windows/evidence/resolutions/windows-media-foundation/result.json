@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "run_id": "4d6ca92d-dc97-4f90-818a-5dbfba989754",
+  "started_at": "2026-09-29T02:26:34.380448+00:00",
+  "action": "decode-reference",
+  "source": {
+    "commit": "5002116872492da705aa6252f26482b02e3df5b5",
+    "dirty": true,
+    "implementation_sha256": "5d0413e3fd1d6b44d94d50cd2dcf37a634089e86e15bc4c9a34ecde3c4d6b731"
+  },
+  "status": "passed",
+  "backend": "media-foundation-d3d11",
+  "adapter_index": 0,
+  "adapter": {
+    "index": 0,
+    "name": "NVIDIA GeForce RTX 4090",
+    "vendor_id": 4318,
+    "software": false,
+    "dedicated_video_bytes": 25310527488,
+    "device_hresult": 0,
+    "feature_level": 45056,
+    "video_interface_hresult": 0,
+    "hevc_main_profile": true,
+    "configurations": [
+      {
+        "width": 1920,
+        "height": 1080,
+        "hresult": 0,
+        "count": 2
+      },
+      {
+        "width": 2560,
+        "height": 1440,
+        "hresult": 0,
+        "count": 2
+      },
+      {
+        "width": 3840,
+        "height": 2160,
+        "hresult": 0,
+        "count": 2
+      }
+    ]
+  },
+  "ffmpeg": "ffmpeg version 8.1-essentials_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers",
+  "ffprobe": "ffprobe version 8.1-essentials_build-www.gyan.dev Copyright (c) 2007-2026 the FFmpeg developers",
+  "clips": [
+    {
+      "clip": "videotoolbox-synthetic-2560x1440",
+      "input_sha256": "83a06d9b095e4aba1e518714fd9f2aac5b9fc0dce2a449f82849e5ccc7db5e50",
+      "format": {
+        "codec_name": "hevc",
+        "profile": "Main",
+        "width": 2560,
+        "height": 1440,
+        "pix_fmt": "yuv420p"
+      },
+      "probe_metrics": {
+        "schema_version": 1,
+        "backend": "media-foundation-d3d11",
+        "adapter_index": 0,
+        "width": 2560,
+        "height": 1440,
+        "gpu_frames": 120,
+        "read_sample_p50_ms": 0.1115,
+        "read_sample_p95_ms": 0.2119,
+        "read_sample_p99_ms": 0.2754,
+        "limits": [
+          "ReadSample timing includes demux and decoder waits; excludes GPU download and hashing",
+          "Staging allocation and readback per frame are for correctness only",
+          "No presentation or input-to-photon measurement"
+        ]
+      },
+      "frames": 120,
+      "framehash_file": "videotoolbox-synthetic-2560x1440.framehash",
+      "framehash_sha256": "3ac05bf70b4190e419fac4291c0f7faf7b380be5aa2abc91030d5d84d5eadf99",
+      "wall_seconds": 1.094
+    },
+    {
+      "clip": "videotoolbox-synthetic-3840x2160",
+      "input_sha256": "0b787f0a7f73261514d1f5e0292d5de392e66cfdf4d6c6d374d13d298e8543bb",
+      "format": {
+        "codec_name": "hevc",
+        "profile": "Main",
+        "width": 3840,
+        "height": 2160,
+        "pix_fmt": "yuv420p"
+      },
+      "probe_metrics": {
+        "schema_version": 1,
+        "backend": "media-foundation-d3d11",
+        "adapter_index": 0,
+        "width": 3840,
+        "height": 2160,
+        "gpu_frames": 120,
+        "read_sample_p50_ms": 0.1264,
+        "read_sample_p95_ms": 0.2648,
+        "read_sample_p99_ms": 0.4637,
+        "limits": [
+          "ReadSample timing includes demux and decoder waits; excludes GPU download and hashing",
+          "Staging allocation and readback per frame are for correctness only",
+          "No presentation or input-to-photon measurement"
+        ]
+      },
+      "frames": 120,
+      "framehash_file": "videotoolbox-synthetic-3840x2160.framehash",
+      "framehash_sha256": "24f1667743b182a6be16cb30dbdfbb0b37b197a5c384188073fac72a37e577b1",
+      "wall_seconds": 1.953
+    }
+  ],
+  "limits": [
+    "Full clips decoded without simulated loss",
+    "Decode correctness only; no presentation, FPS or latency qualification",
+    "Hardware probes use GPU-to-CPU download for pixel hashing; this is not the final rendering path",
+    "Wall time includes process startup, conversion and hashing"
+  ]
+}

@@ -1,0 +1,35 @@
+host_ready width=1920 height=1080 fps_target=30 native_nvenc=true desktop=true input=true
+session_started count=1
+frames=135 keyframes=1 tx=179 rx=140 input=0 held=0 queue=0 skipped=0
+frames=285 keyframes=1 tx=355 rx=292 input=0 held=0 queue=0 skipped=0
+frames=435 keyframes=1 tx=561 rx=511 input=66 held=0 queue=0 skipped=0
+frames=585 keyframes=1 tx=738 rx=663 input=66 held=0 queue=0 skipped=0
+frames=735 keyframes=1 tx=917 rx=815 input=66 held=0 queue=0 skipped=0
+frames=885 keyframes=1 tx=1094 rx=967 input=66 held=0 queue=0 skipped=0
+frames=1035 keyframes=1 tx=1271 rx=1119 input=66 held=0 queue=0 skipped=0
+frames=1186 keyframes=1 tx=1458 rx=1270 input=66 held=0 queue=0 skipped=0
+frames=1336 keyframes=1 tx=1633 rx=1421 input=66 held=0 queue=0 skipped=0
+frames=1486 keyframes=1 tx=1807 rx=1571 input=66 held=0 queue=0 skipped=0
+frames=1636 keyframes=1 tx=1982 rx=1721 input=66 held=0 queue=0 skipped=0
+frames=1786 keyframes=1 tx=2157 rx=1871 input=66 held=0 queue=0 skipped=0
+frames=1936 keyframes=1 tx=2332 rx=2021 input=66 held=0 queue=0 skipped=0
+frames=2086 keyframes=1 tx=2517 rx=2172 input=66 held=0 queue=0 skipped=0
+frames=2236 keyframes=1 tx=2692 rx=2322 input=66 held=0 queue=0 skipped=0
+frames=2386 keyframes=1 tx=2877 rx=2473 input=66 held=0 queue=0 skipped=0
+frames=2536 keyframes=1 tx=3052 rx=2623 input=66 held=0 queue=0 skipped=0
+session_ended held=0
+frames=2608 keyframes=1 tx=3136 rx=2696 input=66 held=0 queue=0 skipped=0
+frames=2608 keyframes=1 tx=3136 rx=2696 input=66 held=0 queue=0 skipped=0
+frames=2608 keyframes=1 tx=3136 rx=2696 input=66 held=0 queue=0 skipped=0
+frames=2608 keyframes=1 tx=3136 rx=2696 input=66 held=0 queue=0 skipped=0
+session_started count=2
+frames=2616 keyframes=2 tx=3171 rx=2708 input=66 held=0 queue=0 skipped=0
+frames=2766 keyframes=2 tx=3346 rx=2858 input=66 held=0 queue=0 skipped=0
+frames=2916 keyframes=2 tx=3521 rx=3008 input=66 held=0 queue=0 skipped=0
+frames=3065 keyframes=2 tx=3695 rx=3157 input=66 held=0 queue=0 skipped=1
+frames=3215 keyframes=2 tx=3870 rx=3307 input=66 held=0 queue=0 skipped=1
+frames=3362 keyframes=2 tx=4041 rx=3454 input=66 held=0 queue=0 skipped=3
+session_ended held=0
+frames=3505 keyframes=2 tx=4208 rx=3598 input=66 held=0 queue=0 skipped=3
+frames=3505 keyframes=2 tx=4208 rx=3598 input=66 held=0 queue=0 skipped=3
+frames=3505 keyframes=2 tx=4208 rx=3598 input=66 held=0 queue=0 skipped=3

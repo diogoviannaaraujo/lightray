@@ -1,0 +1,19 @@
+﻿{
+    "desktop_captured":  false,
+    "clock":  "simulated",
+    "listener":  "127.0.0.1:7373 during probe only",
+    "status":  "passed",
+    "inputs":  {
+                   "vendor\\nv-codec-headers\\nvEncodeAPI.h":  "4fe4094541ef0f8a13249d97a8692dc5f835a6e9dd42eeadb3e2f7321d54dc7e",
+                   "src\\nvenc_encoder.cpp":  "55552bb8a34277d21be41f2851015e4b7afb0312a334b8d8b7397c880eda3383",
+                   "src\\hevc_annexb.hpp":  "e3b24d3fe79332b4fce334876ae7f0f58d6edc1b80ea886e38a8b0b15b5f2d0c",
+                   "src\\nvenc_encoder.hpp":  "96d312175d7b848cbe8acbb602728fdd20d7062efccb9d55ebd8c81fbf7c409c",
+                   "src\\udp_loopback_tests.cpp":  "24669cb4044b251c73126c46a631705a1a69f526e34bfafc3cbfad5ab960f8a6",
+                   "src\\udp_loopback.hpp":  "5ca476b170f0927e3a6103d5b83914d90a0332dd5b5d8af16de32f59e27fdf34",
+                   "run-host-loopback.ps1":  "244cfa8cf6716189e6e41cca30a16c395c15838cc78588f73e0c06c03e7fe2df",
+                   "src\\host_abi_probe.cpp":  "eebc0e609fc30066fbdd8b7ecea50f2da07ac19145f085538f3e08bf8901d3ce"
+               },
+    "executable_sha256":  "66e256064d814e05fe4fbd5f74b6e981d3fce2dc688db20956978006e7bbe01f",
+    "core_dll_sha256":  "5f71e68c6047c42df88f2faa9bfb640b1356eeb3532fcb668ae5aa09850aec8c",
+    "core_probe":  "swift-core-002"
+}

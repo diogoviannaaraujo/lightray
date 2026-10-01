@@ -1,0 +1,11 @@
+test_audited_corpus (test_lab.LabTests.test_audited_corpus) ... ok
+test_checksum_and_path_traversal_rejected (test_lab.LabTests.test_checksum_and_path_traversal_rejected) ... ok
+test_frame_hash_parser_rejects_empty_and_malformed_output (test_lab.LabTests.test_frame_hash_parser_rejects_empty_and_malformed_output) ... ok
+test_partial_inventory_does_not_pass (test_lab.LabTests.test_partial_inventory_does_not_pass) ... ok
+test_remote_keeps_strict_identity_and_no_shell (test_lab.LabTests.test_remote_keeps_strict_identity_and_no_shell) ... ok
+test_timeout_authentication_and_bad_output (test_lab.LabTests.test_timeout_authentication_and_bad_output) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.008s
+
+OK

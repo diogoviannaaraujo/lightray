@@ -1,0 +1,6 @@
+{
+  "lab_processes": 0,
+  "lab_application_running": false,
+  "verified_by": "pgrep of the lab client executable",
+  "verified_at_utc": "2026-10-01T13:31:59.958900+00:00"
+}

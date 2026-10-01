@@ -1,0 +1,12 @@
+Another instance of SwiftPM (PID: 57010) is already running using '/Users/vhccruz/Dev/lightray/macos/.build', waiting until that process has finished execution...Building for production...
+[Planning deferred tasks]
+[4 / 14]
+[5 / 15] LightrayCore
+[7 / 16] LightrayCore
+[11 / 18] LightrayMac
+[13 / 19] LightrayMac
+[16 / 19] lightray-host-product
+[17 / 20] lightray-host-product
+[19 / 20] lightray-host-product
+[20 / 20] lightray-host-product
+Build complete! (10,18 seg)

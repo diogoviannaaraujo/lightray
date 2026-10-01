@@ -1,0 +1,659 @@
+{
+  "desktop-028": {
+    "run": "desktop-028",
+    "native_result": null,
+    "csv_rows": 4183,
+    "invalid_csv_rows": 1,
+    "csv_warmup_seconds": 10,
+    "native_stage_distributions": {
+      "capture_ms": {
+        "p50": 0.167,
+        "p95": 0.306,
+        "p99": 0.706,
+        "rows": 3883
+      },
+      "encode_ms": {
+        "p50": 3.864,
+        "p95": 6.188,
+        "p99": 11.551,
+        "rows": 3883
+      },
+      "submit_ms": {
+        "p50": 0.042,
+        "p95": 0.201,
+        "p99": 0.288,
+        "rows": 3883
+      }
+    },
+    "client_samples": [
+      {
+        "at_seconds": 5.042,
+        "decoded_fps": 30,
+        "rtt_ms": 5.5,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 10.055,
+        "decoded_fps": 31,
+        "rtt_ms": 3.3,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 15.064,
+        "decoded_fps": 30,
+        "rtt_ms": 5.1,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 20.076,
+        "decoded_fps": 30,
+        "rtt_ms": 5.1,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 25.085,
+        "decoded_fps": 30,
+        "rtt_ms": 5.3,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 30.151,
+        "decoded_fps": 29,
+        "rtt_ms": 4.9,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 35.171,
+        "decoded_fps": 30,
+        "rtt_ms": 5.2,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 40.185,
+        "decoded_fps": 30,
+        "rtt_ms": 5.4,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 45.198,
+        "decoded_fps": 30,
+        "rtt_ms": 5.1,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 50.208,
+        "decoded_fps": 30,
+        "rtt_ms": 5.3,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 55.221,
+        "decoded_fps": 30,
+        "rtt_ms": 5.2,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 60.256,
+        "decoded_fps": 18,
+        "rtt_ms": 44.3,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 65.292,
+        "decoded_fps": 30,
+        "rtt_ms": 5.6,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 70.379,
+        "decoded_fps": 30,
+        "rtt_ms": 10.9,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 75.396,
+        "decoded_fps": 30,
+        "rtt_ms": 4.3,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 80.406,
+        "decoded_fps": 30,
+        "rtt_ms": 3.0,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 85.419,
+        "decoded_fps": 30,
+        "rtt_ms": 4.3,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 90.459,
+        "decoded_fps": 31,
+        "rtt_ms": 4.4,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 95.473,
+        "decoded_fps": 30,
+        "rtt_ms": 3.7,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 100.488,
+        "decoded_fps": 30,
+        "rtt_ms": 3.2,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 105.497,
+        "decoded_fps": 30,
+        "rtt_ms": 3.9,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 110.513,
+        "decoded_fps": 30,
+        "rtt_ms": 2.6,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 115.527,
+        "decoded_fps": 30,
+        "rtt_ms": 3.8,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 120.535,
+        "decoded_fps": 30,
+        "rtt_ms": 5.0,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 125.547,
+        "decoded_fps": 30,
+        "rtt_ms": 3.8,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 130.555,
+        "decoded_fps": 31,
+        "rtt_ms": 4.9,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 140.536,
+        "decoded_fps": 30,
+        "rtt_ms": 3.9,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 145.66,
+        "decoded_fps": 0,
+        "rtt_ms": 4.1,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      }
+    ],
+    "recoveries_to_acquire_us": [],
+    "configured_idr_epochs": [
+      1
+    ],
+    "first_decode_after_authentication_us": [],
+    "declared_displays": [],
+    "claim_boundary": "Decoded FPS and acquisition/encode timing; physical presentation and input-to-photon are not measured."
+  },
+  "desktop-029": {
+    "run": "desktop-029",
+    "native_result": {
+      "status": "completed",
+      "frames": 2823,
+      "keyframes": 4,
+      "idr_requests": 1,
+      "sessions": 1,
+      "input_applied": 0,
+      "input_unsupported": 0,
+      "input_failures": 0,
+      "held_at_exit": 0,
+      "tx": 15959,
+      "rx": 4019,
+      "skipped": 3,
+      "width": 1920,
+      "height": 1080,
+      "fps_target": 30,
+      "bitrate_mbps": 20,
+      "source_refresh_hz": 60,
+      "desktop_updates": 2823,
+      "cached_frames": 0,
+      "capture_recreations": 3,
+      "capture_recoveries": 3,
+      "blocked_input": 0,
+      "clock": "steady_clock",
+      "desktop_capture": true,
+      "native_nvenc": true
+    },
+    "csv_rows": 2823,
+    "invalid_csv_rows": 0,
+    "csv_warmup_seconds": 10,
+    "native_stage_distributions": {
+      "capture_ms": {
+        "p50": 0.183,
+        "p95": 0.402,
+        "p99": 1.011,
+        "rows": 2523
+      },
+      "encode_ms": {
+        "p50": 4.916,
+        "p95": 12.137,
+        "p99": 13.068,
+        "rows": 2523
+      },
+      "submit_ms": {
+        "p50": 0.066,
+        "p95": 0.222,
+        "p99": 0.454,
+        "rows": 2523
+      }
+    },
+    "client_samples": [
+      {
+        "at_seconds": 10.125,
+        "decoded_fps": 31,
+        "rtt_ms": 4.7,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 15.143,
+        "decoded_fps": 30,
+        "rtt_ms": 3.7,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 20.156,
+        "decoded_fps": 30,
+        "rtt_ms": 4.6,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 25.188,
+        "decoded_fps": 25,
+        "rtt_ms": 3.2,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 30.2,
+        "decoded_fps": 30,
+        "rtt_ms": 4.6,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 35.231,
+        "decoded_fps": 31,
+        "rtt_ms": 3.2,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 40.244,
+        "decoded_fps": 30,
+        "rtt_ms": 4.6,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 45.256,
+        "decoded_fps": 30,
+        "rtt_ms": 4.2,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 50.276,
+        "decoded_fps": 30,
+        "rtt_ms": 4.5,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 55.288,
+        "decoded_fps": 30,
+        "rtt_ms": 4.3,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 60.319,
+        "decoded_fps": 31,
+        "rtt_ms": 4.1,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 65.358,
+        "decoded_fps": 30,
+        "rtt_ms": 4.1,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 70.382,
+        "decoded_fps": 30,
+        "rtt_ms": 4.7,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 75.402,
+        "decoded_fps": 30,
+        "rtt_ms": 3.1,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 80.417,
+        "decoded_fps": 30,
+        "rtt_ms": 4.5,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 85.439,
+        "decoded_fps": 30,
+        "rtt_ms": 3.8,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 90.476,
+        "decoded_fps": 30,
+        "rtt_ms": 10.0,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 95.49,
+        "decoded_fps": 30,
+        "rtt_ms": 3.1,
+        "lost": 0,
+        "decode_drops": 0,
+        "send_errors": 0,
+        "receive_errors": 0
+      }
+    ],
+    "recoveries_to_acquire_us": [
+      165864,
+      198577,
+      165483
+    ],
+    "configured_idr_epochs": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "first_decode_after_authentication_us": [],
+    "declared_displays": [],
+    "claim_boundary": "Decoded FPS and acquisition/encode timing; physical presentation and input-to-photon are not measured."
+  },
+  "desktop-030": {
+    "run": "desktop-030",
+    "native_result": {
+      "status": "completed",
+      "frames": 3579,
+      "keyframes": 2,
+      "idr_requests": 2,
+      "sessions": 1,
+      "input_applied": 0,
+      "input_unsupported": 0,
+      "input_failures": 0,
+      "held_at_exit": 0,
+      "tx": 27342,
+      "rx": 2085,
+      "skipped": 142,
+      "width": 3840,
+      "height": 2160,
+      "fps_target": 90,
+      "bitrate_mbps": 80,
+      "source_refresh_hz": 60,
+      "desktop_updates": 2420,
+      "cached_frames": 1159,
+      "capture_recreations": 0,
+      "capture_recoveries": 0,
+      "blocked_input": 0,
+      "clock": "steady_clock",
+      "desktop_capture": true,
+      "native_nvenc": true
+    },
+    "csv_rows": 3579,
+    "invalid_csv_rows": 0,
+    "csv_warmup_seconds": 10,
+    "native_stage_distributions": {
+      "capture_ms": {
+        "p50": 0.126,
+        "p95": 0.286,
+        "p99": 0.604,
+        "rows": 2741
+      },
+      "encode_ms": {
+        "p50": 5.586,
+        "p95": 8.883,
+        "p99": 14.973,
+        "rows": 2741
+      },
+      "submit_ms": {
+        "p50": 0.088,
+        "p95": 0.329,
+        "p99": 0.5,
+        "rows": 2741
+      }
+    },
+    "client_samples": [
+      {
+        "at_seconds": 5.045,
+        "decoded_fps": 83,
+        "rtt_ms": 4.7,
+        "lost": 0,
+        "decode_drops": 3,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 10.068,
+        "decoded_fps": 85,
+        "rtt_ms": 5.6,
+        "lost": 0,
+        "decode_drops": 3,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 15.095,
+        "decoded_fps": 80,
+        "rtt_ms": 6.0,
+        "lost": 0,
+        "decode_drops": 3,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 20.129,
+        "decoded_fps": 80,
+        "rtt_ms": 5.3,
+        "lost": 0,
+        "decode_drops": 3,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 25.161,
+        "decoded_fps": 88,
+        "rtt_ms": 6.5,
+        "lost": 0,
+        "decode_drops": 3,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 30.188,
+        "decoded_fps": 81,
+        "rtt_ms": 4.7,
+        "lost": 0,
+        "decode_drops": 3,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 35.217,
+        "decoded_fps": 90,
+        "rtt_ms": 4.5,
+        "lost": 0,
+        "decode_drops": 3,
+        "send_errors": 0,
+        "receive_errors": 0
+      },
+      {
+        "at_seconds": 40.235,
+        "decoded_fps": 87,
+        "rtt_ms": 5.5,
+        "lost": 0,
+        "decode_drops": 3,
+        "send_errors": 0,
+        "receive_errors": 0
+      }
+    ],
+    "recoveries_to_acquire_us": [],
+    "configured_idr_epochs": [
+      1
+    ],
+    "first_decode_after_authentication_us": [
+      124040
+    ],
+    "declared_displays": [
+      "display id=1 native=3840x2160 refresh_millihertz=60000"
+    ],
+    "claim_boundary": "Decoded FPS and acquisition/encode timing; physical presentation and input-to-photon are not measured."
+  }
+}

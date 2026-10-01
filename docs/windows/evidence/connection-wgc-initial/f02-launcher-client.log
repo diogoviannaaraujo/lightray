@@ -1,0 +1,10 @@
+[   0.000] stream 1: presentation screen id=4 max_fps=60
+[   0.007] socket buffers: receive 4194304, send 4194304 bytes
+[   0.007] connecting to 192.168.15.5:37373 from port 64668, with 1 video streams
+[   9.110] disconnected: no response from the host
+[  19.214] disconnected: no response from the host
+[  29.317] disconnected: no response from the host
+[  39.420] disconnected: no response from the host
+[  46.431] stream 1: presentation screen id=4 max_fps=60
+[  46.432] socket buffers: receive 4194304, send 4194304 bytes
+[  46.432] connecting to 192.168.15.5:37373 from port 50372, with 1 video streams

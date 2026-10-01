@@ -1,0 +1,62 @@
+Building for debugging...
+[Planning deferred tasks]
+[32 / 62]
+[33 / 63] LightrayVectors
+[42 / 108]
+[45 / 108]
+[48 / 108]
+[52 / 108]
+[53 / 108]
+[57 / 108]
+[60 / 108]
+[63 / 108]
+[66 / 108]
+[68 / 108]
+[69 / 108]
+[70 / 108]
+[78 / 108] LightrayVectors
+[89 / 109] lightray-vectors-product
+[91 / 111] LightrayVectors
+[91 / 111] lightray-vectors-product
+[92 / 111] lightray-vectors-product
+[95 / 111] LightrayVectors
+[99 / 112] lightray-vectors-product
+[101 / 112] LightrayVectorsTests-product
+[102 / 118]
+[107 / 118] LightrayVectorsTests-product
+[112 / 118] LightrayVectorsTests-product
+[114 / 118] LightrayVectorsTests-product
+Build complete! (9,68 seg)
+Test Suite 'All tests' started at 2026-09-28 20:23:09.938.
+Test Suite 'All tests' passed at 2026-09-28 20:23:09.940.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.002) seconds
+◇ Test run started.
+↳ Testing Library Version: 2084
+↳ Target Platform: arm64e-apple-macos14.0
+◇ Test sealedPacketsOpenOnlyWhenUntouched() started.
+◇ Test noiseMatchesThePublishedVector() started.
+◇ Test protocolNameIsExactlyOneHashLong() started.
+◇ Test x25519MatchesRFC7748() started.
+◇ Test everyCleartextInitByteIsAuthenticated(offset:) started.
+◇ Test slugsFollowGitHub() started.
+◇ Test x25519MatchesVersion0Example() started.
+◇ Test blockNamesAreUnique() started.
+◇ Test initFailsUnderAnotherPSK() started.
+◇ Test packetNumbersReconstruct() started.
+◇ Test exampleHandshakeHoldsTogether() started.
+◇ Test case passing 1 argument offset → 2 to everyCleartextInitByteIsAuthenticated(offset:) started.
+◇ Test case passing 1 argument offset → 3 to everyCleartextInitByteIsAuthenticated(offset:) started.
+◇ Test case passing 1 argument offset → 11 to everyCleartextInitByteIsAuthenticated(offset:) started.
+◇ Test case passing 1 argument offset → 4 to everyCleartextInitByteIsAuthenticated(offset:) started.
+✔ Test packetNumbersReconstruct() passed after 0.001 seconds.
+✔ Test x25519MatchesVersion0Example() passed after 0.001 seconds.
+✔ Test slugsFollowGitHub() passed after 0.001 seconds.
+✔ Test protocolNameIsExactlyOneHashLong() passed after 0.001 seconds.
+✔ Test x25519MatchesRFC7748() passed after 0.001 seconds.
+✔ Test sealedPacketsOpenOnlyWhenUntouched() passed after 0.001 seconds.
+✔ Test exampleHandshakeHoldsTogether() passed after 0.001 seconds.
+✔ Test initFailsUnderAnotherPSK() passed after 0.001 seconds.
+✔ Test everyCleartextInitByteIsAuthenticated(offset:) with 4 test cases passed after 0.002 seconds.
+✔ Test noiseMatchesThePublishedVector() passed after 0.002 seconds.
+✔ Test blockNamesAreUnique() passed after 0.002 seconds.
+✔ Test run with 11 tests in 0 suites passed after 0.002 seconds.

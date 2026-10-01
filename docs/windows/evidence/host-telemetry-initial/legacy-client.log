@@ -1,0 +1,8 @@
+[   0.000] stream 1: presentation screen id=5 max_fps=60
+[   0.003] socket buffers: receive 4194304, send 4194304 bytes
+[   0.003] connecting to 192.168.15.5:37373 from port 51622, with 1 video streams
+[   0.010] session b2f6ab94 established, datagrams up to 1200 bytes, no FEC, video streams [1]
+[   5.010] stream 1: 90 decoded fps · 6.6 connection Mb/s · RTT 6.5 ms · lost 0 · keyframes 2 · FEC-repaired 0 · NACKed 0 · decode 2.31 ms · decode wait 0.05 ms · decode queue drops 3 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  10.034] stream 1: 89 decoded fps · 6.1 connection Mb/s · RTT 5.4 ms · lost 0 · keyframes 2 · FEC-repaired 0 · NACKed 0 · decode 2.37 ms · decode wait 0.05 ms · decode queue drops 3 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  15.077] stream 1: 80 decoded fps · 6.2 connection Mb/s · RTT 6.9 ms · lost 0 · keyframes 2 · FEC-repaired 0 · NACKed 0 · decode 2.39 ms · decode wait 0.05 ms · decode queue drops 3 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose
+[  20.108] stream 1: 90 decoded fps · 6.3 connection Mb/s · RTT 5.8 ms · lost 0 · keyframes 2 · FEC-repaired 0 · NACKed 0 · decode 2.35 ms · decode wait 0.05 ms · decode queue drops 3 · send errors 0 · receive errors 0 · 0 datagrams dropped on purpose

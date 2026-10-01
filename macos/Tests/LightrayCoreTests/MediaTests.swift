@@ -171,6 +171,49 @@ func frame(idr: Bool, size: Int, seed: UInt8 = 0) -> Bytes {
     #expect(now < 20_000)
 }
 
+@Test(arguments: [256, 512, 1200, 9000])
+func generatedNacksRespectDatagramLimit(size: Int) throws {
+    let receiver = VideoReceiver(stream: 1)
+    for index in stride(from: 0, through: 318, by: 2) {
+        receiver.receive(MediaFragment(stream: 1, flags: 0, frameID: 1, index: UInt16(index), count: 320, stride: 200, payload: Bytes(repeating: 0, count: 200)[...]), now: 1_000, budget: 50_000)
+    }
+    let key = Bytes(repeating: 7, count: 32)
+    let connection = Connection(role: .client, sessionID: 1, sendKey: key, receiveKey: key, streams: StreamTable([]), maxDatagramSize: size, peer: PeerAddress(ip: [192, 0, 2, 1], port: 7373), now: 1_000)
+    var requested: [NackEntry] = []
+    var packetNumber: UInt64 = 0
+    for now in [UInt64(10_000), 10_001] {
+        for chunk in receiver.poll(now: now, srtt: 2_000, budget: 50_000) { connection.queue(chunk) }
+        for datagram in connection.flush(now: now) {
+            #expect(datagram.count <= size)
+            let body = try #require(Packet.open(datagram, packetNumber: packetNumber, key: TrafficKey(key)))
+            packetNumber += 1
+            for chunk in Chunk.parse(body).chunks {
+                if case .nack(let nack) = chunk { requested += nack.entries }
+            }
+        }
+    }
+    #expect(requested.map(\.first).sorted() == stride(from: 1, through: 317, by: 2).map { UInt16($0) })
+    #expect(requested.allSatisfy { $0.frameID == 1 && $0.count == 1 })
+}
+
+@Test func oversizedDatagramsAreNotSealed() {
+    let key = Bytes(repeating: 7, count: 32)
+    let connection = Connection(role: .client, sessionID: 1, sendKey: key, receiveKey: key, streams: StreamTable([]), maxDatagramSize: 256, peer: PeerAddress(ip: [192, 0, 2, 1], port: 7373), now: 0)
+    #expect(connection.seal(Bytes(repeating: 0, count: 256), now: 1) == nil)
+    #expect(!connection.queue(.datagram(stream: 1, payload: Bytes(repeating: 0, count: 256))))
+    #expect(connection.flush(now: 2).allSatisfy { $0.count <= 256 })
+    #expect(connection.stats.oversizedOutgoing == 2)
+}
+
+@Test(arguments: [UInt16(0), 65, .max])
+func receiverRejectsInvalidParityLength(length: UInt16) {
+    let receiver = VideoReceiver(stream: 1)
+    let fragment = MediaFragment(stream: 1, flags: MediaFragment.Flag.parity, frameID: 1, index: 0, count: 1, stride: 64, fec: .init(maxBlockLength: 1, parityPerBlock: 1, lastLength: length), payload: Bytes(repeating: 0, count: 64)[...])
+    receiver.receive(fragment, now: 1_000, budget: 50_000)
+    #expect(receiver.stats.discardedFragments == 1)
+    #expect(receiver.takeFrames().isEmpty)
+}
+
 @Test func reliableStreamsDeliverInOrderOnce() {
     let sender = ReliableSender(stream: 4)
     let receiver = ReliableReceiver(stream: 4)

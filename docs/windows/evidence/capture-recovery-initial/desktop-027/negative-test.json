@@ -1,0 +1,7 @@
+{
+    "scenario":  "injected_persistent_capture_loss",
+    "status":  "passed",
+    "expected_host_exit":  1,
+    "observed_exit_ms":  5022,
+    "first_frame_before_injection":  false
+}

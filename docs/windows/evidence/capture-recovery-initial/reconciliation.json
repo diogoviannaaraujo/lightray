@@ -1,0 +1,40 @@
+{
+  "status": "passed",
+  "source_run": "desktop-024",
+  "cycles": 10,
+  "capture_epochs": 11,
+  "every_epoch_begins_with_idr": true,
+  "host_recovery_ms": [
+    122.153,
+    110.981,
+    121.882,
+    110.588,
+    110.799,
+    110.863,
+    109.926,
+    111.41,
+    111.092,
+    121.306
+  ],
+  "observed_recovery_ms": [
+    236,
+    220,
+    223,
+    254,
+    221,
+    223,
+    225,
+    224,
+    232,
+    222
+  ],
+  "private_bytes_range": [
+    277245952,
+    278024192
+  ],
+  "handles_range": [
+    358,
+    362
+  ],
+  "fault_mechanism": "lab marker releases real DXGI interface; no OS desktop switch induced"
+}

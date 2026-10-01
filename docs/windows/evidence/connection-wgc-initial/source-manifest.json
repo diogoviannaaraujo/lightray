@@ -1,0 +1,33 @@
+{
+  "base_git": "5002116872492da705aa6252f26482b02e3df5b5",
+  "branch": "codex/windows-foundation",
+  "uncommitted": true,
+  "sources": {
+    "tools/windows/src/capture_probe.cpp": "4f30f10d15dd5ed21c122ac300c7d10457d4b758cf9819e440cb736ee2344cd6",
+    "tools/windows/src/wgc_capture_probe.cpp": "42570649c0d39549ae2256d2df844daf09e279bdedba337059a4328eba36b1b4",
+    "tools/windows/src/wgc_capture.hpp": "3b5f280140b194d763c58033a6614259f8d233cbb2eb530c065754077d6dbc14",
+    "tools/windows/src/desktop_capture.hpp": "7c6e6e0c2e9f7a5e27c5f7400eb672eb287947f3cb2a88b0de477ceb42c69131",
+    "tools/windows/src/windows_display.hpp": "a565c58bc09c254bb3cff961f5aabc146c60cb424fc75c9114f209b7c342f602",
+    "tools/windows/src/windows_display_tests.cpp": "1800c42fae3d352ee38826da5681bc4ef82eef26a249a2e4e5a03fbef9000095",
+    "tools/windows/src/windows_host.cpp": "4ba161ec73769251130cf840e668a69d93300aadcaba56a8644cf6428add26aa",
+    "tools/windows/build-desktop-host.ps1": "e09a7560f281aa7beb6fa0aa91a48a8bb6262587d135c466379e62a9803606a4",
+    "tools/windows/run-capture-probe.ps1": "2d3b554bb55e7f512e014d9cf680384f09b6fedb7d279f01328fc73a5d719cea",
+    "tools/windows/start-desktop-host-test.ps1": "4541357d9336a155eefa8f21213dc2a6d9542bc9a04031f2102d6414267019a9",
+    "macos/Sources/lightray-client/ConnectionLauncher.swift": "a4f2c6fc6311a5a31c7f14afed74914c02086422921c93490959be9a960d21e1",
+    "macos/Sources/lightray-client/ClientApp.swift": "42bb8516e880bad25a31f248c2b47e7cc4d6e5e870cf9a1265231aaff0677a8a",
+    "macos/Sources/lightray-client/main.swift": "6e6fab355491a9f4281fa2eb692393aa1d0e984dfae2aa7ce69cb3c495d141b0",
+    "macos/Sources/lightray-client/SessionControls.swift": "6624fd42ee6b119562dfb060d589874f2058c748ba0ff90536e286d869a5ad78",
+    "macos/Sources/lightray-client/VideoView.swift": "9a63e3bd3aa89ed9b3f671e6e1d26e0a7e0696b74d9db204b2ed0ff95dbf8a89",
+    "macos/Sources/LightrayMac/Pairing.swift": "44c44928110be66e1c96e575e53099b711c3378a3f9dc9bda06c2d2e604550e5",
+    "macos/Sources/LightrayMac/PairedHosts.swift": "5ec959cf9f91c62ebc324f83cb607f1949e5348dcc685966b70315451fbfc4ef",
+    "macos/Sources/LightrayMac/ConnectionTarget.swift": "8836602b0e797103f1f3c14121e81b79cc9624a7081fe441a361776446c6f639",
+    "macos/Tests/LightrayMacTests/PairedHostsTests.swift": "a3f27bcc1ff403c96ce74a1218fe107a519a1c4e46375df1034c86e306db2678"
+  },
+  "lab_client_sha256": "237fe8c7772a17ba15007fef017036158ecb6be75b7b54b8153c0b72b08bc42b",
+  "test_boundaries": {
+    "catalog_saved_in_real_user_profile": false,
+    "physical_presentation_measured": false,
+    "private_pairing_in_evidence": false
+  },
+  "recorded_at_utc": "2026-10-01T13:31:59.972994+00:00"
+}

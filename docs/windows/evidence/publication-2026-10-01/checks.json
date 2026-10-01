@@ -1,0 +1,28 @@
+{
+  "recorded_at_utc": "2026-10-01T16:58:43.163578+00:00",
+  "base_git": "5002116872492da705aa6252f26482b02e3df5b5",
+  "upstream_at_publication": "5ef9685",
+  "branch": "codex/windows-foundation",
+  "code_snapshot_modified_from_base": true,
+  "platform": "macOS 26.6.1",
+  "swift": "6.4",
+  "swift_tests": {
+    "core": 83,
+    "mac": 33,
+    "total": 116,
+    "status": "passed"
+  },
+  "python_tests": {
+    "total": 31,
+    "status": "passed"
+  },
+  "release_build": "passed",
+  "relative_document_links": "passed",
+  "evidence_and_report_manifests": {
+    "count": 7,
+    "status": "passed"
+  },
+  "native_windows_tests_rerun_this_publication": false,
+  "gpu_or_desktop_tests_rerun_this_publication": false,
+  "macos_27_renderer_validated": false
+}

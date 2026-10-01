@@ -1,0 +1,99 @@
+{
+  "files": [
+    {
+      "source": "macos/Sources/LightrayCore/Control/ControlMessages.swift",
+      "copy": "Sources/LightrayCore/Control/ControlMessages.swift",
+      "sha256": "4b7aee2f338d58bea3f193cb1ee31ed8aa5c1ec6bb8b6166a81b8d902be6b4c2"
+    },
+    {
+      "source": "macos/Sources/LightrayCore/Input/InputMessages.swift",
+      "copy": "Sources/LightrayCore/Input/InputMessages.swift",
+      "sha256": "ee75440f52c38e33380c461e95bf7803206a410575530f0cc80304356241ad9a"
+    },
+    {
+      "source": "macos/Sources/LightrayCore/Media/DecodeQueue.swift",
+      "copy": "Sources/LightrayCore/Media/DecodeQueue.swift",
+      "sha256": "588be2a9c94f6fc1e844520c6ccc917548521d743839396b593a5d92b14f7d5e"
+    },
+    {
+      "source": "macos/Sources/LightrayCore/Media/ReedSolomon.swift",
+      "copy": "Sources/LightrayCore/Media/ReedSolomon.swift",
+      "sha256": "a602157ff2f3a0002b4816765e7f8c5101bda6d4ef40b314243ce5e2495f1370"
+    },
+    {
+      "source": "macos/Sources/LightrayCore/Media/VideoReceiver.swift",
+      "copy": "Sources/LightrayCore/Media/VideoReceiver.swift",
+      "sha256": "a97711aa7232ee34735241fef1ec4c7398b4dfe26ac17c4281e7772e5e6dd896"
+    },
+    {
+      "source": "macos/Sources/LightrayCore/Media/VideoSender.swift",
+      "copy": "Sources/LightrayCore/Media/VideoSender.swift",
+      "sha256": "e4c64b4b8dc445a774bd7e74110b6c074db9c4f48a8ad83e13c7aca90bedb20e"
+    },
+    {
+      "source": "macos/Sources/LightrayCore/Session/ClientEndpoint.swift",
+      "copy": "Sources/LightrayCore/Session/ClientEndpoint.swift",
+      "sha256": "5632d60788eb0825eb13546c6f9562c85bfc5ffd48d75e1f97d40bd738608700"
+    },
+    {
+      "source": "macos/Sources/LightrayCore/Session/HostEndpoint.swift",
+      "copy": "Sources/LightrayCore/Session/HostEndpoint.swift",
+      "sha256": "3d5dd85015b5b55b464b9b6199a956c61efccbb50958897f4adada0d6778f49c"
+    },
+    {
+      "source": "macos/Sources/LightrayCore/Transport/Connection.swift",
+      "copy": "Sources/LightrayCore/Transport/Connection.swift",
+      "sha256": "8720ea25b8780ffcb614e9d29d47b21e41a5a8c2491574c97b1c600312143aa2"
+    },
+    {
+      "source": "macos/Sources/LightrayCore/Transport/MemoryBudget.swift",
+      "copy": "Sources/LightrayCore/Transport/MemoryBudget.swift",
+      "sha256": "bd610fbd808158f5bebfeb820b5fabb2b331fea49e0d64fbfd2d07dd511c7af9"
+    },
+    {
+      "source": "macos/Sources/LightrayCore/Transport/Reliable.swift",
+      "copy": "Sources/LightrayCore/Transport/Reliable.swift",
+      "sha256": "f43b08f3c6108f609ef6097d2017d6f507add88a6c721f9cf5f220c3b7831157"
+    },
+    {
+      "source": "macos/Sources/LightrayCore/Wire/Bytes.swift",
+      "copy": "Sources/LightrayCore/Wire/Bytes.swift",
+      "sha256": "6ff70bbd1be4476500e5d354222c312b0321ecbaaa513c8e74c8af536b993f41"
+    },
+    {
+      "source": "macos/Sources/LightrayCore/Wire/Chunks.swift",
+      "copy": "Sources/LightrayCore/Wire/Chunks.swift",
+      "sha256": "b7dfc199da3e3931529d38a1f6c5d533f4cd2294cdb8ed8022442c30e3564fbc"
+    },
+    {
+      "source": "macos/Sources/LightrayCore/Wire/FrameHeader.swift",
+      "copy": "Sources/LightrayCore/Wire/FrameHeader.swift",
+      "sha256": "30e4697d1b9abbc6b1a56d0378308a519b6c1abe00c4318df625b7b7657f8996"
+    },
+    {
+      "source": "macos/Sources/LightrayCore/Wire/Handshake.swift",
+      "copy": "Sources/LightrayCore/Wire/Handshake.swift",
+      "sha256": "e5f3ae29c928b2a9fa0352cee7a707324a348ebb1bde6a55731680bff8728921"
+    },
+    {
+      "source": "macos/Sources/LightrayCore/Wire/Noise.swift",
+      "copy": "Sources/LightrayCore/Wire/Noise.swift",
+      "sha256": "069355c46232645695ebeb3eca784cf226aac51a776fe2499d4d5e33d85ebf79"
+    },
+    {
+      "source": "macos/Sources/LightrayCore/Wire/Packet.swift",
+      "copy": "Sources/LightrayCore/Wire/Packet.swift",
+      "sha256": "68ee8a18aff1409b2b7017b2109905acf20ae3bc07a5e3e88c4097be1fb9d052"
+    },
+    {
+      "source": "macos/Sources/LightrayMac/VideoDecoder.swift",
+      "copy": "Sources/LightrayMac/VideoDecoder.swift",
+      "sha256": "0ff44ebc36f6349b946aae8d329537a2fee27928c775ae559134c9bc6ed69c16"
+    },
+    {
+      "source": "tools/windows/src/nvenc_mac_interop.swift",
+      "copy": "Sources/Interop/main.swift",
+      "sha256": "f523a84000371296c84fb7a5e4cc7963e1aed70633464200fd0f62fea8daca1c"
+    }
+  ]
+}

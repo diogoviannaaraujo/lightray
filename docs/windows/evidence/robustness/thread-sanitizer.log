@@ -1,0 +1,33 @@
+Building for debugging...
+[Starting]
+[2 / 7] LightrayCoreTests-product
+[4 / 9] LightrayCoreTests-product
+[8 / 11] LightrayCoreTests-product
+[11 / 15] LightrayCoreTests-product
+Build complete! (1,79 seg)
+◇ Test run started.
+↳ Testing Library Version: 2084
+↳ Target Platform: arm64e-apple-macos14.0
+◇ Test boundedDecoderCancellationReleasesPendingWork() started.
+◇ Test socketFailuresAreObservableAndCloseIsIdempotent() started.
+◇ Test socketsExchangeDatagrams() started.
+◇ Test socketCanCloseFromItsReadCallback() started.
+✔ Test socketCanCloseFromItsReadCallback() passed after 0.001 seconds.
+✔ Test socketFailuresAreObservableAndCloseIsIdempotent() passed after 0.001 seconds.
+✔ Test socketsExchangeDatagrams() passed after 0.001 seconds.
+✔ Test boundedDecoderCancellationReleasesPendingWork() passed after 0.002 seconds.
+✔ Test run with 4 tests in 0 suites passed after 0.003 seconds.
+◇ Test run started.
+↳ Testing Library Version: 2084
+↳ Target Platform: arm64e-apple-macos14.0
+◇ Test newerIDRSupersedesActiveDecodeWithoutExceedingByteLimit() started.
+◇ Test memoryReservationsRollBackAndRelease() started.
+◇ Test decodeQueueFailureAndCancellationInvalidateCallbacks() started.
+◇ Test decodeQueueBoundsAndRecoversWithIDR() started.
+◇ Test decodeQueueRejectsStaleAndChangedConfiguration() started.
+✔ Test newerIDRSupersedesActiveDecodeWithoutExceedingByteLimit() passed after 0.001 seconds.
+✔ Test decodeQueueRejectsStaleAndChangedConfiguration() passed after 0.001 seconds.
+✔ Test decodeQueueFailureAndCancellationInvalidateCallbacks() passed after 0.001 seconds.
+✔ Test memoryReservationsRollBackAndRelease() passed after 0.001 seconds.
+✔ Test decodeQueueBoundsAndRecoversWithIDR() passed after 0.003 seconds.
+✔ Test run with 5 tests in 0 suites passed after 0.004 seconds.

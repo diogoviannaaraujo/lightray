@@ -1,0 +1,9 @@
+windows_host.cpp
+nvenc_encoder.cpp
+Generating Code...
+desktop_test_window.cpp
+windows_input_tests.cpp
+capture_recovery_tests.cpp
+display_modes_probe.cpp
+{"status":"passed","cases":12,"faults":"simulated_clock_and_outcomes"}
+{"status":"passed","cases":19,"system_input_injected":false}

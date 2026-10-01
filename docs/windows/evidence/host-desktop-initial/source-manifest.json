@@ -1,0 +1,25 @@
+{
+  "base_commit": "5002116872492da705aa6252f26482b02e3df5b5",
+  "local_uncommitted": true,
+  "sha256": {
+    "tools/windows/src/windows_host.cpp": "97f01f41d343749d493593c281663a2fcc64e59c4ed056bcfd28c4e56be924a4",
+    "tools/windows/src/desktop_capture.hpp": "0b17a93130d86d2e69ee583b4bdb61a0e559d6735709117ce84619cbc97f8ae3",
+    "tools/windows/src/windows_input.hpp": "0b0e8f3c5d6d169e34e17f1684bf0037bda4af8ea35a98744aaf07bd1c06db88",
+    "tools/windows/src/windows_input_tests.cpp": "7807202954a8546f7e6e8e1e5adfa8f5b7184351cdef6714dd732d2117f9ef11",
+    "tools/windows/src/desktop_test_window.cpp": "b72a5056a5e8df35e30ad8a7079db8cf58996310fe13526919d1b2346b96c5f1",
+    "tools/windows/src/nvenc_encoder.cpp": "f4e5255ca2d1de7cc1a131a20b17e6995d81e5dbb34159eeb302e575036fd276",
+    "tools/windows/src/nvenc_encoder.hpp": "4d3673856d6f37013fd0a8eeb884ac04cb52ac51a56dcb6e0f08a58f80e68d63",
+    "tools/windows/src/host_bridge.swift": "cc9c85123dfbe7c314eb9128d21282bf4924c1a3930833b6d0a0d9e5475e216f",
+    "tools/windows/src/host_bridge.h": "f85a2530e30a408e172e58178531f7fb33c4f8afff1921767adb780ec9e0d615",
+    "tools/windows/build-desktop-host.ps1": "4fc2c817fc6bbdbce8069a3efc86a40c098a208abd6a838282fec1d0b134ea4b",
+    "tools/windows/start-desktop-host-test.ps1": "e43501c99408c348591cccfdc285112090f88a341b452776b53a5a5536feaaa4",
+    "tools/windows/stop-desktop-host-test.ps1": "c2102c1f37c3209eb8c3957d86a1906e669c841ab7f8853c74c96b15b52d759e",
+    "macos/Sources/lightray-client/main.swift": "73be33c847408ca119ae7789f48d95d26c6f99071bb3942c002d1c94641b069b",
+    "macos/Sources/lightray-client/VideoView.swift": "4653585a3b119f163e42392ff8dc6505dd723ac6813791aacdcd0894eeaae829",
+    "macos/Sources/lightray-client/ClientApp.swift": "0c9734b0e8f4813c6e09996fb8e4212251fdf0347221310792643251ac2040bb",
+    "macos/Sources/LightrayMac/KeyMap.swift": "3d91cf84c2dbf7d36c522c50d974464fd27d38a2e84a0414c78bec789d3211c7",
+    "macos/Tests/LightrayMacTests/MacTests.swift": "9994159776491560526776f515e233fffc8131da1dac687a107fa82d4a5a5c93",
+    "macos/.build/release/lightray-client": "c1bcf05caad11d4e4c851aa28ead07edb080e095488f17ec6e73c03175c99fb6"
+  },
+  "runner_note": "PairFile absolute-path resolution added after the interactive campaign; native host binary unchanged."
+}

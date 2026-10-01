@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "run_id": "b7afc2bc-7a98-49d7-b639-d841c770647a",
+  "started_at": "2026-09-29T13:00:06.225279+00:00",
+  "action": "decode-reference",
+  "source": {
+    "commit": "5002116872492da705aa6252f26482b02e3df5b5",
+    "dirty": true,
+    "implementation_sha256": "46127c822a58d19cf044d2beb39a8867ea2d40b879d43845c23db2db31ff0f14"
+  },
+  "status": "passed",
+  "backend": "ffmpeg-hevc-software",
+  "adapter_index": null,
+  "adapter": null,
+  "ffmpeg": "ffmpeg version 8.0.1 Copyright (c) 2000-2025 the FFmpeg developers",
+  "ffprobe": "ffprobe version 8.0.1 Copyright (c) 2007-2025 the FFmpeg developers",
+  "clips": [
+    {
+      "clip": "native-nvenc-1920x1080",
+      "input_sha256": "604a82a7a1453bf0d143d78d45e70974782d39f81b654e00066e279224afcb26",
+      "format": {
+        "codec_name": "hevc",
+        "profile": "Main",
+        "width": 1920,
+        "height": 1080,
+        "pix_fmt": "yuv420p"
+      },
+      "probe_metrics": null,
+      "frames": 120,
+      "framehash_file": "native-nvenc-1920x1080.framehash",
+      "framehash_sha256": "1439e6228e8404c49a8f4546e0e6df0a5716f7b2867e0307fd0fda627ccf0446",
+      "wall_seconds": 0.736205
+    },
+    {
+      "clip": "native-nvenc-2560x1440",
+      "input_sha256": "6ff7fb1b277aec901bdff940a674919557986f6ab38ae0b3710fa3a478acf8de",
+      "format": {
+        "codec_name": "hevc",
+        "profile": "Main",
+        "width": 2560,
+        "height": 1440,
+        "pix_fmt": "yuv420p"
+      },
+      "probe_metrics": null,
+      "frames": 120,
+      "framehash_file": "native-nvenc-2560x1440.framehash",
+      "framehash_sha256": "b096c2b13ee57d303a73feb3730961f0f2eade3033246cff03dca43b40d45655",
+      "wall_seconds": 1.181486
+    },
+    {
+      "clip": "native-nvenc-3840x2160",
+      "input_sha256": "034cd0cac2cc3466e2eb05ea9f13b1cf695e3fb9a2f65697353c5003b3ad392e",
+      "format": {
+        "codec_name": "hevc",
+        "profile": "Main",
+        "width": 3840,
+        "height": 2160,
+        "pix_fmt": "yuv420p"
+      },
+      "probe_metrics": null,
+      "frames": 120,
+      "framehash_file": "native-nvenc-3840x2160.framehash",
+      "framehash_sha256": "d31600d1444888390e673d2f13619369a85bc3007d518df015c09b412e32c42b",
+      "wall_seconds": 2.636971
+    }
+  ],
+  "limits": [
+    "Full clips decoded without simulated loss",
+    "Decode correctness only; no presentation, FPS or latency qualification",
+    "Hardware probes use GPU-to-CPU download for pixel hashing; this is not the final rendering path",
+    "Wall time includes process startup, conversion and hashing"
+  ]
+}

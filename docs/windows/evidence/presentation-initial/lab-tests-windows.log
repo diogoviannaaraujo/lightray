@@ -1,0 +1,25 @@
+test_changed_pixels_and_missing_frames_fail (test_lab.ComparisonTests) ... ok
+test_identical_pixels_and_separate_runs (test_lab.ComparisonTests) ... ok
+test_tampered_artifact_is_rejected (test_lab.ComparisonTests) ... ok
+test_unmatched_inputs_and_invalid_manifests_are_rejected (test_lab.ComparisonTests) ... ok
+test_adapter_selection_rejects_missing_software_and_unusable_devices (test_lab.LabTests) ... ok
+test_audited_corpus (test_lab.LabTests) ... ok
+test_checksum_and_path_traversal_rejected (test_lab.LabTests) ... ok
+test_dedicated_verified_host_file_is_forwarded (test_lab.LabTests) ... ok
+test_frame_hash_parser_rejects_empty_and_malformed_output (test_lab.LabTests) ... ok
+test_hardware_backend_and_adapter_guards (test_lab.LabTests) ... ok
+test_partial_inventory_does_not_pass (test_lab.LabTests) ... ok
+test_remote_keeps_strict_identity_and_no_shell (test_lab.LabTests) ... ok
+test_swift_probe_is_isolated_and_records_import_adaptation (test_lab.LabTests) ... ok
+test_swift_success_requires_discovery_and_success_exit (test_lab.LabTests) ... ok
+test_synthetic_generator_checks_platform_and_output_scope (test_lab.LabTests) ... ok
+test_synthetic_manifest_requires_unique_complete_pairs (test_lab.LabTests) ... ok
+test_timeout_authentication_and_bad_output (test_lab.LabTests) ... ok
+test_false_summary_incomplete_run_and_different_workloads_fail (test_lab.PresentationTests) ... ok
+test_missing_reordered_nonfinite_and_malformed_frames_fail (test_lab.PresentationTests) ... ok
+test_valid_pair_checks_raw_data_without_choosing_winner (test_lab.PresentationTests) ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 0.179s
+
+OK

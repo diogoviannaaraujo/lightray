@@ -1,0 +1,36 @@
+Window: "Lightray — 192.168.15.5 — reconnecting", App: Lightray Windows Lab.
+0 standard window Lightray — 192.168.15.5 — reconnecting, Secondary Actions: Raise
+	1 button Lightray · Waiting, Description: Lightray session menu, Help: Session controls (⌃⌥⌘S)
+	2 text Help: Capture/convert and encode are host wall-clock durations. Decode and queue use the client clock. Values average successful decoded frames since the previous update; unavailable metrics show a dash. RTT is round-trip time, not one-way or total latency. Display latency is not measured., Value: Waiting for video
+Waiting for video
+reconnecting
+Input released · click video to resume
+⌃⌥⌘S menu · ⌃⌥⌘Esc release input
+	3 close button
+	4 full screen button Help: this button also has an action to zoom the window, Secondary Actions: zoom the window
+	5 minimize button
+	6 text Lightray — 192.168.15.5 — reconnecting
+	7 popover Secondary Actions: Cancel
+		8 text Lightray Waiting for video
+Remote input released
+		9 checkbox Show performance statistics, Value: 1
+		10 checkbox Use Command for Windows shortcuts, Value: 0
+		11 text Command becomes Ctrl. Control becomes the Windows key. Right Option remains AltGr when the Windows layout supports it.
+		12 checkbox Show local pointer, Value: 1
+		13 button Toggle full screen
+		14 button (disabled) Send Alt+Tab
+		15 button (disabled) Send Windows key
+		16 button (disabled) Resume remote input
+		17 button Reset host preferences
+		18 text Preferences apply to this paired host. Remote shortcut buttons resume input and operate inside Windows. ⌃⌥⌘S session menu
+⌃⌥⌘Esc release input
+⌃⌥⌘F full screen
+Click the video to resume released input.
+		19 button Disconnect
+20 menu bar
+	21 Lightray Windows Lab
+	22 Displays
+	23 View
+	24 Input
+
+The focused UI element is 9 checkbox Show performance statistics, Value: 1

@@ -1,0 +1,68 @@
+host_ready width=3840 height=2160 fps_target=90 bitrate_mbps=80 source_refresh_hz=60 native_nvenc=true desktop=true input=true
+session_started count=1
+capture_ready epoch=1 recovery_us=0 recreations=0 source_refresh_hz=60
+capture_idr epoch=1 sample=0
+frames=441 keyframes=3 tx=3379 rx=630 input=374 held=0 queue=0 skipped=0 desktop_updates=277 cached_frames=164
+frames=891 keyframes=3 tx=6588 rx=907 input=403 held=0 queue=0 skipped=0 desktop_updates=576 cached_frames=315
+frames=1341 keyframes=3 tx=9822 rx=1156 input=403 held=0 queue=0 skipped=0 desktop_updates=876 cached_frames=465
+capture_fault_injected mechanism=release_duplication
+capture_recovering held=0 losses=1
+capture_ready epoch=2 recovery_us=122153 recreations=1 source_refresh_hz=60
+capture_idr epoch=2 sample=1691
+frames=1781 keyframes=4 tx=12828 rx=1399 input=403 held=0 queue=0 skipped=0 desktop_updates=1170 cached_frames=611
+capture_fault_injected mechanism=release_duplication
+capture_recovering held=0 losses=2
+capture_ready epoch=3 recovery_us=110981 recreations=2 source_refresh_hz=60
+capture_idr epoch=3 sample=1885
+capture_fault_injected mechanism=release_duplication
+capture_recovering held=0 losses=3
+capture_ready epoch=4 recovery_us=121882 recreations=3 source_refresh_hz=60
+capture_idr epoch=4 sample=2074
+frames=2208 keyframes=6 tx=15989 rx=1638 input=403 held=0 queue=0 skipped=1 desktop_updates=1454 cached_frames=754
+capture_fault_injected mechanism=release_duplication
+capture_recovering held=0 losses=4
+capture_ready epoch=5 recovery_us=110588 recreations=4 source_refresh_hz=60
+capture_idr epoch=5 sample=2264
+capture_fault_injected mechanism=release_duplication
+capture_recovering held=0 losses=5
+capture_ready epoch=6 recovery_us=110799 recreations=5 source_refresh_hz=60
+capture_idr epoch=6 sample=2457
+frames=2639 keyframes=8 tx=19078 rx=1877 input=403 held=0 queue=0 skipped=1 desktop_updates=1739 cached_frames=900
+capture_fault_injected mechanism=release_duplication
+capture_recovering held=0 losses=6
+capture_ready epoch=7 recovery_us=110863 recreations=6 source_refresh_hz=60
+capture_idr epoch=7 sample=2648
+capture_fault_injected mechanism=release_duplication
+capture_recovering held=0 losses=7
+capture_ready epoch=8 recovery_us=109926 recreations=7 source_refresh_hz=60
+capture_idr epoch=8 sample=2839
+capture_fault_injected mechanism=release_duplication
+capture_recovering held=0 losses=8
+capture_ready epoch=9 recovery_us=111410 recreations=8 source_refresh_hz=60
+capture_idr epoch=9 sample=3030
+frames=3059 keyframes=11 tx=22103 rx=2111 input=403 held=0 queue=0 skipped=1 desktop_updates=2019 cached_frames=1040
+capture_fault_injected mechanism=release_duplication
+capture_recovering held=0 losses=9
+capture_ready epoch=10 recovery_us=111092 recreations=9 source_refresh_hz=60
+capture_idr epoch=10 sample=3216
+capture_fault_injected mechanism=release_duplication
+capture_recovering held=0 losses=10
+capture_ready epoch=11 recovery_us=121306 recreations=10 source_refresh_hz=60
+capture_idr epoch=11 sample=3404
+frames=3480 keyframes=13 tx=25144 rx=2348 input=403 held=0 queue=0 skipped=3 desktop_updates=2301 cached_frames=1179
+frames=3928 keyframes=13 tx=28282 rx=2596 input=403 held=0 queue=0 skipped=4 desktop_updates=2597 cached_frames=1331
+frames=4379 keyframes=13 tx=31343 rx=2845 input=403 held=0 queue=0 skipped=4 desktop_updates=2898 cached_frames=1481
+frames=4829 keyframes=13 tx=34627 rx=3092 input=403 held=0 queue=0 skipped=4 desktop_updates=3198 cached_frames=1631
+frames=5279 keyframes=13 tx=37720 rx=3339 input=403 held=0 queue=0 skipped=4 desktop_updates=3498 cached_frames=1781
+frames=5729 keyframes=13 tx=40917 rx=3587 input=403 held=0 queue=0 skipped=4 desktop_updates=3798 cached_frames=1931
+frames=6180 keyframes=14 tx=44074 rx=3836 input=403 held=0 queue=0 skipped=4 desktop_updates=4098 cached_frames=2082
+frames=6630 keyframes=14 tx=47301 rx=4084 input=403 held=0 queue=0 skipped=4 desktop_updates=4398 cached_frames=2232
+session_ended held=0
+frames=6941 keyframes=14 tx=49386 rx=4256 input=403 held=0 queue=0 skipped=4 desktop_updates=4606 cached_frames=2335
+frames=6941 keyframes=14 tx=49386 rx=4256 input=403 held=0 queue=0 skipped=4 desktop_updates=4606 cached_frames=2335
+frames=6941 keyframes=14 tx=49386 rx=4256 input=403 held=0 queue=0 skipped=4 desktop_updates=4606 cached_frames=2335
+frames=6941 keyframes=14 tx=49386 rx=4256 input=403 held=0 queue=0 skipped=4 desktop_updates=4606 cached_frames=2335
+frames=6941 keyframes=14 tx=49386 rx=4256 input=403 held=0 queue=0 skipped=4 desktop_updates=4606 cached_frames=2335
+frames=6941 keyframes=14 tx=49386 rx=4256 input=403 held=0 queue=0 skipped=4 desktop_updates=4606 cached_frames=2335
+frames=6941 keyframes=14 tx=49386 rx=4256 input=403 held=0 queue=0 skipped=4 desktop_updates=4606 cached_frames=2335
+frames=6941 keyframes=14 tx=49386 rx=4256 input=403 held=0 queue=0 skipped=4 desktop_updates=4606 cached_frames=2335

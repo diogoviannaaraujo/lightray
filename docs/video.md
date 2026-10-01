@@ -419,3 +419,22 @@ The rate MUST follow the whole backlog, not the newest frame alone.
 
 Control chunks MUST NOT be delayed by pacing. A `NACK` or a `RESUME` held behind an empty
 token bucket defeats its own purpose.
+
+### Experimental host timing extension (local Windows laboratory)
+
+The Windows laboratory implementation optionally emits type `0xF0`, a provisional local TLV that must be coordinated before becoming a protocol assignment.
+Its 17-byte value contains `version:u8 = 1`, `capture_duration_us:u32`, `encode_duration_us:u32`, and `host_sample_id:u64`, with all integers big-endian.
+The extension adds 20 bytes per frame, including the TLV header, and is omitted when it would exceed the extension area's `u16` length budget.
+The durations use the host's monotonic clock and are each limited to 1,000,000 microseconds; no clock synchronization is assumed.
+The sample ID is the native host's frame-attempt counter for its current process and can contain gaps; it is diagnostic and is not a protocol frame ID or a globally unique identifier.
+Frame association, stream identity and session lifetime come from the enclosing video frame and transport.
+Unknown versions, invalid value sizes, out-of-range durations and duplicate timing TLVs make the optional timing unavailable without invalidating otherwise valid video; malformed TLV framing still invalidates the frame.
+Receivers without this extension continue to skip it according to the existing unknown-extension rule.
+Absence of the extension means unavailable, never zero.
+
+In the native Windows host, capture/convert measures the wall time of desktop acquisition and conversion submission; encode measures the synchronous encoder call through output availability.
+GPU work is asynchronous, so waits for previously submitted conversion can appear inside encode; these are application stage boundaries, not isolated GPU execution timers.
+Cached desktop frames remain timing samples, and decoded FPS must not be interpreted as new desktop updates or display presentations.
+The Mac HUD averages host samples from successful current-epoch decodes over the reporting interval (approximately one second), independently from client decode and queue durations.
+The samples exclude lost, undecodable and dropped frames, so they are not an unbiased measure of every host attempt.
+RTT remains round-trip network time; summing these values does not produce input-to-photon latency.

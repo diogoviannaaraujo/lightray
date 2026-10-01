@@ -1,0 +1,9 @@
+{
+    "run":  "capture-003",
+    "backend":  "wgc",
+    "exit_code":  0,
+    "motion":  true,
+    "captured_pixels_saved":  false,
+    "input_injected":  false,
+    "executable_sha256":  "cc4416f8b748a83745e5d0ff4b3b69978f5fcc23c41882a9d19ab700aaf21c12"
+}

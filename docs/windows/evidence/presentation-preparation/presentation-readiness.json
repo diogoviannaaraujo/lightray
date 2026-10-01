@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "status": "compiled_self_tests_passed",
+  "visual_execution": "pending_user_coordination",
+  "executable_bytes": 300032,
+  "executable_sha256": "3a7a5d5321ae83d416128b642956d245d5256009f927b4456373b035bfacc27d",
+  "compiler_flags": "/std:c++20 /W4 /WX /O2 /utf-8",
+  "parameter_cases": 11,
+  "statistics_cases": 3,
+  "desktop_guard": "passed",
+  "invalid_parameter_guard": "passed",
+  "launcher_syntax": "passed",
+  "windows_opened": 0,
+  "source_sha256": {
+    "tools/windows/src/present_probe.cpp": "3a9f9a899ca1e7dd6ea6522461d88b5bd3b863a07bbe3e001b6dc5f67d579ec6",
+    "tools/windows/build-platform-probe.ps1": "24357d6e447b6b6ab73426a27c7a04084d2d9a689fe2bb0693bf59897c0d2dbc",
+    "tools/windows/run-presentation-probe.ps1": "7422ec9552cb008e47d888c6245880a841e0963e7f70d969cd090f9cc0e79fc3"
+  },
+  "console_user_present": true,
+  "console_matches_ssh_identity": true
+}

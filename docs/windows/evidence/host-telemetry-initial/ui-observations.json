@@ -1,0 +1,26 @@
+{
+  "date": "2026-09-30",
+  "method": "CUA accessibility and screenshots of the actual Mac client; recorded observations, not an automated replay.",
+  "checks": {
+    "windowed_hud_readable": true,
+    "fullscreen_hud_readable": true,
+    "fullscreen_preserves_video_aspect_ratio": true,
+    "hide_and_show_updates_values": true,
+    "new_client_old_host_displays_missing_host_metrics": true,
+    "old_client_new_host_exit_code": 0,
+    "new_client_old_host_exit_code": 0,
+    "ui_client_quit_exit_code": 0
+  },
+  "example_windowed_ms": {
+    "capture_convert": 0.1,
+    "encode": 6.5,
+    "rtt": 4.95,
+    "decode": 2.36,
+    "queue": 0.05
+  },
+  "limitations": [
+    "No input-to-photon measurement.",
+    "Presentation screen reported 60 Hz; fullscreen used a portrait display with aspect-fit video.",
+    "The benchmark retained input and input events occurred; interpretation is exploratory."
+  ]
+}

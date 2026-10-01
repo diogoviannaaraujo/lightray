@@ -1,0 +1,36 @@
+{
+  "source_commit": "d38aaade7936660f62bc4b52a230cbd7dc78f2af",
+  "source_repository": "https://github.com/diogoviannaaraujo/lightray.git",
+  "files": [
+    {
+      "path": "tools/windows/reference/videotoolbox-idr.hevc",
+      "sha256": "a66e182e0493de105012d13be38e117d1546338b58e18214a6d0e5dc09022070",
+      "bytes": 680279
+    },
+    {
+      "path": "tools/windows/reference/videotoolbox-idr.json",
+      "sha256": "732ae627af0f27193703a3593cef0649de3cc9114fd3152007603a7fda3e6578",
+      "bytes": 9887
+    },
+    {
+      "path": "tools/windows/reference/videotoolbox-ltr-ack-every-250ms.hevc",
+      "sha256": "a7eb5752edea734e560e6d0f4a4c7a0810da619e9a89c327edfa3d0f8f22b0b2",
+      "bytes": 496370
+    },
+    {
+      "path": "tools/windows/reference/videotoolbox-ltr-ack-every-250ms.json",
+      "sha256": "a0afb42f9e13d77a01b281a43d0b9360dd70fb1b566bc7f3151ae62ad082029a",
+      "bytes": 9994
+    },
+    {
+      "path": "tools/windows/reference/videotoolbox-ltr-ack-every-frame.hevc",
+      "sha256": "09e68901868a21e597bd0a7e51e3354654cf5d12488d6a851476ea946689c531",
+      "bytes": 493430
+    },
+    {
+      "path": "tools/windows/reference/videotoolbox-ltr-ack-every-frame.json",
+      "sha256": "b913b8883f3661aa478d1633d6d7e3ed31966b97219b7dda1c21504a0b5c5e3b",
+      "bytes": 9993
+    }
+  ]
+}

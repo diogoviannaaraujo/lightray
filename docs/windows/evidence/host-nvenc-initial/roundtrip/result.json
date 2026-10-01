@@ -1,0 +1,39 @@
+{
+  "status": "passed",
+  "qualification": "annexb_to_length_prefixed_roundtrip_only",
+  "runs": [
+    {
+      "width": 1920,
+      "height": 1080,
+      "frames": 120,
+      "roundtrip_pixel_mismatches": 0,
+      "framehash_sha256": "1439e6228e8404c49a8f4546e0e6df0a5716f7b2867e0307fd0fda627ccf0446",
+      "encode_lock_p50_ms": 1.6277,
+      "encode_lock_p95_ms": 2.0238,
+      "encode_lock_p99_ms": 3.1264
+    },
+    {
+      "width": 2560,
+      "height": 1440,
+      "frames": 120,
+      "roundtrip_pixel_mismatches": 0,
+      "framehash_sha256": "b096c2b13ee57d303a73feb3730961f0f2eade3033246cff03dca43b40d45655",
+      "encode_lock_p50_ms": 2.6002,
+      "encode_lock_p95_ms": 2.8867,
+      "encode_lock_p99_ms": 4.1628
+    },
+    {
+      "width": 3840,
+      "height": 2160,
+      "frames": 120,
+      "roundtrip_pixel_mismatches": 0,
+      "framehash_sha256": "d31600d1444888390e673d2f13619369a85bc3007d518df015c09b412e32c42b",
+      "encode_lock_p50_ms": 3.6222,
+      "encode_lock_p95_ms": 5.2068,
+      "encode_lock_p99_ms": 5.7264
+    }
+  ],
+  "limits": [
+    "Timing excludes synthetic generation/upload, network and presentation; one short run per resolution"
+  ]
+}

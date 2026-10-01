@@ -1,0 +1,20 @@
+{
+  "run": "desktop-005",
+  "report_samples": 17,
+  "sample_interval_seconds": 5,
+  "client_duration_seconds": 90,
+  "decoded_fps_min": 30,
+  "decoded_fps_max": 31,
+  "decoded_fps_median": 30,
+  "reported_rtt_ms_min": 3.4,
+  "reported_rtt_ms_max": 8.4,
+  "reported_rtt_ms_median": 5.3,
+  "max_lost": 0,
+  "max_decode_queue_drops": 0,
+  "max_send_errors": 0,
+  "max_receive_errors": 0,
+  "handshake_seconds": 3.109,
+  "content": "test window with 4 Hz tick and manual UI actions; low motion",
+  "network": "LAN",
+  "latency_kind": "reported transport RTT, not input-to-photon"
+}

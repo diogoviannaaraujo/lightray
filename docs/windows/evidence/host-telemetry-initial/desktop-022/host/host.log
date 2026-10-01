@@ -1,0 +1,72 @@
+host_ready width=3840 height=2160 fps_target=90 bitrate_mbps=80 source_refresh_hz=60 native_nvenc=true desktop=true input=true
+frames=0 keyframes=0 tx=0 rx=0 input=0 held=0 queue=0 skipped=0 desktop_updates=0 cached_frames=0
+session_started count=1
+frames=203 keyframes=3 tx=1649 rx=305 input=170 held=0 queue=0 skipped=10 desktop_updates=138 cached_frames=65
+frames=653 keyframes=3 tx=4907 rx=841 input=459 held=0 queue=0 skipped=10 desktop_updates=438 cached_frames=215
+frames=1103 keyframes=3 tx=8467 rx=2008 input=1380 held=0 queue=0 skipped=11 desktop_updates=738 cached_frames=365
+frames=1541 keyframes=3 tx=11628 rx=2718 input=1839 held=0 queue=0 skipped=21 desktop_updates=1025 cached_frames=516
+frames=1970 keyframes=3 tx=14908 rx=3698 input=2550 held=0 queue=0 skipped=37 desktop_updates=1312 cached_frames=658
+frames=2396 keyframes=3 tx=17963 rx=4542 input=3127 held=0 queue=0 skipped=56 desktop_updates=1583 cached_frames=813
+frames=2826 keyframes=3 tx=20846 rx=5414 input=3731 held=0 queue=0 skipped=70 desktop_updates=1832 cached_frames=994
+frames=3254 keyframes=3 tx=23829 rx=6671 input=4714 held=0 queue=0 skipped=87 desktop_updates=2085 cached_frames=1169
+frames=3679 keyframes=3 tx=27086 rx=7240 input=5020 held=0 queue=0 skipped=106 desktop_updates=2359 cached_frames=1320
+session_ended held=0
+session_started count=2
+frames=3909 keyframes=4 tx=28462 rx=7576 input=5223 held=0 queue=0 skipped=109 desktop_updates=2488 cached_frames=1421
+frames=4344 keyframes=4 tx=31855 rx=8213 input=5603 held=0 queue=0 skipped=121 desktop_updates=2777 cached_frames=1567
+frames=4765 keyframes=4 tx=35311 rx=9011 input=6130 held=0 queue=0 skipped=140 desktop_updates=3059 cached_frames=1706
+frames=5216 keyframes=4 tx=38971 rx=9485 input=6347 held=0 queue=0 skipped=140 desktop_updates=3357 cached_frames=1859
+frames=5656 keyframes=4 tx=42595 rx=10191 input=6801 held=0 queue=0 skipped=148 desktop_updates=3635 cached_frames=2021
+frames=6087 keyframes=4 tx=45872 rx=11259 input=7600 held=0 queue=0 skipped=162 desktop_updates=3896 cached_frames=2191
+frames=6518 keyframes=4 tx=49231 rx=11817 input=7914 held=0 queue=0 skipped=178 desktop_updates=4177 cached_frames=2341
+frames=6957 keyframes=4 tx=52638 rx=12066 input=7914 held=0 queue=0 skipped=186 desktop_updates=4471 cached_frames=2486
+frames=7388 keyframes=4 tx=56121 rx=12315 input=7914 held=0 queue=0 skipped=201 desktop_updates=4763 cached_frames=2625
+session_ended held=0
+frames=7804 keyframes=4 tx=59385 rx=12558 input=7914 held=0 queue=0 skipped=219 desktop_updates=5043 cached_frames=2761
+session_started count=3
+frames=8033 keyframes=5 tx=61155 rx=12696 input=7914 held=0 queue=0 skipped=232 desktop_updates=5199 cached_frames=2834
+frames=8462 keyframes=5 tx=64453 rx=12944 input=7914 held=0 queue=0 skipped=248 desktop_updates=5490 cached_frames=2972
+frames=8891 keyframes=5 tx=67784 rx=13192 input=7914 held=0 queue=0 skipped=265 desktop_updates=5780 cached_frames=3111
+frames=9330 keyframes=5 tx=71313 rx=13441 input=7914 held=0 queue=0 skipped=274 desktop_updates=6074 cached_frames=3256
+frames=9758 keyframes=5 tx=74815 rx=13688 input=7914 held=0 queue=0 skipped=287 desktop_updates=6363 cached_frames=3395
+frames=10208 keyframes=5 tx=78366 rx=13937 input=7914 held=0 queue=0 skipped=287 desktop_updates=6663 cached_frames=3545
+frames=10637 keyframes=5 tx=81769 rx=14185 input=7914 held=0 queue=0 skipped=304 desktop_updates=6952 cached_frames=3685
+frames=11065 keyframes=5 tx=85142 rx=14433 input=7914 held=0 queue=0 skipped=321 desktop_updates=7241 cached_frames=3824
+frames=11499 keyframes=5 tx=88544 rx=14681 input=7914 held=0 queue=0 skipped=333 desktop_updates=7531 cached_frames=3968
+session_ended held=0
+session_started count=4
+frames=11724 keyframes=6 tx=90349 rx=14814 input=7914 held=0 queue=0 skipped=340 desktop_updates=7685 cached_frames=4039
+frames=12154 keyframes=6 tx=93812 rx=15062 input=7914 held=0 queue=0 skipped=355 desktop_updates=7977 cached_frames=4177
+frames=12584 keyframes=6 tx=97368 rx=15310 input=7914 held=0 queue=0 skipped=371 desktop_updates=8267 cached_frames=4317
+frames=13022 keyframes=6 tx=100855 rx=15558 input=7914 held=0 queue=0 skipped=380 desktop_updates=8560 cached_frames=4462
+frames=13451 keyframes=6 tx=104531 rx=16302 input=8411 held=0 queue=0 skipped=396 desktop_updates=8850 cached_frames=4601
+frames=13881 keyframes=6 tx=107997 rx=16550 input=8411 held=0 queue=0 skipped=411 desktop_updates=9140 cached_frames=4741
+frames=14311 keyframes=6 tx=111390 rx=16798 input=8411 held=0 queue=0 skipped=426 desktop_updates=9429 cached_frames=4882
+frames=14746 keyframes=6 tx=114898 rx=17042 input=8411 held=0 queue=0 skipped=430 desktop_updates=9720 cached_frames=5026
+frames=15196 keyframes=6 tx=118474 rx=17290 input=8411 held=0 queue=0 skipped=430 desktop_updates=10020 cached_frames=5176
+session_ended held=0
+frames=15611 keyframes=6 tx=121720 rx=17520 input=8411 held=0 queue=0 skipped=430 desktop_updates=10297 cached_frames=5314
+frames=15611 keyframes=6 tx=121720 rx=17520 input=8411 held=0 queue=0 skipped=430 desktop_updates=10297 cached_frames=5314
+frames=15611 keyframes=6 tx=121720 rx=17520 input=8411 held=0 queue=0 skipped=430 desktop_updates=10297 cached_frames=5314
+frames=15611 keyframes=6 tx=121720 rx=17520 input=8411 held=0 queue=0 skipped=430 desktop_updates=10297 cached_frames=5314
+frames=15611 keyframes=6 tx=121720 rx=17520 input=8411 held=0 queue=0 skipped=430 desktop_updates=10297 cached_frames=5314
+session_started count=5
+frames=15980 keyframes=8 tx=124776 rx=17741 input=8411 held=0 queue=0 skipped=442 desktop_updates=10545 cached_frames=5435
+frames=16411 keyframes=8 tx=128204 rx=17989 input=8411 held=0 queue=0 skipped=457 desktop_updates=10836 cached_frames=5575
+frames=16841 keyframes=8 tx=131810 rx=18237 input=8411 held=0 queue=0 skipped=472 desktop_updates=11127 cached_frames=5714
+frames=17279 keyframes=8 tx=135308 rx=18485 input=8411 held=0 queue=0 skipped=481 desktop_updates=11421 cached_frames=5858
+frames=17708 keyframes=8 tx=138855 rx=18733 input=8411 held=0 queue=0 skipped=497 desktop_updates=11712 cached_frames=5996
+session_ended held=0
+frames=17770 keyframes=8 tx=139371 rx=18768 input=8411 held=0 queue=0 skipped=497 desktop_updates=11754 cached_frames=6016
+session_started count=6
+frames=18182 keyframes=11 tx=142795 rx=19010 input=8411 held=0 queue=0 skipped=497 desktop_updates=12029 cached_frames=6153
+frames=18623 keyframes=11 tx=146413 rx=19258 input=8411 held=0 queue=0 skipped=504 desktop_updates=12325 cached_frames=6298
+frames=19053 keyframes=11 tx=149951 rx=19512 input=8417 held=0 queue=0 skipped=520 desktop_updates=12617 cached_frames=6436
+frames=19481 keyframes=11 tx=153471 rx=19760 input=8417 held=0 queue=0 skipped=537 desktop_updates=12907 cached_frames=6574
+frames=19902 keyframes=11 tx=156985 rx=20014 input=8423 held=0 queue=0 skipped=560 desktop_updates=13192 cached_frames=6710
+frames=20333 keyframes=11 tx=160578 rx=20274 input=8435 held=0 queue=0 skipped=574 desktop_updates=13482 cached_frames=6851
+frames=20761 keyframes=11 tx=164213 rx=20522 input=8435 held=0 queue=0 skipped=591 desktop_updates=13771 cached_frames=6990
+session_ended held=0
+frames=20811 keyframes=11 tx=164609 rx=20557 input=8435 held=0 queue=0 skipped=591 desktop_updates=13805 cached_frames=7006
+frames=20811 keyframes=11 tx=164609 rx=20557 input=8435 held=0 queue=0 skipped=591 desktop_updates=13805 cached_frames=7006
+frames=20811 keyframes=11 tx=164609 rx=20557 input=8435 held=0 queue=0 skipped=591 desktop_updates=13805 cached_frames=7006

@@ -1,0 +1,7 @@
+[   0.000] stream 1: presentation screen id=5 max_fps=60
+[   0.002] socket buffers: receive 4194304, send 4194304 bytes
+[   0.002] connecting to 192.168.15.5:37373 from port 62232, with 1 video streams
+[   0.007] session c83c395d established, datagrams up to 1200 bytes, no FEC, video streams [1]
+[   9.893] disconnected: nothing from the host for 5 s
+[  18.996] disconnected: no response from the host
+[  29.099] disconnected: no response from the host
