@@ -1,7 +1,6 @@
 import CoreMedia
 import CoreVideo
 import Foundation
-import LightrayCore
 import VideoToolbox
 
 /// HEVC decoding with VideoToolbox. Every keyframe carries its parameter sets, and a new set
@@ -41,7 +40,9 @@ public final class VideoDecoder {
         guard let sample = Self.sampleBuffer(frame.payload, format: format) else {
             return .failed(frameID: frame.frameID, status: -1)
         }
-        var result = Result.failed(frameID: frame.frameID, status: -1)
+        // Without the asynchronous flag, the handler runs before VTDecompressionSessionDecodeFrame
+        // returns, so nothing else touches `result` meanwhile.
+        nonisolated(unsafe) var result = Result.failed(frameID: frame.frameID, status: -1)
         let status = VTDecompressionSessionDecodeFrame(
             session, sampleBuffer: sample, flags: [], infoFlagsOut: nil
         ) { status, _, image, _, _ in

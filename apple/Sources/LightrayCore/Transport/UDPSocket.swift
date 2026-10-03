@@ -1,6 +1,5 @@
 import Darwin
 import Dispatch
-import LightrayCore
 
 /// The monotonic clock every timestamp is drawn from, in microseconds. `CLOCK_UPTIME_RAW` is the
 /// clock ScreenCaptureKit and VideoToolbox stamp samples with, so capture times need no conversion.

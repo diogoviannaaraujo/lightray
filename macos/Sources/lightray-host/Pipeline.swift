@@ -1,7 +1,6 @@
 import CoreVideo
 import Foundation
 import LightrayCore
-import LightrayMac
 
 /// Capture and encoding for one video stream showing one display. Each stream has its own, on a
 /// queue of its own, so that nothing one display does reaches another (`docs/displays.md`).
@@ -29,7 +28,7 @@ final class Pipeline: @unchecked Sendable {
     /// Starts capturing `display` and creates an encoder of its size. Throws if either cannot
     /// start, which is how a host finds the limit of its hardware.
     static func start(
-        stream: UInt8, display: DisplayInfo, options: HostOptions, output: @escaping (EncodedFrame) -> Void
+        stream: UInt8, display: DisplayInfo, options: HostOptions, output: @escaping @Sendable (EncodedFrame) -> Void
     ) async throws -> Pipeline {
         let queue = DispatchQueue(label: "lightray.capture.\(stream)", qos: .userInteractive)
         let source: FrameSource
@@ -54,7 +53,8 @@ final class Pipeline: @unchecked Sendable {
             throw error
         }
         let pipeline = Pipeline(stream: stream, display: display, queue: queue, source: source, encoder: encoder)
-        source.onFrame = { [unowned pipeline] pixels, micros in pipeline.captured(pixels, at: micros) }
+        // Weak: a source can deliver one more frame after `stop`, when the pipeline may be gone.
+        source.onFrame = { [weak pipeline] pixels, micros in pipeline?.captured(pixels, at: micros) }
         source.onFailure = { [weak pipeline] reason in pipeline?.onFailure?(reason) }
         return pipeline
     }

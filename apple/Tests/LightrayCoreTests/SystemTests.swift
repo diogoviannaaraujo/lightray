@@ -1,10 +1,10 @@
 import CoreVideo
 import Dispatch
 import Foundation
+import os
 import Testing
 
 @testable import LightrayCore
-@testable import LightrayMac
 
 /// Regression scenario: decode the published 16 × 16 IDR in `docs/video.md`.
 @Test func decodesThePublishedIDR() throws {
@@ -23,10 +23,11 @@ import Testing
 /// The encoder's output, framed and reassembled, decodes; a predicted frame without its
 /// keyframe fails instead of producing a picture.
 @Test func encoderOutputDecodes() throws {
-    var frames: [EncodedFrame] = []
+    // The encoder calls back on a thread of its own.
+    let output = OSAllocatedUnfairLock(initialState: [EncodedFrame]())
     let done = DispatchSemaphore(value: 0)
-    let encoder = try VideoEncoder(width: 320, height: 240, frameRate: 30, bitrate: 2_000_000) {
-        frames.append($0)
+    let encoder = try VideoEncoder(width: 320, height: 240, frameRate: 30, bitrate: 2_000_000) { frame in
+        output.withLock { $0.append(frame) }
         done.signal()
     }
     for i in 0..<3 {
@@ -43,6 +44,7 @@ import Testing
         encoder.encode(pixels, captureTimeMicros: UInt64(1_000_000 + i * 33_333), forceKeyframe: i == 0)
         _ = done.wait(timeout: .now() + 2)
     }
+    let frames = output.withLock { $0 }
     try #require(frames.count == 3)
     #expect(frames[0].isKeyframe && frames[0].codecConfig != nil)
     #expect(!frames[1].isKeyframe)

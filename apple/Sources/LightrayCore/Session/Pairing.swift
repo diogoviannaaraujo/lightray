@@ -1,5 +1,4 @@
 import Foundation
-import LightrayCore
 import Security
 
 /// A pairing: the identifier a host looks the key up by, and the 32-byte pre-shared key. The
@@ -40,7 +39,8 @@ public struct Pairing: Equatable, Sendable {
     }
 }
 
-/// Stores a pairing token in `~/Library/Application Support/Lightray/`, readable only by the user.
+/// Stores a pairing token in `Lightray/` in Application Support (on iOS, inside the app's
+/// container), readable only by the user.
 public enum PairingStore {
     public static var directory: URL {
         FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]

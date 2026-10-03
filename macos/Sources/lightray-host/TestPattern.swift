@@ -1,6 +1,6 @@
 import CoreVideo
 import Foundation
-import LightrayMac
+import LightrayCore
 
 /// A synthetic source in place of the screen: a moving bar over a gradient, at a fixed rate.
 /// It needs no Screen Recording permission, which makes it the way to test the transport alone.

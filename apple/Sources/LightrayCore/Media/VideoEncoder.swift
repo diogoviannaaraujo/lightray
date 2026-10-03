@@ -1,7 +1,6 @@
 import CoreMedia
 import CoreVideo
 import Foundation
-import LightrayCore
 import VideoToolbox
 
 public struct CodecError: Error, CustomStringConvertible {
@@ -17,11 +16,10 @@ public final class VideoEncoder {
     public let width: Int
     public let height: Int
     private var session: VTCompressionSession?
-    private let output: (EncodedFrame) -> Void
+    private let output: @Sendable (EncodedFrame) -> Void
     private var lastPresentation: Int64 = 0
-    public private(set) var framesDropped = 0
 
-    public init(width: Int, height: Int, frameRate: Int, bitrate: Int, output: @escaping (EncodedFrame) -> Void) throws {
+    public init(width: Int, height: Int, frameRate: Int, bitrate: Int, output: @escaping @Sendable (EncodedFrame) -> Void) throws {
         self.width = width
         self.height = height
         self.output = output
@@ -70,19 +68,15 @@ public final class VideoEncoder {
         lastPresentation = pts
         let options: CFDictionary? = forceKeyframe ? [kVTEncodeFrameOptionKey_ForceKeyFrame: true] as CFDictionary : nil
         let output = self.output
-        let status = VTCompressionSessionEncodeFrame(
+        VTCompressionSessionEncodeFrame(
             session, imageBuffer: pixelBuffer, presentationTimeStamp: CMTime(value: pts, timescale: 1_000_000),
             duration: .invalid, frameProperties: options, infoFlagsOut: nil
-        ) { [weak self] status, flags, sample in
+        ) { status, flags, sample in
             guard status == noErr, !flags.contains(.frameDropped), let sample,
                 let frame = Self.frame(from: sample, captureTimeMicros: captureTimeMicros)
-            else {
-                self?.framesDropped += 1
-                return
-            }
+            else { return }
             output(frame)
         }
-        if status != noErr { framesDropped += 1 }
     }
 
     static func frame(from sample: CMSampleBuffer, captureTimeMicros: UInt64) -> EncodedFrame? {

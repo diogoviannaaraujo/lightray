@@ -1,7 +1,6 @@
 import AppKit
 import CoreGraphics
 import LightrayCore
-import LightrayMac
 
 /// Delivers input messages as CGEvents. A pointer position lands on the display it names. It
 /// tracks everything it holds down for the client, so that a session ending releases it all, and

@@ -1,7 +1,7 @@
 import ApplicationServices
 import CoreGraphics
 import Foundation
-import LightrayMac
+import LightrayCore
 
 let usage = """
     usage: lightray-host [options]

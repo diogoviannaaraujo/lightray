@@ -1,7 +1,6 @@
 import CoreGraphics
 import Foundation
 import LightrayCore
-import LightrayMac
 
 struct HostOptions {
     var port: UInt16 = 7373

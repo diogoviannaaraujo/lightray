@@ -1,5 +1,5 @@
 import AppKit
-import LightrayMac
+import LightrayCore
 
 let usage = """
     usage: lightray-client <host>[:port] [options]

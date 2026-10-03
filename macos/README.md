@@ -6,21 +6,18 @@ microphone, park and resume, and the other things listed under [Not yet](#not-ye
 
 ## Build and test
 
-Requires macOS 27 or later and Swift 6.4.
+Requires macOS 27 or later and Swift 6.4. The apps are built on [`apple/`](../apple/README.md), the
+package they share with an iOS client, which must sit beside this directory.
 
 ```bash
 swift build -c release --package-path macos
 ```
 
-```bash
-swift test --package-path macos
-```
+The tests are in that package:
 
-The tests reproduce every value in [`tools/vectors/vectors.json`](../tools/vectors/vectors.json),
-parse and re-encode the hex examples in the version 0 documents, decode the IDR published in
-[`video.md`](../docs/video.md) with VideoToolbox, and run a host against a client over a simulated
-path with loss, jitter and address changes. The names of the conformance tests they cover are in
-the test files.
+```bash
+swift test --package-path apple
+```
 
 ## Run
 
@@ -238,12 +235,11 @@ None of these is on the wire.
 
 | Target | What it is |
 |---|---|
-| `LightrayCore` | The protocol, with no I/O and nothing platform-specific beyond CryptoKit, so that an iPad client can reuse it. The endpoints take datagrams and the time, and return datagrams and events |
-| `LightrayMac` | The UDP socket, the HID ↔ Mac key-code map, pairing storage, and the VideoToolbox encoder and decoder |
+| `LightrayCore`, in [`apple/`](../apple/README.md) | The protocol, with no I/O: the endpoints take datagrams and the time, and return datagrams and events. Around it, what the apps share with an iOS client: the UDP socket, pairing storage, the HID ↔ Mac key-code map, the VideoToolbox encoder and decoder, a renderer for an `AVSampleBufferDisplayLayer`, and `ClientRunner`, which runs the client's endpoint and decoders |
 | `lightray-host` | The display list, a capture-and-encode pipeline per video stream, and CGEvent injection |
-| `lightray-client` | A window per video stream: decoding into an `AVSampleBufferDisplayLayer`, keyboard and mouse capture, and the Displays menu |
+| `lightray-client` | A window per video stream, keyboard and mouse capture, and the Displays menu |
 
-Each executable runs its endpoint, socket and timer on one serial queue. Each video stream has a
+Each app runs its endpoint, socket and timer on one serial queue. Each video stream has a
 queue of its own: for capture and encoding on the host, and for decoding on the client.
 
 ## Not yet

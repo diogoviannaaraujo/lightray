@@ -1,7 +1,6 @@
 import AppKit
 import CoreImage
 import LightrayCore
-import LightrayMac
 import UniformTypeIdentifiers
 
 struct ClientOptions {
@@ -24,25 +23,12 @@ struct ClientOptions {
     var exitAfter: Double?
 }
 
-/// The client's windows and their glue. The endpoint, socket and timer live on `queue`, with a
-/// decoder for each video stream that has shown something. Windows live on the main thread, one
-/// for each stream that shows a display.
+/// The client's windows and their glue, on the main thread: a window for each stream that shows a
+/// display, and the Displays menu. The runner does the network and the decoding.
 final class ClientApp: NSObject, NSApplicationDelegate, @unchecked Sendable {
     let options: ClientOptions
-    let pairing: Pairing
-    let queue = DispatchQueue(label: "lightray.net", qos: .userInteractive)
-    private var endpoint: ClientEndpoint!
-    private var socket: UDPSocket!
-    private var timer: DispatchSourceTimer!
+    private let runner: ClientRunner
 
-    // On `queue`.
-    private var decoders: [UInt8: StreamDecoder] = [:]
-    private var lastDecoded: [UInt8: Int] = [:]
-    private var lastBytes = 0
-    private var lastReport = monotonicMicros()
-    private var lastLogged = monotonicMicros()
-
-    // On the main thread.
     private var windows: [UInt8: StreamWindow] = [:]
     private var videoStreams: [UInt8] = [1]
     private var bindings: [UInt8: UInt32] = [:]
@@ -57,7 +43,12 @@ final class ClientApp: NSObject, NSApplicationDelegate, @unchecked Sendable {
 
     init(options: ClientOptions, pairing: Pairing) {
         self.options = options
-        self.pairing = pairing
+        var settings = ClientRunner.Settings(host: options.host, port: options.port, pairing: pairing)
+        settings.maxDatagramSize = options.maxDatagramSize
+        settings.streams = options.streams
+        settings.offerFEC = options.offerFEC
+        settings.dropRate = options.dropRate
+        runner = ClientRunner(settings: settings)
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -67,8 +58,12 @@ final class ClientApp: NSObject, NSApplicationDelegate, @unchecked Sendable {
         if let seconds = options.exitAfter {
             DispatchQueue.main.asyncAfter(deadline: .now() + seconds) { NSApp.terminate(nil) }
         }
+        runner.onEvent = { [unowned self] event in handle(event) }
+        if options.snapshot != nil {
+            runner.onPicture = { [unowned self] stream, pixels in takeSnapshot(pixels, stream: stream) }
+        }
         do {
-            try startNetwork()
+            try runner.start()
         } catch {
             log("lightray-client: \(error)")
             exit(1)
@@ -76,10 +71,7 @@ final class ClientApp: NSObject, NSApplicationDelegate, @unchecked Sendable {
     }
 
     func applicationWillTerminate(_ notification: Notification) {
-        queue.sync {
-            endpoint?.close(now: monotonicMicros())
-            for datagram in endpoint?.takeOutbox() ?? [] { socket.send(datagram, to: endpoint.config.host) }
-        }
+        runner.close()
     }
 
     private func buildMenu() {
@@ -101,122 +93,28 @@ final class ClientApp: NSObject, NSApplicationDelegate, @unchecked Sendable {
         NSApp.mainMenu = menu
     }
 
-    // MARK: Network
+    // MARK: The runner's events
 
-    private func startNetwork() throws {
-        let (address, family) = try UDPSocket.resolve(options.host, port: options.port)
-        var config = ClientConfig(pairingID: pairing.id, psk: pairing.psk, host: address)
-        config.maxDatagramSize = options.maxDatagramSize
-        config.videoStreamCount = options.streams
-        config.offerFEC = options.offerFEC
-        endpoint = ClientEndpoint(config: config, unixTime: unixSeconds)
-        socket = try UDPSocket(family: family, queue: queue)
-        socket.dropRate = options.dropRate
-        timer = DispatchSource.makeTimerSource(flags: .strict, queue: queue)
-        timer.setEventHandler { [unowned self] in pump() }
-        log("connecting to \(address) from port \(socket.localPort), with \(options.streams) video streams")
-        queue.async { [self] in
-            socket.start { [unowned self] datagram, from in
-                endpoint.receive(datagram, from: from, now: monotonicMicros())
-                pump()
-            }
-            timer.resume()
-            endpoint.start(now: monotonicMicros())
-            pump()
-        }
-    }
-
-    private func pump() {
-        let now = monotonicMicros()
-        endpoint.tick(now: now)
-        for datagram in endpoint.takeOutbox() { socket.send(datagram, to: endpoint.config.host) }
-        for event in endpoint.takeEvents() { handle(event) }
-        let wake = endpoint.nextWakeup(now: now) ?? now + 1_000_000
-        timer.schedule(deadline: .now() + .microseconds(Int(min(wake > now ? wake - now : 0, 1_000_000))), leeway: .microseconds(100))
-        report(now: now)
-    }
-
-    private func handle(_ event: ClientEvent) {
+    private func handle(_ event: ClientRunner.Event) {
         switch event {
         case .connecting:
-            onMain { $0.setStatus("connecting") }
-        case .connected(let id, let size, let streams):
-            let fec = endpoint.session?.fec == true ? "FEC on" : "no FEC"
-            log("session \(String(id, radix: 16)) established, datagrams up to \(size) bytes, \(fec), video streams \(streams)")
-            onMain { app in
-                app.videoStreams = streams
-                app.restoring = app.bindings.filter { $0.value != 0 }
-                app.setStatus("connected")
-            }
-        case .disconnected(let reason):
-            log("disconnected: \(reason)")
-            for decoder in decoders.values { decoder.invalidate() }
-            decoders.removeAll()
-            onMain { $0.setStatus("reconnecting") }
+            setStatus("connecting")
+        case .connected(let streams):
+            videoStreams = streams
+            restoring = bindings.filter { $0.value != 0 }
+            setStatus("connected")
+        case .disconnected:
+            setStatus("reconnecting")
         case .displays(let list):
-            onMain { $0.displaysArrived(list) }
+            displaysArrived(list)
         case .streamDisplay(let stream, let display):
-            onMain { $0.streamShows(stream, display) }
-        case .frame(let stream, let frame):
-            decoder(for: stream).submit(frame)
-        }
-    }
-
-    private func onMain(_ work: @escaping (ClientApp) -> Void) {
-        DispatchQueue.main.async { [self] in work(self) }
-    }
-
-    /// The stream's decoder, created at its first frame together with a request for its window.
-    private func decoder(for stream: UInt8) -> StreamDecoder {
-        if let decoder = decoders[stream] { return decoder }
-        let decoder = StreamDecoder(stream: stream)
-        decoders[stream] = decoder
-        decoder.onResult = { [unowned self] result in
-            queue.async { [self] in
-                switch result {
-                case .picture(_, let id, let isKeyframe):
-                    endpoint.decoded(stream: stream, frameID: id, isKeyframe: isKeyframe)
-                case .failed(let id, let status):
-                    log("stream \(stream): frame \(id) failed to decode (\(status)); asking for a keyframe")
-                    endpoint.decoderFailed(stream: stream, frameID: id)
-                    pump()
-                }
-            }
-        }
-        decoder.onSize = { [unowned self] size in onMain { $0.windows[stream]?.resize(to: size) } }
-        if options.snapshot != nil {
-            decoder.onPicture = { [unowned self] pixels in takeSnapshot(pixels, stream: stream) }
-        }
-        onMain { app in decoder.attach(app.window(for: stream).view) }
-        return decoder
-    }
-
-    private func report(now: UInt64) {
-        guard now >= lastReport + 1_000_000, let session = endpoint.session else { return }
-        let seconds = Double(now - lastReport) / 1_000_000
-        lastReport = now
-        let c = session.connection
-        let mbps = Double(c.stats.bytesReceived - lastBytes) * 8 / seconds / 1_000_000
-        lastBytes = c.stats.bytesReceived
-        var status: [UInt8: String] = [:]
-        for (stream, decoder) in decoders {
-            let decoded = decoder.decoded
-            let fps = Double(decoded - lastDecoded[stream, default: 0]) / seconds
-            lastDecoded[stream] = decoded
-            let v = session.videos[stream]?.stats ?? VideoReceiverStats()
-            status[stream] = String(
-                format: "%.0f fps · %.1f Mb/s · RTT %.1f ms · lost %d · keyframes %d · FEC-repaired %d · NACKed %d", fps,
-                mbps, Double(c.rtt.smoothed) / 1000, v.framesLost + v.framesUndecodable, v.keyframesDelivered, v.fecRepaired,
-                v.nackedFragments)
-        }
-        onMain { app in
-            for (stream, text) in status { app.windows[stream]?.status = text }
-        }
-        if now >= lastLogged + 5_000_000 {
-            lastLogged = now
-            for stream in status.keys.sorted() {
-                log("stream \(stream): \(status[stream]!) · \(socket.dropped) datagrams dropped on purpose")
-            }
+            streamShows(stream, display)
+        case .needsRenderer(let stream):
+            runner.attach(window(for: stream).view.renderer, to: stream)
+        case .pictureSize(let stream, let size):
+            windows[stream]?.resize(to: size)
+        case .stats(let lines):
+            for (stream, text) in lines { windows[stream]?.status = text }
         }
     }
 
@@ -225,10 +123,7 @@ final class ClientApp: NSObject, NSApplicationDelegate, @unchecked Sendable {
     private func window(for stream: UInt8) -> StreamWindow {
         if let window = windows[stream] { return window }
         let window = StreamWindow(stream: stream, hostName: options.host) { [unowned self] message in
-            queue.async { [self] in
-                endpoint.send(message, now: monotonicMicros())
-                pump()
-            }
+            runner.send(message)
         }
         window.display = displays.first { $0.id == bindings[stream] }
         window.onUserClose = { [unowned self] stream in userClosed(stream) }
@@ -274,7 +169,7 @@ final class ClientApp: NSObject, NSApplicationDelegate, @unchecked Sendable {
             // A stream with a request on its way keeps its window until the answer.
             guard wanted == nil, let window = windows[stream] else { return }
             log("stream \(stream): the host stopped showing \(window.display?.name ?? "its display")")
-            queue.async { [self] in decoders.removeValue(forKey: stream)?.invalidate() }
+            runner.stopDecoding(stream)
             if windows.count == 1 {
                 // The last window stays, so that the client does not seem to quit. If its display
                 // went away (a Screen Sharing session that ends takes its virtual display with
@@ -302,11 +197,7 @@ final class ClientApp: NSObject, NSApplicationDelegate, @unchecked Sendable {
         windows[stream] = nil
         bindings[stream] = 0
         restoring[stream] = nil
-        queue.async { [self] in
-            endpoint.selectDisplay(0, on: stream)
-            decoders.removeValue(forKey: stream)?.invalidate()
-            pump()
-        }
+        runner.selectDisplay(0, on: stream)
         if windows.isEmpty { NSApp.terminate(nil) }
         rebuildDisplaysMenu()
     }
@@ -318,10 +209,7 @@ final class ClientApp: NSObject, NSApplicationDelegate, @unchecked Sendable {
 
     private func select(_ display: UInt32, on stream: UInt8) {
         restoring[stream] = display
-        queue.async { [self] in
-            endpoint.selectDisplay(display, on: stream)
-            pump()
-        }
+        runner.selectDisplay(display, on: stream)
     }
 
     private func rebuildDisplaysMenu() {

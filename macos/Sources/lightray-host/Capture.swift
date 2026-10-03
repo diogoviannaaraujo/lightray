@@ -3,7 +3,6 @@ import CoreMedia
 import CoreVideo
 import Foundation
 import LightrayCore
-import LightrayMac
 import ScreenCaptureKit
 
 /// Where a pipeline's pictures come from: a display, or the test pattern.

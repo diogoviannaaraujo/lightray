@@ -1,16 +1,11 @@
 import AVFoundation
 import AppKit
 import LightrayCore
-import LightrayMac
 
 /// Shows the decoded video, aspect-fit, and turns keyboard and mouse events over it into input
 /// messages. The host draws the cursor into the video, so the local one is hidden over it.
 final class VideoView: NSView {
-    let displayLayer = AVSampleBufferDisplayLayer()
-    /// The layer's renderer only takes pictures through a synchronizer, whose clock runs on host
-    /// time; every picture is marked to show at once regardless.
-    private let synchronizer = AVSampleBufferRenderSynchronizer()
-    private let receiver: AVSampleBufferVideoRenderer.Receiver
+    let renderer = VideoRenderer()
     /// The video's size in pixels, once a keyframe has decoded. Set on the main thread.
     var videoSize: CGSize?
     /// Called on the main thread for every input message.
@@ -25,17 +20,13 @@ final class VideoView: NSView {
     private let blankCursor = NSCursor(image: NSImage(size: NSSize(width: 1, height: 1)), hotSpot: .zero)
 
     override init(frame: NSRect) {
-        receiver = synchronizer.sampleBufferReceiver(adding: displayLayer.sampleBufferRenderer)
-        synchronizer.delaysRateChangeUntilHasSufficientMediaData = false
-        synchronizer.setRate(1, time: CMClockGetTime(CMClockGetHostTimeClock()))
         super.init(frame: frame)
         layer = CALayer()
         wantsLayer = true
         layer!.backgroundColor = NSColor.black.cgColor
-        displayLayer.videoGravity = .resizeAspect
-        displayLayer.frame = bounds
-        displayLayer.autoresizingMask = [.layerWidthSizable, .layerHeightSizable]
-        layer!.addSublayer(displayLayer)
+        renderer.displayLayer.frame = bounds
+        renderer.displayLayer.autoresizingMask = [.layerWidthSizable, .layerHeightSizable]
+        layer!.addSublayer(renderer.displayLayer)
     }
 
     required init?(coder: NSCoder) { fatalError("not used") }
@@ -64,25 +55,6 @@ final class VideoView: NSView {
         super.updateTrackingAreas()
         for area in trackingAreas { removeTrackingArea(area) }
         addTrackingArea(NSTrackingArea(rect: .zero, options: [.mouseMoved, .activeInKeyWindow, .inVisibleRect], owner: self))
-    }
-
-    // MARK: Video
-
-    /// Shows a decoded picture at once. Safe from any one serial queue.
-    func enqueue(_ pixels: CVPixelBuffer) {
-        // The decoder never writes to a picture it has handed out.
-        var picture = CMReadySampleBuffer(
-            pixelBuffer: CVReadOnlyPixelBuffer(unsafeBuffer: pixels),
-            presentationTimeStamp: CMClockGetTime(CMClockGetHostTimeClock()))
-        picture.sampleAttachments.displayImmediately = true
-        let sample = CMReadySampleBuffer<CMSampleBuffer.DynamicContent>(picture)
-        switch receiver.enqueueImmediately(sample) {
-        case .cancelledDueToFlushRequiredToResume, .cancelledDueToError:
-            receiver.flush()
-            _ = receiver.enqueueImmediately(sample)
-        default:
-            break
-        }
     }
 
     // MARK: Keyboard
