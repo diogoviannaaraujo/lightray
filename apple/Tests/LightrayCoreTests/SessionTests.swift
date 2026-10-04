@@ -158,6 +158,63 @@ final class SimulatedLink {
     func keyframesSent(on stream: UInt8) -> Int { host.session?.videos[stream]?.stats.keyframes ?? 0 }
 }
 
+@Test(arguments: [false, true])
+func inputOverflowEndsTheSession(dropClose: Bool) throws {
+    let link = SimulatedLink()
+    link.client.start(now: link.now)
+    link.run(for: 50_000)
+    #expect(link.client.isConnected)
+    link.client.send(.key(usage: 4, down: true, isRepeat: false), now: link.now)
+    link.run(for: 50_000)
+    #expect(link.inputs.contains(.key(usage: 4, down: true, isRepeat: false)))
+    link.hostEvents.removeAll()
+    if dropClose { link.dropFilter = { _, towardsHost in towardsHost } }
+    for _ in 0..<1024 { link.client.send(.key(usage: 4, down: true, isRepeat: true), now: link.now) }
+    link.client.send(.key(usage: 4, down: false, isRepeat: false), now: link.now)
+    #expect(!link.client.isConnected)
+    link.run(for: 2_100_000)
+    #expect(link.hostEvents.contains { event in
+        switch event {
+        case .sessionEnded, .paused: true
+        default: false
+        }
+    })
+    #expect(link.clientEvents.contains { event in
+        if case .disconnected(let reason) = event { return reason.contains("input") }
+        return false
+    })
+}
+
+@Test func pointerMotionSurvivesReliableBackpressure() throws {
+    let link = SimulatedLink()
+    link.client.start(now: link.now)
+    link.run(for: 50_000)
+    for _ in 0..<1024 { link.client.send(.scroll(dx: 0, dy: 1, units: .pixels), now: link.now) }
+    let motion = InputMessage.pointer(x: 123, y: 456, display: 0)
+    #expect(link.client.send(.pointer(x: 10, y: 20, display: 0), now: link.now))
+    #expect(link.client.send(motion, now: link.now))
+    link.run(for: 200_000)
+    #expect(link.client.isConnected)
+    #expect(link.inputs.last == motion)
+}
+
+@Test(arguments: [false, true])
+func buttonOverflowResetsInput(pendingMotion: Bool) throws {
+    let link = SimulatedLink()
+    link.client.start(now: link.now)
+    link.run(for: 50_000)
+    #expect(link.client.send(.button(.left, down: true), now: link.now))
+    link.run(for: 50_000)
+    for _ in 0..<1024 { #expect(link.client.send(.scroll(dx: 0, dy: 1, units: .pixels), now: link.now)) }
+    if pendingMotion { #expect(link.client.send(.pointer(x: 10, y: 20, display: 0), now: link.now)) }
+    #expect(!link.client.send(.button(.left, down: false), now: link.now))
+    #expect(!link.client.isConnected)
+    link.run(for: 10_000)
+    #expect(link.host.session == nil)
+    #expect(link.inputs == [.button(.left, down: true)])
+    #expect(link.hostEvents.contains { if case .sessionEnded = $0 { true } else { false } })
+}
+
 @Test func sessionStreamsWithoutRepairOnACleanPath() throws {
     let link = SimulatedLink()
     link.client.start(now: link.now)
@@ -480,4 +537,33 @@ final class SimulatedLink {
         #expect(link.client.session?.fec == false && link.host.session?.fec == false)
         #expect(link.host.session!.videos[1]!.stats.parityFragments == 0 && link.delivered.count > 5)
     }
+}
+
+@Test(arguments: [false, true])
+func clientRoutesRepliesAndCloseToAuthenticatedReboundHost(changesIP: Bool) throws {
+    let link = SimulatedLink()
+    link.client.start(now: link.now)
+    let initial = link.client.takeOutboundDatagrams()
+    #expect(initial.count == 1 && initial[0].destination == link.hostAddress)
+    link.host.receive(initial[0].bytes, from: link.clientAddress, now: link.now, unixTime: link.unix)
+    for (bytes, _) in link.host.takeOutbox() { link.client.receive(bytes, from: link.hostAddress, now: link.now) }
+    link.run(for: 50_000)
+    let host = try #require(link.host.session?.connection)
+    let changed = PeerAddress(ip: changesIP ? [10, 0, 0, 9] : link.hostAddress.ip, port: 7374)
+    let packet = try #require(host.seal(Chunk.ping(id: 1).encoded, now: link.now))
+    link.client.receive(packet, from: changed, now: link.now)
+    for id: UInt32 in 2...4 {
+        let extra = try #require(host.seal(Chunk.ping(id: id).encoded, now: link.now))
+        link.client.receive(extra, from: changed, now: link.now)
+    }
+    #expect(link.client.session?.connection.peer == changed)
+    link.client.receive(packet, from: link.hostAddress, now: link.now)
+    #expect(link.client.session?.connection.peer == changed)
+    link.client.tick(now: link.now + 100_000)
+    let replies = link.client.takeOutboundDatagrams()
+    #expect(!replies.isEmpty && replies.allSatisfy { $0.destination == changed })
+    link.client.close(now: link.now + 100_001)
+    let closing = link.client.takeOutboundDatagrams()
+    #expect(!closing.isEmpty && closing.allSatisfy { $0.destination == changed })
+    #expect(link.client.session == nil)
 }

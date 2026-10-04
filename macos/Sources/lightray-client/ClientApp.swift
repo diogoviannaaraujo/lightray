@@ -19,14 +19,24 @@ struct ClientOptions {
     var snapshot: String?
     /// Offer FEC to the host.
     var offerFEC = true
+    /// Use a local pointer when the host does not composite the hardware cursor.
+    var localCursor: Bool?
+    var screenID: UInt32?
+    var showStatistics: Bool?
+    var keyboardMapping: RemoteKeyboard.Mapping?
+    var rememberPreferences = true
+    var launcher = false
+    var rememberHosts = true
     /// Quits after this many seconds, for scripted runs.
     var exitAfter: Double?
 }
 
 /// The client's windows and their glue, on the main thread: a window for each stream that shows a
-/// display, and the Displays menu. The runner does the network and the decoding.
-final class ClientApp: NSObject, NSApplicationDelegate, @unchecked Sendable {
+/// display, the menus, and the session's preferences. The runner does the network and the
+/// decoding.
+final class ClientApp: NSObject, NSApplicationDelegate, NSMenuItemValidation, @unchecked Sendable {
     let options: ClientOptions
+    let pairing: Pairing
     private let runner: ClientRunner
 
     private var windows: [UInt8: StreamWindow] = [:]
@@ -40,38 +50,62 @@ final class ClientApp: NSObject, NSApplicationDelegate, @unchecked Sendable {
     private let displaysMenu = NSMenu(title: "Displays")
     private var snapshotsTaken = Set<UInt8>()
     private var firstPicture: [UInt8: UInt64] = [:]
+    private let preferencesStore = SessionPreferencesStore()
+    private var preferences = SessionPreferences()
+    var onReturnToComputers: (() -> Void)?
+    var onConnectionState: ((Bool) -> Void)?
+    private var didStop = false
 
     init(options: ClientOptions, pairing: Pairing) {
         self.options = options
+        self.pairing = pairing
         var settings = ClientRunner.Settings(host: options.host, port: options.port, pairing: pairing)
         settings.maxDatagramSize = options.maxDatagramSize
         settings.streams = options.streams
         settings.offerFEC = options.offerFEC
         settings.dropRate = options.dropRate
         runner = ClientRunner(settings: settings)
+        super.init()
+        if options.rememberPreferences {
+            do { preferences = try preferencesStore.load(hostID: pairing.id) }
+            catch { log("Cannot load session preferences; using defaults: \(error)") }
+        }
+        if let mapping = options.keyboardMapping { preferences.keyboardMapping = mapping }
+        if let statistics = options.showStatistics { preferences.showStatistics = statistics }
+        if let cursor = options.localCursor { preferences.localCursor = cursor }
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        do { try launch() }
+        catch { log("lightray-client: \(error)"); exit(1) }
+    }
+
+    func launch() throws {
         buildMenu()
         _ = window(for: 1)
         NSApp.activate()
         if let seconds = options.exitAfter {
             DispatchQueue.main.asyncAfter(deadline: .now() + seconds) { NSApp.terminate(nil) }
         }
-        runner.onEvent = { [unowned self] event in handle(event) }
+        runner.onEvent = { [weak self] event in self?.handle(event) }
         if options.snapshot != nil {
-            runner.onPicture = { [unowned self] stream, pixels in takeSnapshot(pixels, stream: stream) }
+            runner.onPicture = { [weak self] stream, pixels in self?.takeSnapshot(pixels, stream: stream) }
         }
-        do {
-            try runner.start()
-        } catch {
-            log("lightray-client: \(error)")
-            exit(1)
-        }
+        try runner.start()
     }
 
     func applicationWillTerminate(_ notification: Notification) {
-        runner.close()
+        stopSession()
+    }
+
+    /// Ends the session, telling the host, and closes its windows.
+    func stopSession() {
+        guard !didStop else { return }
+        didStop = true
+        for window in windows.values { window.view.releaseEverything() }
+        runner.stop()
+        for window in Array(windows.values) { window.close() }
+        windows.removeAll()
     }
 
     private func buildMenu() {
@@ -80,6 +114,10 @@ final class ClientApp: NSObject, NSApplicationDelegate, @unchecked Sendable {
         menu.addItem(appItem)
         let appMenu = NSMenu()
         appMenu.addItem(withTitle: "Quit Lightray (⌃⌥⌘Q)", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "")
+        if onReturnToComputers != nil {
+            let computers = appMenu.addItem(withTitle: "Disconnect and Show Computers", action: #selector(returnToComputers(_:)), keyEquivalent: "")
+            computers.target = self
+        }
         appItem.submenu = appMenu
         let displaysItem = NSMenuItem()
         menu.addItem(displaysItem)
@@ -88,9 +126,72 @@ final class ClientApp: NSObject, NSApplicationDelegate, @unchecked Sendable {
         let viewItem = NSMenuItem()
         menu.addItem(viewItem)
         let viewMenu = NSMenu(title: "View")
+        let controls = viewMenu.addItem(withTitle: "Session Menu (⌃⌥⌘S)", action: #selector(showSessionMenu(_:)), keyEquivalent: "")
+        controls.target = self
         viewMenu.addItem(withTitle: "Enter Full Screen", action: #selector(NSWindow.toggleFullScreen(_:)), keyEquivalent: "")
+        let stats = viewMenu.addItem(withTitle: "Show Statistics (⌃⌥⌘M)", action: #selector(toggleStatistics(_:)), keyEquivalent: "")
+        stats.target = self
         viewItem.submenu = viewMenu
+        let inputItem = NSMenuItem()
+        menu.addItem(inputItem)
+        let inputMenu = NSMenu(title: "Input")
+        for (title, action) in [
+            ("Swap Command and Control", #selector(toggleKeyboardMapping(_:))),
+            ("Release Input (⌃⌥⌘Esc)", #selector(releaseInput(_:))),
+            ("Resume Input", #selector(resumeInput(_:))),
+            ("Send Alt+Tab (⌃⌥⌘Tab)", #selector(sendAltTab(_:))),
+            ("Send Windows Key (⌃⌥⌘W)", #selector(sendWindowsKey(_:))),
+            ("Send Ctrl+Esc", #selector(sendControlEscape(_:))),
+        ] {
+            let item = inputMenu.addItem(withTitle: title, action: action, keyEquivalent: "")
+            item.target = self
+        }
+        inputItem.submenu = inputMenu
         NSApp.mainMenu = menu
+    }
+
+    private var focusedWindow: StreamWindow? {
+        windows.values.first { $0.window.isKeyWindow } ?? windows.values.first { $0.window.isMainWindow }
+    }
+
+    private func updatePreferences(_ preferences: SessionPreferences) {
+        self.preferences = preferences
+        for window in windows.values { window.view.applyPreferences(preferences) }
+        if options.rememberPreferences {
+            do { try preferencesStore.save(preferences, hostID: pairing.id) }
+            catch { log("Cannot save session preferences: \(error)") }
+        }
+    }
+    private func resetPreferences() {
+        if options.rememberPreferences { preferencesStore.reset(hostID: pairing.id) }
+        updatePreferences(SessionPreferences())
+    }
+    @objc private func showSessionMenu(_ sender: Any?) { focusedWindow?.view.toggleSessionMenu() }
+    @objc private func returnToComputers(_ sender: Any?) { stopSession(); onReturnToComputers?() }
+    @objc private func toggleStatistics(_ sender: Any?) {
+        var updated = preferences
+        updated.showStatistics = !updated.showStatistics
+        updatePreferences(updated)
+    }
+    @objc private func toggleKeyboardMapping(_ sender: Any?) {
+        var updated = preferences
+        updated.keyboardMapping = updated.keyboardMapping == .physical ? .commandControl : .physical
+        updatePreferences(updated)
+    }
+    @objc private func releaseInput(_ sender: Any?) { focusedWindow?.view.setInputEnabled(false) }
+    @objc private func resumeInput(_ sender: Any?) { focusedWindow?.view.setInputEnabled(true) }
+    @objc private func sendAltTab(_ sender: Any?) { focusedWindow?.view.sendShortcut(.altTab) }
+    @objc private func sendWindowsKey(_ sender: Any?) { focusedWindow?.view.sendShortcut(.windowsKey) }
+    @objc private func sendControlEscape(_ sender: Any?) { focusedWindow?.view.sendShortcut(.controlEscape) }
+
+    func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
+        guard let view = focusedWindow?.view else { return false }
+        if menuItem.action == #selector(toggleStatistics(_:)) { menuItem.state = view.statisticsVisible ? .on : .off }
+        if menuItem.action == #selector(toggleKeyboardMapping(_:)) { menuItem.state = view.keyboardMapping == .commandControl ? .on : .off }
+        if menuItem.action == #selector(resumeInput(_:)) { return !view.inputEnabled && view.streamState == .live }
+        if menuItem.action == #selector(releaseInput(_:)) { return view.canSendInput }
+        if [#selector(sendAltTab(_:)), #selector(sendWindowsKey(_:)), #selector(sendControlEscape(_:))].contains(menuItem.action) { return view.canSendInput }
+        return true
     }
 
     // MARK: The runner's events
@@ -98,13 +199,17 @@ final class ClientApp: NSObject, NSApplicationDelegate, @unchecked Sendable {
     private func handle(_ event: ClientRunner.Event) {
         switch event {
         case .connecting:
+            firstPicture.removeAll()
             setStatus("connecting")
         case .connected(let streams):
             videoStreams = streams
             restoring = bindings.filter { $0.value != 0 }
-            setStatus("connected")
+            setStatus("connected · waiting for video")
+            onConnectionState?(true)
         case .disconnected:
+            firstPicture.removeAll()
             setStatus("reconnecting")
+            onConnectionState?(false)
         case .displays(let list):
             displaysArrived(list)
         case .streamDisplay(let stream, let display):
@@ -113,8 +218,12 @@ final class ClientApp: NSObject, NSApplicationDelegate, @unchecked Sendable {
             runner.attach(window(for: stream).view.renderer, to: stream)
         case .pictureSize(let stream, let size):
             windows[stream]?.resize(to: size)
-        case .stats(let lines):
-            for (stream, text) in lines { windows[stream]?.status = text }
+        case .stats(let reports):
+            for (stream, report) in reports {
+                windows[stream]?.status = report.status
+                windows[stream]?.view.statisticsText = report.overlay
+                windows[stream]?.view.streamState = report.state
+            }
         }
     }
 
@@ -125,6 +234,29 @@ final class ClientApp: NSObject, NSApplicationDelegate, @unchecked Sendable {
         let window = StreamWindow(stream: stream, hostName: options.host) { [unowned self] message in
             runner.send(message)
         }
+        if let screenID = options.screenID, let screen = NSScreen.screens.first(where: { $0.cgDirectDisplayID == screenID }) {
+            window.window.setFrameOrigin(CGPoint(x: screen.visibleFrame.midX - window.window.frame.width / 2, y: screen.visibleFrame.midY - window.window.frame.height / 2))
+            log("stream \(stream): presentation screen id=\(screenID) max_fps=\(screen.maximumFramesPerSecond)")
+        }
+        window.view.applyPreferences(preferences)
+        window.view.onPreferencesChange = { [weak self] in self?.updatePreferences($0) }
+        window.view.onResetPreferences = { [weak self] in self?.resetPreferences() }
+        window.view.onDisconnect = { [weak self] in
+            guard let self else { return }
+            if onReturnToComputers != nil { returnToComputers(nil) } else { NSApp.terminate(nil) }
+        }
+        window.view.onHotkey = { [weak self, weak window] action in
+            guard let self, let window else { return }
+            switch action {
+            case .quit: NSApp.terminate(nil)
+            case .statistics: self.toggleStatistics(nil)
+            case .releaseInput: window.view.setInputEnabled(false)
+            case .fullScreen: window.window.toggleFullScreen(nil)
+            case .altTab: window.view.sendShortcut(.altTab)
+            case .windowsKey: window.view.sendShortcut(.windowsKey)
+            case .sessionMenu: window.view.toggleSessionMenu()
+            }
+        }
         window.display = displays.first { $0.id == bindings[stream] }
         window.onUserClose = { [unowned self] stream in userClosed(stream) }
         windows[stream] = window
@@ -132,10 +264,16 @@ final class ClientApp: NSObject, NSApplicationDelegate, @unchecked Sendable {
     }
 
     private func setStatus(_ text: String) {
-        for window in windows.values { window.status = text }
+        for window in windows.values {
+            window.status = text
+            window.view.releaseEverything()
+            window.view.statisticsText = text
+            window.view.streamState = .waiting
+        }
     }
 
     private func displaysArrived(_ list: [DisplayInfo]) {
+        for display in list { log("display id=\(display.id) native=\(display.width)x\(display.height) refresh_millihertz=\(display.refreshMillihertz)") }
         displays = list
         for (stream, window) in windows { window.display = list.first { $0.id == bindings[stream] } }
         // After a reconnection, ask again for what each stream showed; the host has only bound
@@ -166,6 +304,7 @@ final class ClientApp: NSObject, NSApplicationDelegate, @unchecked Sendable {
         bindings[stream] = display
         defer { rebuildDisplaysMenu() }
         if display == 0 {
+            windows[stream]?.view.streamState = .waiting
             // A stream with a request on its way keeps its window until the answer.
             guard wanted == nil, let window = windows[stream] else { return }
             log("stream \(stream): the host stopped showing \(window.display?.name ?? "its display")")
@@ -198,7 +337,9 @@ final class ClientApp: NSObject, NSApplicationDelegate, @unchecked Sendable {
         bindings[stream] = 0
         restoring[stream] = nil
         runner.selectDisplay(0, on: stream)
-        if windows.isEmpty { NSApp.terminate(nil) }
+        if windows.isEmpty {
+            if onReturnToComputers != nil { returnToComputers(nil) } else { NSApp.terminate(nil) }
+        }
         rebuildDisplaysMenu()
     }
 

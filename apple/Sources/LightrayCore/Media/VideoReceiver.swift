@@ -6,6 +6,7 @@ public struct DeliveredFrame: Sendable {
     public let payloadOffset: Int
     /// When its last fragment arrived, on the receiver's clock.
     public let completedAt: UInt64
+    var memoryReservations: [MemoryReservation] = []
 
     public var payload: ArraySlice<UInt8> { bytes[payloadOffset...] }
 }
@@ -24,6 +25,7 @@ public struct VideoReceiverStats: Sendable {
     public var refreshRequests = 0
     /// Data fragments rebuilt from Reed–Solomon parity.
     public var fecRepaired = 0
+    public var memoryLimitDrops = 0
 }
 
 /// The client side of a `MEDIA` stream, `docs/video.md` version 0 text with provisional FEC
@@ -38,6 +40,8 @@ public final class VideoReceiver {
     public let stream: UInt8
     public private(set) var stats = VideoReceiverStats()
     public var maxFrameBytes = 32 << 20
+    public let memoryBudget: MemoryBudget
+    private let sharedBudget: MemoryBudget?
     /// An estimate; the client is not told the frame rate. Used only for the tail timeout.
     public var frameInterval: UInt64 = 16_667
 
@@ -77,6 +81,7 @@ public final class VideoReceiver {
     }
 
     private final class Slot {
+        var reservations: [MemoryReservation] = []
         let discovered: UInt64
         var deadline: UInt64
         var extended: UInt64 = 0
@@ -122,14 +127,31 @@ public final class VideoReceiver {
         }
     }
 
-    public init(stream: UInt8, firstFrameID: UInt32 = 1) {
+    public init(stream: UInt8, firstFrameID: UInt32 = 1, memoryBudget: MemoryBudget = MemoryBudget(limit: 64 << 20), sharedBudget: MemoryBudget? = nil) {
         self.stream = stream
+        self.memoryBudget = memoryBudget
+        self.sharedBudget = sharedBudget
         nextToDeliver = firstFrameID
     }
 
     // MARK: Fragments
 
     public func receive(_ f: MediaFragment, now: UInt64, budget: UInt64) {
+        guard f.count > 0, f.stride > 0, !f.payload.isEmpty, f.payload.count <= Int(f.stride) else {
+            stats.discardedFragments += 1
+            return
+        }
+        if f.isParity {
+            guard let fec = f.fec, let layout = FECLayout(dataCount: Int(f.count), maxBlockLength: Int(fec.maxBlockLength), parityPerBlock: Int(fec.parityPerBlock)), Int(f.index) < layout.parityCount, f.payload.count == Int(f.stride) else {
+                stats.discardedFragments += 1
+                return
+            }
+        } else {
+            guard f.index < f.count, f.index == f.count - 1 || f.payload.count == Int(f.stride), f.fec == nil || f.index != f.count - 1 || f.payload.count == Int(f.fec!.lastLength) else {
+                stats.discardedFragments += 1
+                return
+            }
+        }
         let id = f.frameID
         guard id != 0, !completed.contains(id) else {
             stats.redundantFragments += 1
@@ -212,12 +234,20 @@ public final class VideoReceiver {
         let stride = Int(f.stride)
         var layout: FECLayout?
         if let fec = f.fec {
+            guard fec.lastLength > 0, fec.lastLength <= f.stride else { return false }
             layout = FECLayout(
                 dataCount: count, maxBlockLength: Int(fec.maxBlockLength), parityPerBlock: Int(fec.parityPerBlock))
             guard layout != nil else { return false }
         }
         let parityCount = layout?.parityCount ?? 0
         guard (count + parityCount) * stride <= maxFrameBytes else { return false }
+        // Reserve encoded buffers, recovery/copy workspace, and conservative per-fragment metadata before allocating.
+        let charge = 2 * (count + parityCount) * stride + (count + parityCount) * 32 + (layout?.blockCount ?? 0) * 8 + 512
+        guard let reservation = memoryBudget.reserve(charge, sharing: sharedBudget) else {
+            stats.memoryLimitDrops += 1
+            return false
+        }
+        slot.reservations = [reservation]
         slot.count = count
         slot.stride = stride
         slot.fec = f.fec
@@ -277,7 +307,7 @@ public final class VideoReceiver {
             } else {
                 var skipped = next(base)
                 while skipped != id {
-                    if slots[skipped] == nil, !completed.contains(skipped) { slots[skipped] = Slot(now: now, budget: budget) }
+                    if slots.count < Self.maxSlots, slots[skipped] == nil, !completed.contains(skipped) { slots[skipped] = Slot(now: now, budget: budget) }
                     skipped = next(skipped)
                 }
             }
@@ -320,7 +350,7 @@ public final class VideoReceiver {
             chainIntact = true
             lastDelivered = id
             ready.append(DeliveredFrame(
-                frameID: id, header: header, bytes: slot.buffer, payloadOffset: offset, completedAt: slot.completedAt!))
+                frameID: id, header: header, bytes: slot.buffer, payloadOffset: offset, completedAt: slot.completedAt!, memoryReservations: slot.reservations))
             stats.framesDelivered += 1
             if header.frameType == .idr {
                 stats.keyframesDelivered += 1
@@ -424,6 +454,7 @@ public final class VideoReceiver {
         let retry = max(srtt * 3 / 2, 2_000)
         var entries: [NackEntry] = []
         for id in slots.keys.sorted(by: { serialNewer($1, than: $0) }) {
+            if entries.count == 128 { break }
             let slot = slots[id]!
             guard !slot.isComplete, now < slot.deadline else { continue }
             if !slot.known {
@@ -462,19 +493,21 @@ public final class VideoReceiver {
             }
             var run: (first: Int, count: Int)?
             for i in wanted {
-                slot.lastNack[i] = now
-                stats.nackedFragments += 1
                 if let r = run, r.first + r.count == i {
                     run = (r.first, r.count + 1)
                 } else {
                     if let r = run { entries.append(NackEntry(frameID: id, first: UInt16(r.first), count: UInt16(r.count))) }
+                    // Leave omitted ranges due for the next poll rather than marking them as requested.
+                    if entries.count == 128 { return Nack(stream: stream, entries: entries) }
                     run = (i, 1)
                 }
+                slot.lastNack[i] = now
+                stats.nackedFragments += 1
             }
             if let r = run { entries.append(NackEntry(frameID: id, first: UInt16(r.first), count: UInt16(r.count))) }
         }
         guard !entries.isEmpty else { return nil }
-        return Nack(stream: stream, entries: Array(entries.prefix(128)))
+        return Nack(stream: stream, entries: entries)
     }
 
     private func refresh(now: UInt64, srtt: UInt64, budget: UInt64) -> RefreshRequest? {

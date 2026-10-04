@@ -11,6 +11,6 @@ let package = Package(
         // The protocol, with no I/O, and what the apps on both platforms share around it: the
         // socket, pairing, VideoToolbox, showing the video and running a client.
         .target(name: "LightrayCore"),
-        .testTarget(name: "LightrayCoreTests", dependencies: ["LightrayCore"]),
+        .testTarget(name: "LightrayCoreTests", dependencies: ["LightrayCore"], resources: [.copy("Fixtures")]),
     ]
 )

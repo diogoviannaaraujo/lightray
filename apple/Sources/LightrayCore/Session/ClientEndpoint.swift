@@ -66,7 +66,7 @@ public final class ClientSession {
         self.resetToken = resetToken
         self.fec = fec
         videoStreams = connection.streams.entries.filter { $0.kind == .video && $0.direction == .hostToClient }.map(\.id)
-        videos = Dictionary(uniqueKeysWithValues: videoStreams.map { ($0, VideoReceiver(stream: $0)) })
+        videos = Dictionary(uniqueKeysWithValues: videoStreams.map { ($0, VideoReceiver(stream: $0, sharedBudget: connection.memoryBudget)) })
         let input = connection.streams.entries.filter { $0.kind == .input && $0.direction == .clientToHost }
         keyboardStream = input.first?.id
         pointerStream = input.dropFirst().first?.id ?? input.first?.id
@@ -96,7 +96,7 @@ public final class ClientEndpoint {
     }
 
     private var state = State.idle
-    private var outbox: [Bytes] = []
+    private var outbox: [OutboundDatagram] = []
     private var events: [ClientEvent] = []
 
     static let maxSends = 8
@@ -107,11 +107,19 @@ public final class ClientEndpoint {
         self.unixTime = unixTime
     }
 
-    /// Datagrams to send, all to `config.host`.
-    public func takeOutbox() -> [Bytes] {
+    public struct OutboundDatagram: Sendable {
+        public let bytes: Bytes
+        public let destination: PeerAddress
+    }
+
+    /// Transport adapters must preserve each destination, including after session teardown.
+    public func takeOutboundDatagrams() -> [OutboundDatagram] {
         defer { outbox.removeAll() }
         return outbox
     }
+
+    /// Byte-only compatibility helper for simulations with a fixed route.
+    public func takeOutbox() -> [Bytes] { takeOutboundDatagrams().map(\.bytes) }
 
     public func takeEvents() -> [ClientEvent] {
         defer { events.removeAll() }
@@ -129,7 +137,7 @@ public final class ClientEndpoint {
         let handshake = ClientHandshake(psk: config.psk, pairingID: config.pairingID, params: params)
         state = .handshaking(Handshaking(handshake: handshake, firstSent: now, nextSend: now + 100_000))
         session = nil
-        outbox.append(handshake.datagram)
+        outbox.append(OutboundDatagram(bytes: handshake.datagram, destination: config.host))
         events.append(.connecting)
     }
 
@@ -243,27 +251,47 @@ public final class ClientEndpoint {
 
     /// Queues an input message. Pointer motion waits up to the merge interval, replaced by newer
     /// motion; anything else on the pointer stream sends the waiting motion first.
-    public func send(_ message: InputMessage, now: UInt64) {
-        guard let session, isConnected else { return }
+    /// False means the event was not accepted; reliable input overflow ends the session so the host resets held input.
+    @discardableResult
+    public func send(_ message: InputMessage, now: UInt64) -> Bool {
+        guard let session, isConnected else { return false }
         switch message {
         case .key:
-            if let stream = session.keyboardStream { session.connection.send(message: message.encoded, on: stream) }
+            guard let stream = session.keyboardStream else { return false }
+            guard session.connection.send(message: message.encoded, on: stream) else {
+                inputOverflow(session, now: now)
+                return false
+            }
         case .pointer:
+            guard session.pointerStream != nil else { return false }
             session.pendingMotion = message
-            flushMotion(session, now: now, force: false)
+            _ = flushMotion(session, now: now, force: false)
         case .button, .scroll:
-            flushMotion(session, now: now, force: true)
-            if let stream = session.pointerStream { session.connection.send(message: message.encoded, on: stream) }
+            guard let stream = session.pointerStream else { return false }
+            guard flushMotion(session, now: now, force: true), session.connection.send(message: message.encoded, on: stream) else {
+                inputOverflow(session, now: now)
+                return false
+            }
         }
+        return true
     }
 
-    private func flushMotion(_ session: ClientSession, now: UInt64, force: Bool) {
-        guard let motion = session.pendingMotion, let stream = session.pointerStream,
-            force || now >= session.lastMotion + ClientSession.mergeInterval
-        else { return }
-        session.connection.send(message: motion.encoded, on: stream)
-        session.pendingMotion = nil
+    private func flushMotion(_ session: ClientSession, now: UInt64, force: Bool) -> Bool {
+        guard let motion = session.pendingMotion else { return true }
+        guard let stream = session.pointerStream else { return false }
+        guard force || now >= session.lastMotion + ClientSession.mergeInterval else { return true }
+        // Retain a refused position, but throttle retries to avoid an immediate-wakeup loop.
         session.lastMotion = now
+        guard session.connection.send(message: motion.encoded, on: stream) else { return false }
+        session.pendingMotion = nil
+        return true
+    }
+
+    private func inputOverflow(_ session: ClientSession, now: UInt64) {
+        // Do not flush stale input on overflow; CLOSE, a replacement handshake, or silence releases it on the host.
+        outbox.removeAll()
+        if let datagram = session.connection.seal(Chunk.close(.appRequest).encoded, now: now) { outbox.append(OutboundDatagram(bytes: datagram, destination: session.connection.peer)) }
+        restart(reason: "reliable input queue full; resetting the session", now: now, immediately: false)
     }
 
     public func decoded(stream: UInt8, frameID: UInt32, isKeyframe: Bool) {
@@ -295,7 +323,7 @@ public final class ClientEndpoint {
             if h.sends >= Self.maxSends {
                 if now >= h.nextSend { restart(reason: "no response from the host", now: now, immediately: false) }
             } else if now >= h.nextSend {
-                outbox.append(h.handshake.datagram)
+                outbox.append(OutboundDatagram(bytes: h.handshake.datagram, destination: config.host))
                 h.sends += 1
                 // 100 ms, doubling to at most 2 s; the last send is followed by 2 s of waiting.
                 h.nextSend = now + (h.sends == Self.maxSends ? 2_000_000 : min(100_000 << UInt64(h.sends - 1), 2_000_000))
@@ -308,7 +336,7 @@ public final class ClientEndpoint {
                 restart(reason: "nothing from the host for \(config.silenceTimeout / 1_000_000) s", now: now, immediately: true)
                 return
             }
-            flushMotion(session, now: now, force: false)
+            _ = flushMotion(session, now: now, force: false)
             for stream in session.videoStreams {
                 for chunk in session.videos[stream]!.poll(
                     now: now, srtt: connection.rtt.smoothed, budget: connection.latencyBudget,
@@ -318,7 +346,7 @@ public final class ClientEndpoint {
                 }
             }
             collectFrames(session)
-            outbox += connection.flush(now: now)
+            outbox += connection.flush(now: now).map { OutboundDatagram(bytes: $0, destination: connection.peer) }
         }
     }
 
@@ -345,7 +373,7 @@ public final class ClientEndpoint {
     public func close(now: UInt64) {
         if let session, isConnected {
             session.connection.queue(.close(.appRequest))
-            outbox += session.connection.flush(now: now)
+            outbox += session.connection.flush(now: now).map { OutboundDatagram(bytes: $0, destination: session.connection.peer) }
         }
         session = nil
         state = .idle

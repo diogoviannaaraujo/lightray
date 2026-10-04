@@ -138,6 +138,9 @@ public struct MediaFragment: Equatable, Sendable {
         }
         let payload = r.rest()
         guard count > 0, stride > 0, !payload.isEmpty, payload.count <= Int(stride) else { return nil }
+        if let fec {
+            guard fec.lastLength > 0, fec.lastLength <= stride else { return nil }
+        }
         if flags & Flag.parity != 0 {
             // Parity is always a whole stride, and there is one set per block.
             guard let fec,
@@ -150,7 +153,6 @@ public struct MediaFragment: Equatable, Sendable {
             if let fec {
                 guard FECLayout(
                     dataCount: Int(count), maxBlockLength: Int(fec.maxBlockLength), parityPerBlock: Int(fec.parityPerBlock)) != nil,
-                    fec.lastLength > 0, fec.lastLength <= stride,
                     index != count - 1 || payload.count == Int(fec.lastLength)
                 else { return nil }
             }

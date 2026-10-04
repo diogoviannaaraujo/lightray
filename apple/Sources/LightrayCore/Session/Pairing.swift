@@ -42,6 +42,20 @@ public struct Pairing: Equatable, Sendable {
 /// Stores a pairing token in `Lightray/` in Application Support (on iOS, inside the app's
 /// container), readable only by the user.
 public enum PairingStore {
+    public enum StoreError: Error { case invalidName, invalidPairing }
+    private static func namedURL(_ name: String) throws -> URL {
+        guard !name.isEmpty, name.utf8.count <= 100, name.allSatisfy({ $0.isASCII && ($0.isLetter || $0.isNumber || $0 == "-" || $0 == "_") }) else { throw StoreError.invalidName }
+        return directory.appendingPathComponent(name)
+    }
+    public static func read(_ name: String) throws -> Pairing {
+        let text = try String(contentsOf: namedURL(name), encoding: .utf8)
+        guard let pairing = Pairing(token: text) else { throw StoreError.invalidPairing }
+        return pairing
+    }
+    public static func remove(_ name: String) throws {
+        let url = try namedURL(name)
+        if FileManager.default.fileExists(atPath: url.path) { try FileManager.default.removeItem(at: url) }
+    }
     public static var directory: URL {
         FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("Lightray", isDirectory: true)
@@ -54,7 +68,7 @@ public enum PairingStore {
 
     public static func save(_ pairing: Pairing, as name: String) throws {
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-        let url = directory.appendingPathComponent(name)
+        let url = try namedURL(name)
         try Data((pairing.token + "\n").utf8).write(to: url, options: .atomic)
         try FileManager.default.setAttributes([.posixPermissions: 0o600], ofItemAtPath: url.path)
     }

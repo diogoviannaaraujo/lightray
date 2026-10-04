@@ -7,12 +7,14 @@ public struct EncodedFrame: Sendable {
     public var codecConfig: CodecConfig?
     /// The capture instant on the sender's monotonic clock, in microseconds.
     public var captureTimeMicros: UInt64
+    public var hostTimings: HostFrameTimings?
 
-    public init(isKeyframe: Bool, payload: Bytes, codecConfig: CodecConfig?, captureTimeMicros: UInt64) {
+    public init(isKeyframe: Bool, payload: Bytes, codecConfig: CodecConfig?, captureTimeMicros: UInt64, hostTimings: HostFrameTimings? = nil) {
         self.isKeyframe = isKeyframe
         self.payload = payload
         self.codecConfig = codecConfig
         self.captureTimeMicros = captureTimeMicros
+        self.hostTimings = hostTimings
     }
 }
 
@@ -175,7 +177,7 @@ public final class VideoSender {
         let header = FrameHeader(
             frameType: frame.isKeyframe ? .idr : .predicted, refKind: frame.isKeyframe ? .none : .previous,
             captureTimeMicros: UInt32(truncatingIfNeeded: frame.captureTimeMicros),
-            codecConfig: frame.isKeyframe ? frame.codecConfig : nil)
+            codecConfig: frame.isKeyframe ? frame.codecConfig : nil, hostTimings: frame.hostTimings)
         let id = nextFrameID
         nextFrameID = nextFrameID == .max ? 1 : nextFrameID + 1
         let bytes = header.encoded + frame.payload

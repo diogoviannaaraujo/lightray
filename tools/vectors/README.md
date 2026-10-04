@@ -53,3 +53,15 @@ swift test --package-path tools/vectors
 - **Lightray.** Building the worked example runs the host's side against the client's and stops
   unless they agree: the host opens the INIT, the client opens the RESPONSE, and both hold the
   same traffic keys. Changing any cleartext INIT byte makes the INIT fail to open.
+
+## Independent FEC reference
+
+`fec_reference.py` uses Python 3.9 or later and the standard library to generate GF(256) fixtures with bitwise multiplication and a Vandermonde matrix, independently of the Swift implementation.
+The core tests consume the checked-in fixture to verify coefficients, parity bytes, zero padding, and recovery.
+
+```sh
+python3 tools/vectors/fec_reference.py --check apple/Tests/LightrayCoreTests/Fixtures/fec-reference.json
+swift test --package-path apple --filter fecMatchesIndependentFixture
+```
+
+To regenerate after reviewing an intentional change, use `--output` with the same fixture path and inspect the diff.

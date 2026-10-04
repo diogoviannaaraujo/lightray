@@ -19,6 +19,17 @@ The tests are in that package:
 swift test --package-path apple
 ```
 
+## Graphical client
+
+Start `macos/.build/release/lightray-client` without a host to open Computers.
+Enter a hostname/IP and port, import the pairing file supplied by the host, choose a local display, and connect.
+Remember this computer stores public metadata separately from the protected pairing file.
+The session menu offers Disconnect, which returns to Computers; closing the last stream does the same in this mode.
+The launcher returns to Computers with guidance if authentication does not succeed within 12 seconds after network setup.
+`--launcher` forces this mode with optional CLI defaults; `--no-host-catalog --no-preferences` isolates laboratory runs from saved hosts/settings.
+Monitor preferences use persistent display UUIDs, with an available-display fallback after disconnection.
+The [connection and WGC validation report](https://github.com/diogoviannaaraujo/lightray/blob/5ae52d6/docs/windows/connection-capture-progress-2026-10-01.md), kept at the commit that added it, records the tested behavior and the open onboarding and compatibility gates.
+
 ## Run
 
 **On the host**, create a pairing once and copy the token it prints:
@@ -63,7 +74,7 @@ is hidden over the window.
 Each window shows one of the host's displays on a video stream of its own
 ([displays.md](../docs/displays.md)). The **Displays** menu opens another display in a new window,
 brings forward the one showing it, or switches the current window to a different display. Closing
-a window stops its stream; closing the last one quits. Two windows can show the same display.
+a window stops its stream; closing the last one quits in direct CLI mode or returns to Computers in launcher mode. Two windows can show the same display.
 
 `--all-displays` opens every display at start, and `--show ID` a given one, by the id the host logs
 when it starts. The client proposes 4 video streams, so 4 windows at once; `--streams N` changes
@@ -106,6 +117,14 @@ Both ends keep their tokens in `~/Library/Application Support/Lightray/`, readab
 |---|---|
 | `host[:port]` | Name or address; `[::1]:7373` for IPv6 with a port |
 | `--pair TOKEN` | Use and remember a pairing token |
+| `--pair-file FILE` | Use the token in a file for this run, without saving it or showing it in the arguments |
+| `--launcher` | Open the Computers list instead of connecting; the default with no host |
+| `--no-host-catalog` | Do not load or save remembered computers |
+| `--no-preferences` | Ignore saved session preferences and save none during this run |
+| `--stats`, `--no-stats` | Show or hide the statistics overlay at start |
+| `--swap-command-control`, `--physical-keys` | Send Command as Control and Control as the Windows key, or keys as they are |
+| `--local-cursor`, `--host-cursor` | Show a local pointer over the video, or hide it |
+| `--screen-id N` | Open the stream windows on this Mac display |
 | `--mtu N` | Datagram size to propose, default 1200 |
 | `--streams N` | Video streams to propose: how many displays can be shown at once, default 4 |
 | `--all-displays` | Show every display of the host at start |
@@ -215,6 +234,28 @@ A client rebuilds a block as soon as it holds k shards. It asks only for what pa
 cover: once the fragments sent after a gap have arrived, as many data fragments as the block
 would still lack if every fragment not yet known lost arrived.
 
+### Provisional host timing extension
+
+The Windows laboratory host in [`tools/windows`](../tools/windows/README.md) can report how long
+it took to capture and encode each frame, for the client's statistics overlay. It does so with
+frame-header extension type `0xF0`, which must be coordinated before it becomes a protocol
+assignment. The Mac host does not send it.
+
+- **Value**, 17 bytes, big-endian: `version:u8` = 1, `capture_duration_us:u32`,
+  `encode_duration_us:u32`, `host_sample_id:u64`. With its header the extension adds 20 bytes to
+  a frame, and the host leaves it out when it would overflow the extension area's `u16` length.
+- **Durations** are on the host's monotonic clock, at most 1,000,000 µs each, with no clock
+  synchronization assumed. The sample ID counts the host's frame attempts in its current process
+  and can have gaps; it is diagnostic, not a frame ID.
+- **Receiving.** An unknown version, a value of another size, a duration out of range or a second
+  timing extension makes the timing unavailable without invalidating the frame; malformed
+  extension framing still invalidates it. Absence means unavailable, never zero. Receivers
+  without this extension skip it as any unknown extension.
+- **What the overlay shows.** It averages the samples of the frames decoded in the current epoch
+  over about a second, apart from the client's own decode and queue times. Lost, undecodable and
+  dropped frames are not counted, and the round-trip time is not added to them: none of it is
+  input-to-photon latency.
+
 ### Implementation defaults
 
 None of these is on the wire.
@@ -228,6 +269,7 @@ None of these is on the wire.
 | Keepalive | `PING` after 250 ms without sending |
 | Client silent | host stops media after 2 s, keeping capture and the encoders warm; resumes with a keyframe on each stream at the next packet; forgets the session after 60 s |
 | Host silent | client starts a new handshake after 5 s |
+| Reliable input queue full | pending pointer motion is retained and coalesced; a refused key, button, or scroll ends the session and reports the reason, so CLOSE, a replacement handshake, or host silence resets held input |
 | Sessions | one at a time; a new handshake replaces the current session |
 | Pacing | each video stream paces itself: it drains its backlog within a frame interval of its last frame, at least 1.25 × the bitrate, in bursts of 32 datagrams; the order the streams drain in rotates |
 
@@ -235,9 +277,9 @@ None of these is on the wire.
 
 | Target | What it is |
 |---|---|
-| `LightrayCore`, in [`apple/`](../apple/README.md) | The protocol, with no I/O: the endpoints take datagrams and the time, and return datagrams and events. Around it, what the apps share with an iOS client: the UDP socket, pairing storage, the HID ↔ Mac key-code map, the VideoToolbox encoder and decoder, a renderer for an `AVSampleBufferDisplayLayer`, and `ClientRunner`, which runs the client's endpoint and decoders |
+| `LightrayCore`, in [`apple/`](../apple/README.md) | The protocol, with no I/O: the endpoints take datagrams and the time, and return datagrams and events. Around it, what the apps share with an iOS client: the UDP socket, pairing storage, saved computers and session preferences, the HID ↔ Mac key-code map and the remote keyboard, the VideoToolbox encoder, the bounded decoder, a renderer for an `AVSampleBufferDisplayLayer`, and `ClientRunner`, which runs the client's endpoint and decoders |
 | `lightray-host` | The display list, a capture-and-encode pipeline per video stream, and CGEvent injection |
-| `lightray-client` | A window per video stream, keyboard and mouse capture, and the Displays menu |
+| `lightray-client` | The Computers launcher, a window per video stream with its statistics overlay and session menu, keyboard and mouse capture, and the Displays and Input menus |
 
 Each app runs its endpoint, socket and timer on one serial queue. Each video stream has a
 queue of its own: for capture and encoding on the host, and for decoding on the client.
@@ -255,3 +297,24 @@ queue of its own: for capture and encoding on the host, and for decoding on the 
   streams, the same for all.
 - The cursor channel, relative pointer motion, gamepads and text input.
 - Capturing system shortcuts on the client.
+
+## Session controls and host preferences
+
+Each window shows a statistics overlay: the stream's resolution and state, the client's decode and
+queue times, the round-trip time, and, from a host that sends the
+[timing extension](#provisional-host-timing-extension), its capture and encode times. ⌃⌥⌘M
+toggles it. For Windows hosts, `--swap-command-control` or the Input menu sends Command as Control,
+so that Command-C and Command-V copy and paste there. ⌃⌥⌘Esc releases remote input; a click on the
+video resumes it.
+
+The client exposes a Lightray session button in windowed and full-screen mode, also available through View → Session Menu or Control+Option+Command+S.
+Opening it releases remote input; closing it keeps input released until explicit resume or a consumed click on the video.
+The panel offers statistics, optional Command/Control swapping, local pointer, full screen, Alt+Tab, Windows key and preference reset.
+Remote actions require live decoded video; waiting or interrupted video cannot forward input.
+The cursor remains visible locally while input cannot be forwarded.
+
+Preferences persist by public pairing ID and contain no pairing key or clipboard data.
+Explicit CLI choices override the initial saved values without saving them at launch: `--stats`/`--no-stats`, `--physical-keys`/`--swap-command-control`, and `--host-cursor`/`--local-cursor`.
+Use `--no-preferences` to isolate a lab run and `--screen-id N` to select a local presentation monitor after checking the current screen inventory.
+Successful decodes drive a local waiting/live/interrupted state; two seconds without progress after live video pause input, without attributing the cause to capture or network.
+The [implementation, evidence and remaining validation](https://github.com/diogoviannaaraujo/lightray/blob/5ae52d6/docs/windows/session-controls-progress.md) and the [telemetry semantics](https://github.com/diogoviannaaraujo/lightray/blob/5ae52d6/docs/windows/host-telemetry-progress.md) are kept at the commit that added them.

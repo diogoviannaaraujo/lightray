@@ -29,6 +29,7 @@ final class StreamWindow: NSObject, NSWindowDelegate {
         super.init()
         window.contentView = view
         window.collectionBehavior = [.fullScreenPrimary]
+        window.contentMinSize = NSSize(width: 420, height: 260)
         window.isReleasedWhenClosed = false
         window.delegate = self
         view.onInput = onInput
@@ -48,6 +49,7 @@ final class StreamWindow: NSObject, NSWindowDelegate {
     }
 
     func windowWillClose(_ notification: Notification) {
+        view.releaseEverything()
         if !closedByHost { onUserClose?(stream) }
     }
 

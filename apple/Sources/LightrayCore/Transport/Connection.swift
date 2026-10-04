@@ -56,6 +56,8 @@ public struct ConnectionStats: Sendable {
     public var malformedChunks = 0
     public var streamViolations = 0
     public var blockedByValidation = 0
+    /// Outgoing chunks or datagrams rejected because they exceed the negotiated size.
+    public var oversizedOutgoing = 0
     /// From the peer's FEEDBACK: our packets it reported received and missing.
     public var reportedReceived = 0
     public var reportedLost = 0
@@ -80,6 +82,7 @@ public final class Connection {
     public let role: Role
     public let sessionID: UInt32
     public let streams: StreamTable
+    public let memoryBudget: MemoryBudget
     public private(set) var maxDatagramSize: Int
     public private(set) var peer: PeerAddress
     public var rtt = RTTEstimator()
@@ -131,20 +134,21 @@ public final class Connection {
 
     public init(
         role: Role, sessionID: UInt32, sendKey: Bytes, receiveKey: Bytes, streams: StreamTable,
-        maxDatagramSize: Int, peer: PeerAddress, now: UInt64
+        maxDatagramSize: Int, peer: PeerAddress, now: UInt64, memoryBudget: MemoryBudget = MemoryBudget(limit: 256 << 20)
     ) {
         self.role = role
         self.sessionID = sessionID
         self.sendKey = TrafficKey(sendKey)
         self.receiveKey = TrafficKey(receiveKey)
         self.streams = streams
+        self.memoryBudget = memoryBudget
         self.maxDatagramSize = maxDatagramSize
         self.peer = peer
         lastReceived = now
         lastSent = now
         for entry in [StreamEntry.control] + streams.entries where entry.streamClass == .reliable {
-            if sends(entry) { senders[entry.id] = ReliableSender(stream: entry.id) }
-            if receives(entry) { receivers[entry.id] = ReliableReceiver(stream: entry.id) }
+            if sends(entry) { senders[entry.id] = ReliableSender(stream: entry.id, sharedBudget: memoryBudget) }
+            if receives(entry) { receivers[entry.id] = ReliableReceiver(stream: entry.id, sharedBudget: memoryBudget) }
         }
     }
 
@@ -285,11 +289,38 @@ public final class Connection {
     }
 
     /// Queues a small chunk (NACK, REFRESH_REQUEST, CLOSE) for the next control datagram.
-    public func queue(_ chunk: Chunk) { control.append(chunk.encoded) }
+    @discardableResult
+    public func queue(_ chunk: Chunk) -> Bool {
+        let limit = maxDatagramSize - Packet.overhead
+        if case .nack(let nack) = chunk, !nack.entries.isEmpty {
+            // NACK has a three-byte chunk header, a stream byte and eight bytes per range.
+            let capacity = (limit - 4) / Nack.entryLength
+            guard capacity > 0 else {
+                stats.oversizedOutgoing += 1
+                return false
+            }
+            for offset in stride(from: 0, to: nack.entries.count, by: capacity) {
+                let end = min(offset + capacity, nack.entries.count)
+                control.append(Chunk.nack(Nack(stream: nack.stream, entries: Array(nack.entries[offset..<end]))).encoded)
+            }
+            return true
+        }
+        let encoded = chunk.encoded
+        guard encoded.count <= limit else {
+            stats.oversizedOutgoing += 1
+            return false
+        }
+        control.append(encoded)
+        return true
+    }
 
-    /// Seals one datagram. Nil if an unvalidated address has used its allowance.
+    /// Seals one datagram. Nil if it exceeds the negotiated size or an unvalidated address has used its allowance.
     public func seal(_ chunks: Bytes, now: UInt64) -> Bytes? {
         let size = chunks.count + Packet.overhead
+        guard size <= maxDatagramSize else {
+            stats.oversizedOutgoing += 1
+            return nil
+        }
         if var v = validation {
             guard v.sent + size <= 3 * v.received else {
                 stats.blockedByValidation += 1

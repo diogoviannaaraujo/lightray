@@ -6,10 +6,16 @@ The Swift package the Lightray apps share on macOS and iOS: the protocol in
 - **The protocol**, with no I/O: the handshake, packets, reliable streams, video with FEC, and the
   host and client endpoints. An endpoint takes datagrams and the time, and returns datagrams and
   events.
-- **Around it:** the UDP socket and the clock, pairing tokens and their storage, the HID ↔ Mac
-  key-code map, the VideoToolbox encoder and decoder, `VideoRenderer`, which shows decoded pictures
-  in an `AVSampleBufferDisplayLayer`, and `ClientRunner`, which runs a client's endpoint and
-  decoders on queues of their own and leaves the app its windows and input.
+- **Around it:**
+  - the UDP socket and the clock;
+  - pairing tokens and their storage, saved computers and per-host session preferences;
+  - the HID ↔ Mac key-code map, and the remote keyboard, which can swap Command and Control for
+    Windows hosts;
+  - the VideoToolbox encoder, and a bounded decoder that drops what it cannot keep up with and
+    measures its timings;
+  - `VideoRenderer`, which shows decoded pictures in an `AVSampleBufferDisplayLayer`;
+  - `ClientRunner`, which runs a client's endpoint and decoders on queues of their own and leaves
+    the app its windows and input.
 
 The Mac host and client are in [`macos/`](../macos/README.md), which needs this directory beside it.
 

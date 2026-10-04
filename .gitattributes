@@ -1,0 +1,5 @@
+# Preserve pinned third-party headers byte for byte.
+tools/windows/vendor/** -text -whitespace
+
+# Video clips must never be treated as text or have line endings converted.
+*.hevc binary

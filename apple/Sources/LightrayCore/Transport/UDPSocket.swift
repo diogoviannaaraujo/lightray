@@ -1,5 +1,6 @@
 import Darwin
 import Dispatch
+import Foundation
 
 /// The monotonic clock every timestamp is drawn from, in microseconds. `CLOCK_UPTIME_RAW` is the
 /// clock ScreenCaptureKit and VideoToolbox stamp samples with, so capture times need no conversion.
@@ -20,6 +21,14 @@ public final class UDPSocket: @unchecked Sendable {
     private let family: Int32
     private let queue: DispatchQueue
     private var source: DispatchSourceRead?
+    private let lifecycle = NSRecursiveLock()
+    private var closed = false
+    public private(set) var receiveFailures = 0
+    public private(set) var lastSendError: Int32?
+    public private(set) var lastReceiveError: Int32?
+    public private(set) var optionWarnings: [String] = []
+    public private(set) var receiveBufferBytes: Int32 = 0
+    public private(set) var sendBufferBytes: Int32 = 0
     private var buffer = [UInt8](repeating: 0, count: 65536)
     /// For testing repair on a clean network: the fraction of arriving datagrams to drop.
     public var dropRate = 0.0
@@ -38,17 +47,34 @@ public final class UDPSocket: @unchecked Sendable {
         var bufferSize: Int32 = 4 << 20
         var service: Int32 = 3  // NET_SERVICE_TYPE_VI
         let size = socklen_t(MemoryLayout<Int32>.size)
-        setsockopt(fd, SOL_SOCKET, SO_RCVBUF, &bufferSize, size)
-        setsockopt(fd, SOL_SOCKET, SO_SNDBUF, &bufferSize, size)
-        setsockopt(fd, SOL_SOCKET, SO_NET_SERVICE_TYPE, &service, size)
-        setsockopt(fd, SOL_SOCKET, SO_NOSIGPIPE, &on, size)
-        if family == AF_INET6 {
-            setsockopt(fd, IPPROTO_IPV6, IPV6_V6ONLY, &off, size)
-            setsockopt(fd, IPPROTO_IPV6, 62 /* IPV6_DONTFRAG, hidden behind __APPLE_USE_RFC_3542 */, &on, size)
+        func option(_ level: Int32, _ name: Int32, _ value: inout Int32, _ label: String, required: Bool = false) throws {
+            if setsockopt(fd, level, name, &value, size) != 0 {
+                let error = SocketError(label)
+                if required { throw error }
+                optionWarnings.append(error.description)
+            }
         }
-        // On a dual-stack socket this may be refused; IPv4 traffic then goes without it.
-        setsockopt(fd, IPPROTO_IP, IP_DONTFRAG, &on, size)
-        _ = fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) | O_NONBLOCK)
+        do {
+            try option(SOL_SOCKET, SO_RCVBUF, &bufferSize, "SO_RCVBUF")
+            try option(SOL_SOCKET, SO_SNDBUF, &bufferSize, "SO_SNDBUF")
+            try option(SOL_SOCKET, SO_NET_SERVICE_TYPE, &service, "SO_NET_SERVICE_TYPE")
+            try option(SOL_SOCKET, SO_NOSIGPIPE, &on, "SO_NOSIGPIPE")
+            if family == AF_INET6 {
+                try option(IPPROTO_IPV6, IPV6_V6ONLY, &off, "IPV6_V6ONLY", required: true)
+                try option(IPPROTO_IPV6, 62 /* IPV6_DONTFRAG */, &on, "IPV6_DONTFRAG")
+            }
+            try option(IPPROTO_IP, IP_DONTFRAG, &on, "IP_DONTFRAG")
+            let flags = fcntl(fd, F_GETFL)
+            guard flags >= 0, fcntl(fd, F_SETFL, flags | O_NONBLOCK) == 0 else { throw SocketError("nonblocking socket") }
+            var actualSize = size
+            if getsockopt(fd, SOL_SOCKET, SO_RCVBUF, &receiveBufferBytes, &actualSize) != 0 { optionWarnings.append(SocketError("read SO_RCVBUF").description) }
+            actualSize = size
+            if getsockopt(fd, SOL_SOCKET, SO_SNDBUF, &sendBufferBytes, &actualSize) != 0 { optionWarnings.append(SocketError("read SO_SNDBUF").description) }
+        } catch {
+            closed = true
+            Darwin.close(fd)
+            throw error
+        }
 
         var status: Int32
         if family == AF_INET6 {
@@ -71,12 +97,16 @@ public final class UDPSocket: @unchecked Sendable {
         }
         guard status == 0 else {
             let error = SocketError("bind to port \(port)")
+            closed = true
             Darwin.close(fd)
             throw error
         }
     }
 
     public var localPort: UInt16 {
+        lifecycle.lock()
+        defer { lifecycle.unlock() }
+        guard !closed else { return 0 }
         var storage = sockaddr_storage()
         var length = socklen_t(MemoryLayout<sockaddr_storage>.size)
         _ = withUnsafeMutablePointer(to: &storage) {
@@ -87,31 +117,63 @@ public final class UDPSocket: @unchecked Sendable {
 
     /// Starts reading; `handler` runs on the socket's queue for every datagram.
     public func start(_ handler: @escaping (Bytes, PeerAddress) -> Void) {
+        lifecycle.lock()
+        defer { lifecycle.unlock() }
+        guard !closed, source == nil else { return }
         let source = DispatchSource.makeReadSource(fileDescriptor: fd, queue: queue)
-        source.setEventHandler { [unowned self] in
-            while true {
-                var storage = sockaddr_storage()
-                var length = socklen_t(MemoryLayout<sockaddr_storage>.size)
-                let count = buffer.withUnsafeMutableBytes { bytes in
-                    withUnsafeMutablePointer(to: &storage) {
-                        $0.withMemoryRebound(to: sockaddr.self, capacity: 1) {
-                            recvfrom(fd, bytes.baseAddress, bytes.count, 0, $0, &length)
-                        }
-                    }
-                }
-                guard count >= 0 else { break }  // EAGAIN: drained.
-                if dropRate > 0, Double.random(in: 0..<1) < dropRate {
-                    dropped += 1
-                    continue
-                }
-                handler(Array(buffer[0..<count]), Self.peer(from: storage))
-            }
+        let descriptor = fd
+        source.setCancelHandler { Darwin.close(descriptor) }
+        source.setEventHandler { [weak self] in
+            guard let self else { return }
+            self.read(handler)
         }
-        source.resume()
         self.source = source
+        source.resume()
     }
 
-    public func send(_ datagram: Bytes, to peer: PeerAddress) {
+    private func read(_ handler: (Bytes, PeerAddress) -> Void) {
+        lifecycle.lock()
+        defer { lifecycle.unlock() }
+        guard !closed else { return }
+        // Yield after a bounded batch so a busy peer cannot starve timers and cancellation.
+        for _ in 0..<64 {
+            if closed { break }
+            var storage = sockaddr_storage()
+            var length = socklen_t(MemoryLayout<sockaddr_storage>.size)
+            let count = buffer.withUnsafeMutableBytes { bytes in
+                withUnsafeMutablePointer(to: &storage) {
+                    $0.withMemoryRebound(to: sockaddr.self, capacity: 1) {
+                        recvfrom(fd, bytes.baseAddress, bytes.count, 0, $0, &length)
+                    }
+                }
+            }
+            guard count >= 0 else {
+                let code = errno
+                if code == EINTR { continue }
+                if code != EAGAIN && code != EWOULDBLOCK {
+                    receiveFailures += 1
+                    lastReceiveError = code
+                    if code == EBADF || code == ENOTSOCK { close() }
+                }
+                break
+            }
+            if dropRate > 0, Double.random(in: 0..<1) < dropRate {
+                dropped += 1
+                continue
+            }
+            handler(Array(buffer[0..<count]), Self.peer(from: storage))
+        }
+    }
+
+    @discardableResult
+    public func send(_ datagram: Bytes, to peer: PeerAddress) -> Bool {
+        lifecycle.lock()
+        defer { lifecycle.unlock() }
+        guard !closed else {
+            sendFailures += 1
+            lastSendError = EBADF
+            return false
+        }
         var storage = Self.socketAddress(for: peer, family: family)
         let length = socklen_t(storage.ss_len)
         let sent = datagram.withUnsafeBytes { bytes in
@@ -119,14 +181,28 @@ public final class UDPSocket: @unchecked Sendable {
                 $0.withMemoryRebound(to: sockaddr.self, capacity: 1) { sendto(fd, bytes.baseAddress, bytes.count, 0, $0, length) }
             }
         }
-        if sent < 0 { sendFailures += 1 }
+        guard sent == datagram.count else {
+            sendFailures += 1
+            lastSendError = sent < 0 ? errno : EMSGSIZE
+            return false
+        }
+        return true
     }
 
     public func close() {
-        source?.cancel()
-        source = nil
-        Darwin.close(fd)
+        lifecycle.lock()
+        defer { lifecycle.unlock() }
+        guard !closed else { return }
+        closed = true
+        if let source {
+            source.cancel()
+            self.source = nil
+        } else {
+            Darwin.close(fd)
+        }
     }
+
+    deinit { close() }
 
     // MARK: Addresses
 
