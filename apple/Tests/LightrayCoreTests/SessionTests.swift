@@ -33,8 +33,12 @@ final class SimulatedLink {
     /// reaches or leaves the client; what is sent meanwhile arrives in a burst when it returns.
     var stalls: (every: UInt64, length: UInt64)?
     var rng = SplitMix(state: 1)
+    let uplink = SimulatedBottleneck()
+    let downlink = SimulatedBottleneck()
     /// Return true to drop a datagram: (bytes, towards the host).
     var dropFilter: ((Bytes, Bool) -> Bool)?
+    private(set) var filteredToHost = 0
+    private(set) var filteredToClient = 0
     private var inFlight: [(at: UInt64, bytes: Bytes, from: PeerAddress, toHost: Bool)] = []
 
     var hostEvents: [HostEvent] = []
@@ -42,6 +46,8 @@ final class SimulatedLink {
     /// Frames delivered on stream 1, and on every stream.
     var delivered: [DeliveredFrame] = []
     var deliveredOn: [UInt8: [DeliveredFrame]] = [:]
+    /// Long scenario runs can keep delivery metadata without pinning every media reservation.
+    var retainDeliveredPayloads = true
     var inputs: [InputMessage] = []
     /// The video streams `run` submits frames on.
     var streams: [UInt8] = [1]
@@ -55,16 +61,18 @@ final class SimulatedLink {
 
     let hostConfig: HostConfig
 
-    init(offerFEC: Bool = true, hostConfig: HostConfig = HostConfig()) {
+    init(offerFEC: Bool = true, hostConfig: HostConfig = HostConfig(), videoStreamCount: Int = 4, seed: UInt64 = 1) {
         let psk = self.psk
         let pairingID = self.pairingID
         self.hostConfig = hostConfig
+        rng = SplitMix(state: seed)
         host = HostEndpoint(config: hostConfig, hostSecret: Bytes(repeating: 3, count: 32)) {
             $0 == pairingID ? psk : nil
         }
         var config = ClientConfig(pairingID: pairingID, psk: psk, host: hostAddress)
         config.maxDatagramSize = 1200
         config.offerFEC = offerFEC
+        config.videoStreamCount = videoStreamCount
         let unix = self.unix
         client = ClientEndpoint(config: config, unixTime: { unix })
     }
@@ -79,6 +87,8 @@ final class SimulatedLink {
 
     func step() {
         now += 250
+        for packet in uplink.advance(to: now) { schedule(packet, toHost: true) }
+        for packet in downlink.advance(to: now) { schedule(packet, toHost: false) }
         let due = inFlight.filter { $0.at <= now }
         inFlight.removeAll { $0.at <= now }
         for packet in due {
@@ -108,8 +118,10 @@ final class SimulatedLink {
         }
         for event in client.takeEvents() {
             if case .frame(let stream, let frame) = event {
-                if stream == 1 { delivered.append(frame) }
-                deliveredOn[stream, default: []].append(frame)
+                let recorded = retainDeliveredPayloads ? frame : DeliveredFrame(
+                    frameID: frame.frameID, header: frame.header, bytes: [], payloadOffset: 0, completedAt: frame.completedAt)
+                if stream == 1 { delivered.append(recorded) }
+                deliveredOn[stream, default: []].append(recorded)
                 client.decoded(stream: stream, frameID: frame.frameID, isKeyframe: frame.header.frameType == .idr)
             } else {
                 clientEvents.append(event)
@@ -118,12 +130,20 @@ final class SimulatedLink {
     }
 
     private func send(_ bytes: Bytes, from: PeerAddress, toHost: Bool) {
-        if let dropFilter, dropFilter(bytes, toHost) { return }
+        if let dropFilter, dropFilter(bytes, toHost) {
+            if toHost { filteredToHost += 1 } else { filteredToClient += 1 }
+            return
+        }
         if loss > 0, Double.random(in: 0..<1, using: &rng) < loss { return }
+        let path = toHost ? uplink : downlink
+        for packet in path.enqueue(bytes, from: from, now: now) { schedule(packet, toHost: toHost) }
+    }
+
+    private func schedule(_ packet: SimulatedBottleneck.Transmission, toHost: Bool) {
         let extra = jitter > 0 ? UInt64.random(in: 0...jitter, using: &rng) : 0
-        var at = (toHost ? stallEnd(now) ?? now : now) + delay + extra
+        var at = (toHost ? stallEnd(packet.at) ?? packet.at : packet.at) + delay + extra
         if !toHost, let end = stallEnd(at) { at = end }
-        inFlight.append((at, bytes, from, toHost))
+        inFlight.append((at, packet.bytes, packet.from, toHost))
     }
 
     /// When the stall under way at `time` ends, if one is.
