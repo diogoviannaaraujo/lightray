@@ -17,7 +17,8 @@ The Swift package the Lightray apps share on macOS and iOS: the protocol in
   - `ClientRunner`, which runs a client's endpoint and decoders on queues of their own and leaves
     the app its windows and input.
 
-The Mac host and client are in [`macos/`](../macos/README.md), which needs this directory beside it.
+The Mac host and client are in [`macos/`](../macos/README.md), and the iPad client is in
+[`ios/`](../ios/README.md). Both need this directory beside them.
 
 ## Build and test
 

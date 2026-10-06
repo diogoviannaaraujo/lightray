@@ -311,7 +311,6 @@ public final class VideoSender {
             guard pacer.spend(size) else { break }
             var flags: UInt8 = 0
             if frame.isKeyframe { flags |= MediaFragment.Flag.keyframe }
-            if item.index == 0, !item.parity { flags |= MediaFragment.Flag.frameStart }
             if fromRetransmit { flags |= MediaFragment.Flag.retransmission }
             if item.parity { flags |= MediaFragment.Flag.parity }
             var w = ByteWriter(capacity: size)

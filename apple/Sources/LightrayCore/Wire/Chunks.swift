@@ -29,7 +29,7 @@ public struct MediaFragment: Equatable, Sendable {
     public enum Flag {
         public static let keyframe: UInt8 = 1 << 0
         public static let retransmission: UInt8 = 1 << 1
-        public static let frameStart: UInt8 = 1 << 2
+        // Bit 2 is retired. The first data fragment is identified by index == 0.
         /// Provisional: a Reed–Solomon parity fragment; `index` counts parity fragments.
         public static let parity: UInt8 = 1 << 3
     }
@@ -373,10 +373,10 @@ public struct Nack: Equatable, Sendable {
     }
 }
 
+/// A successfully decoded reference candidate; `docs/feedback.md#frame_ack-0x12`.
 public struct FrameAckEntry: Equatable, Sendable {
     public var stream: UInt8
     public var frameID: UInt32
-    public var status: UInt8
 }
 
 /// `docs/feedback.md#refresh_request-0x13`.
@@ -454,7 +454,6 @@ public enum Chunk: Equatable, Sendable {
                 var v = ByteWriter()
                 v.u8(e.stream)
                 v.u32(e.frameID)
-                v.u8(e.status)
                 return v.bytes
             })
         case .refreshRequest(let r): r.write(to: &w)
@@ -517,10 +516,10 @@ public enum Chunk: Equatable, Sendable {
         case ChunkType.feedback: return Feedback.parse(value).map(Chunk.feedback)
         case ChunkType.nack: return Nack.parse(value).map(Chunk.nack)
         case ChunkType.frameAck:
-            guard value.count % 6 == 0 else { return nil }
+            guard value.count % 5 == 0 else { return nil }
             var entries: [FrameAckEntry] = []
             while !r.isAtEnd {
-                entries.append(FrameAckEntry(stream: try! r.u8(), frameID: try! r.u32(), status: try! r.u8()))
+                entries.append(FrameAckEntry(stream: try! r.u8(), frameID: try! r.u32()))
             }
             return .frameAck(entries)
         case ChunkType.refreshRequest: return RefreshRequest.parse(value).map(Chunk.refreshRequest)

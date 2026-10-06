@@ -21,6 +21,7 @@ generates and checks its examples, and its implementations.
 | [`tools/vectors/`](tools/vectors/README.md) | The generator of every hex example in `docs/` and of `vectors.json`, the file to test an implementation against. It also checks the links in `docs/` |
 | [`apple/`](apple/README.md) | `LightrayCore`, the Swift package the apps share on macOS and iOS: the protocol, with no I/O, and what an app needs around it: the UDP socket, pairing, the VideoToolbox encoder and decoder, a renderer, and `ClientRunner`, which runs a client |
 | [`macos/`](macos/README.md) | The Mac host and client, `lightray-host` and `lightray-client` |
+| [`ios/`](ios/README.md) | The iPadOS 27 client proof of concept: a native SwiftUI app using the shared Apple core |
 | [`tools/windows/`](tools/windows/README.md) | The Windows laboratory from pull request #3: a C++ host that captures with DXGI or Windows Graphics Capture, encodes with NVENC and injects input, and the probes and scripts around it |
 
 How the parts fit together:
@@ -48,7 +49,9 @@ How the parts fit together:
   and keyboard and mouse back. Their README lists
   [what they implement](macos/README.md#what-is-implemented) and
   [what they do not yet](macos/README.md#not-yet).
-- **iPad.** There is no client in the tree yet. `apple/` builds for iOS so that one can share it.
+- **iPad.** The proof of concept in [`ios/`](ios/README.md) connects to the Mac host, streams one
+  display at a time, sends touch, pointer and hardware-keyboard input, and reconnects when returning
+  from the background. It targets iPadOS 27 and shares `apple/` with the Mac apps.
 - **Windows.** The laboratory host does not build on main, and nothing in `tools/windows/` is
   maintained. It took its protocol layer from the Swift package, which is now for Apple platforms
   only. Windows is to be ported to Rust.

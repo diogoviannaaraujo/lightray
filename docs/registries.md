@@ -5,8 +5,8 @@ implementation MUST NOT assign it; a receiver's handling of an unassigned value 
 [conformance.md](conformance.md). A number that an earlier version used and this one retired is
 never assigned again.
 
-A section marked *Version 0, pending* is carried unchanged from version 0 until the document
-that owns it is rewritten for version 1.
+A section marked *Version 0, pending* retains version 0 definitions until the document
+that owns it is rewritten for version 1, except for explicitly marked version 1 amendments.
 
 ## Datagram types
 
@@ -179,8 +179,8 @@ implementations behave alike.
 
 ## Version 0, pending
 
-Everything below is carried unchanged from version 0 until the document named in each section
-is rewritten.
+The sections below retain version 0 definitions until the document named in each section
+is rewritten, except for explicitly marked version 1 amendments.
 
 ### FEC schemes
 
@@ -208,11 +208,14 @@ A `u8` bitfield in handshake TLV 3.
 
 *Pending [video.md](video.md).*
 
+*Version 1 amendment: bit 2 is retired. `fragment_index == 0` identifies the first data
+fragment.*
+
 | Bit | Name | Meaning |
 |---|---|---|
 | 0 | `KEYFRAME` | This fragment belongs to a frame that needs no prior frame |
 | 1 | `RETRANSMISSION` | This fragment has been sent before |
-| 2 | `FRAME_START` | `fragment_index` is 0 |
+| 2 | — | Retired. MUST be written 0 and ignored on receipt. |
 | 3–7 | — | Reserved |
 
 ### Frame types
@@ -258,16 +261,6 @@ Encoding is `type:u8, length:u16, value`.
 |---|---|---|
 | `0` | Reserved | — |
 | `1` | `CODEC_CONFIG` | Decoder configuration; REQUIRED on every `IDR`. See [video.md](video.md). |
-| `2`–`255` | Reserved | — |
-
-### Frame acknowledgement status
-
-*Pending [feedback.md](feedback.md).*
-
-| Value | Name | Version 0 |
-|---|---|---|
-| `0` | `RECEIVED` | MAY be sent; a sender MUST NOT treat it as a reference acknowledgement |
-| `1` | `DECODED` | The acknowledgement that makes a frame usable as a long-term reference |
 | `2`–`255` | Reserved | — |
 
 ### Refresh reasons

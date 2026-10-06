@@ -322,7 +322,7 @@ When the `LTR` capability is negotiated, the sender marks frames it is willing t
 long-term references by setting `LTR_MARK`. A sender SHOULD mark every frame.
 
 The **receiver** chooses which of those become reference points. Having decoded a
-marked frame, a receiver MAY acknowledge it with `FRAME_ACK` and status `DECODED`. A
+marked frame, a receiver MAY acknowledge it with `FRAME_ACK`. A
 receiver SHOULD acknowledge at most one frame per 250 ms.
 
 A receiver MUST NOT acknowledge a frame it has not decoded successfully. Delivery is not

@@ -1,6 +1,7 @@
 # Feedback, loss reporting and repair
 
-> **Version 0 text, to be rewritten for version 1** ([gaps.md](gaps.md)). Version 1 changes:
+> **Version 0 text, to be rewritten for version 1** ([gaps.md](gaps.md)), except for the
+> decoded-only `FRAME_ACK` amendment below. Remaining version 1 changes:
 >
 > - `FRAME_ACK` carries the reference epoch;
 > - `REFRESH_REQUEST` reports the last frame the client decoded, and its epoch;
@@ -258,26 +259,29 @@ This timeout is a repair heuristic, not proof of loss: a slower sender or path m
 
 ## FRAME_ACK (`0x12`)
 
+*Version 1 amendment: decoded-only acknowledgements. The reference epoch is still pending.*
+
 Establishes reference points for long-term-reference recovery.
 
 ```
-entries[...]              stream:u8, frame_id:u32, status:u8
+entries[...]              stream:u8, frame_id:u32
 ```
 
-`status` is `RECEIVED` (0) or `DECODED` (1).
+Each entry is 5 bytes. A receiver MUST discard a chunk whose body length is not a multiple
+of 5.
 
-A receiver MUST NOT send `DECODED` for a frame it has not decoded successfully. A sender
-MUST treat only `DECODED` as establishing a usable reference, and MUST ignore `RECEIVED`
-for that purpose.
+A receiver MUST NOT acknowledge a frame it has not decoded successfully. Every entry
+establishes a usable reference; there is no status field.
 
 See [video.md](video.md) for the acknowledgement interval and the bound on the retained
 set.
 
+<!-- vector: feedback.frame-ack -->
 ```
-12000c01000001f40101000001f500
+12000a01000001f401000001f5
 ```
 
-Two entries: stream 1 frame 500 `DECODED`, stream 1 frame 501 `RECEIVED`.
+Two successfully decoded reference candidates: stream 1 frames 500 and 501.
 
 ## REFRESH_REQUEST (`0x13`)
 

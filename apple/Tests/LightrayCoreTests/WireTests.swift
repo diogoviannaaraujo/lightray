@@ -65,6 +65,16 @@ func single(_ bytes: Bytes) -> Chunk? {
     #expect(Chunk.nack(expected).encoded == bytes)
 }
 
+@Test(arguments: [1, 2, 3, 4, 6, 7, 8, 9, 11])
+func malformedFrameAcknowledgementDoesNotDiscardFollowingChunk(length: Int) {
+    var w = ByteWriter()
+    w.tlv(ChunkType.frameAck, Bytes(repeating: 0, count: length))
+    Chunk.ping(id: 9).write(to: &w)
+    let parsed = Chunk.parse(w.bytes)
+    #expect(parsed.malformed == 1)
+    #expect(parsed.chunks == [.ping(id: 9)])
+}
+
 @Test func refreshRequestExample() {
     let bytes = hex("13000f010000000001e0000001eb00000007")
     let expected = RefreshRequest(stream: 1, reason: .loss, preferred: .ltr, lastGoodFrame: 480, lostFrame: 491, reqID: 7)

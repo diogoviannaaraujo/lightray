@@ -20,10 +20,13 @@ func frame(idr: Bool, size: Int, seed: UInt8 = 0) -> Bytes {
 }
 
 /// Conformance test 5: the last fragment first, then the rest out of order.
-@Test func reassemblesInAnyOrder() throws {
+@Test(arguments: [UInt8(0), UInt8(1 << 2)])
+func reassemblesInAnyOrder(ignoredFlags: UInt8) throws {
     let receiver = VideoReceiver(stream: 1)
     let bytes = frame(idr: true, size: 950)
     var parts = fragments(frameID: 1, frame: bytes)
+    // Retired flag bit 2 has no effect, even when set on nonzero fragment indexes.
+    for i in parts.indices { parts[i].flags = ignoredFlags }
     parts = [parts.last!] + parts.dropLast().reversed()
     for (i, part) in parts.enumerated() {
         receiver.receive(part, now: UInt64(i), budget: 50_000)
@@ -144,7 +147,16 @@ func frame(idr: Bool, size: Int, seed: UInt8 = 0) -> Bytes {
     #expect(sender.handle(next, now: 2_000))
 
     sender.submit(EncodedFrame(isKeyframe: false, payload: Bytes(repeating: 1, count: 3000), codecConfig: nil, captureTimeMicros: 0), now: 0, datagramSize: 1200, budget: 50_000)
-    #expect(sender.drain(now: 0, datagramSize: 1200, seal: { $0 }).count == 3)
+    let initial = sender.drain(now: 0, datagramSize: 1200, seal: { $0 })
+    #expect(initial.count == 3)
+    for (index, datagram) in initial.enumerated() {
+        guard case .mediaFragment(let f) = single(datagram) else {
+            Issue.record("not a media fragment")
+            return
+        }
+        #expect(f.index == UInt16(index))
+        #expect(f.flags == 0)
+    }
     sender.handle(Nack(stream: 1, entries: [NackEntry(frameID: 1, first: 1, count: 1)]), now: 10_000, srtt: 4_000)
     let resent = sender.drain(now: 10_000, datagramSize: 1200, seal: { $0 })
     #expect(resent.count == 1)

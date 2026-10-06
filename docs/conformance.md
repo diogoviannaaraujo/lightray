@@ -66,6 +66,7 @@ abandoning it and reporting the error to its application.
 | Unknown chunk type | Skip by its length, continue |
 | `PADDING` | Ignore |
 | Chunk body malformed | Discard that chunk only, continue |
+| `FRAME_ACK` body length not a multiple of 5 | Discard that chunk only, continue |
 | Chunk names a stream not in the table | Discard, count |
 | Data chunk that does not belong to the stream's class | Discard, count |
 | Data chunk against the stream's direction, or feedback chunk along it | Discard, count |

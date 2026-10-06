@@ -4,8 +4,8 @@ import Testing
 
 @testable import LightrayCore
 
-/// Reproduces `tools/vectors/vectors.json`, the worked examples of `docs/handshake.md` and
-/// `docs/packets.md`, from their stated inputs.
+/// Reproduces `tools/vectors/vectors.json`, the worked examples of `docs/handshake.md`,
+/// `docs/packets.md` and `docs/feedback.md`, from their stated inputs.
 struct Vectors {
     let json: [String: Any]
 
@@ -138,4 +138,18 @@ func everyCleartextInitByteIsAuthenticated(offset: Int) throws {
     #expect(!w.accepts(5000 - 2048))
     #expect(w.accepts(5000 - 2047))
     #expect(!w.accepts(5))
+}
+
+@Test func frameAcknowledgementWorkedExample() throws {
+    let v = try Vectors()
+    let inputs = v.section("frame_ack", "inputs")
+    let entries = (inputs["entries"] as! [[String: Any]]).map {
+        FrameAckEntry(stream: UInt8(v.number($0, "stream")), frameID: UInt32(v.number($0, "frame_id")))
+    }
+    let bytes = v.bytes(v.section("frame_ack", "outputs"), "chunk")
+    #expect(bytes.count == 3 + 5 * entries.count)
+    #expect(Chunk.frameAck(entries).encoded == bytes)
+    let parsed = Chunk.parse(bytes)
+    #expect(parsed.malformed == 0)
+    #expect(parsed.chunks == [.frameAck(entries)])
 }
