@@ -13,9 +13,10 @@ package they share with an iOS client, which must sit beside this directory.
 swift build -c release --package-path macos
 ```
 
-The tests are in that package:
+Run the host startup regressions and the shared protocol/media tests:
 
 ```bash
+swift test --package-path macos
 swift test --package-path apple
 ```
 
@@ -82,15 +83,21 @@ that. The host accepts every stream, starts capture and an encoder for each disp
 for, and refuses a display only when one of them cannot start: the hardware sets the limit. Each
 stream runs at the full `--bitrate`.
 
-The host keeps capture and the encoders running for 5 minutes after a session ends, so that a
-client coming back gets its first frame from a warm encoder (`--warm S` to change it). When a
+The host prepares its primary display's capture and encoder before accepting connections and
+keeps capture and encoders ready indefinitely by default. Connecting or resuming immediately
+encodes the latest captured picture as a keyframe, even when the desktop has not changed.
+Encoding pauses without a client; while connected, a still picture is refreshed about once a
+second so that it stays live on the client. `--warm S` opts into an idle timeout, including
+before the first connection; `--warm 0` disables prewarming and releases capture on disconnect.
+Keeping capture ready uses more idle resources than releasing it. When a
 display is unplugged, the windows showing it close; when its resolution changes, they get a
 keyframe of the new size. When the host's capture stops on its own (macOS reconfigured the
 display: a Screen Sharing session that added a virtual display ended, say), the host starts it
 again, retrying every 2 s at most while it fails, and the window carries on. If the host stops
 showing the last window's display because that display went away, the window moves to the
 primary display; otherwise it stays open and says so, rather than the client seeming to quit.
-The host reads its display list again at each session start and checks it every second, since
+The host uses its cached display list immediately at session start, refreshes it in the
+background, and checks for display changes every second, since
 macOS does not always announce a change: a Screen Sharing session in its high-performance mode
 replaces the displays with a virtual one while it lasts, and takes it away when it ends.
 
@@ -108,7 +115,7 @@ Both ends keep their tokens in `~/Library/Application Support/Lightray/`, readab
 | `--log-input` | Log input messages instead of injecting them |
 | `--no-input` | Ignore input |
 | `--test-pattern WxH` | Offer two synthetic displays of that size instead of the real ones; needs no permission |
-| `--warm S` | Keep capture and encoders running S seconds after a session ends, default 300 |
+| `--warm S` | Idle capture timeout in seconds, default unlimited; 0 disables prewarming; `inf` keeps it ready indefinitely |
 | `--fec PERCENT` | Reed–Solomon parity per block of fragments, for clients that offer FEC; 0 turns it off. Default 10 |
 | `--fec-min N` | At least N parity fragments per block, default 1. `--fec 20 --fec-min 2` is Sunshine's setting |
 | `--drop-rate X` | Drop a fraction X of arriving datagrams |

@@ -32,7 +32,7 @@ final class TestPattern: FrameSource {
         CVPixelBufferPoolCreate(nil, nil, attributes as CFDictionary, &pool)
     }
 
-    func start() {
+    func start() async throws {
         let timer = DispatchSource.makeTimerSource(flags: .strict, queue: queue)
         timer.schedule(deadline: .now(), repeating: .microseconds(1_000_000 / frameRate), leeway: .microseconds(500))
         timer.setEventHandler { [unowned self] in draw() }

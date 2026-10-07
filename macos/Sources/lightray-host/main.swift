@@ -20,7 +20,7 @@ let usage = """
     --test-pattern WxH
                     offer two synthetic displays of that size instead of the real ones
                     (no permission needed)
-    --warm S        keep capture and encoders running S seconds after a session ends (default 300)
+    --warm S        idle capture timeout in seconds (default unlimited; 0 disables prewarming)
     --fec PERCENT   Reed–Solomon parity per block of fragments, for clients that offer it; 0 turns
                     it off (default 10)
     --fec-min N     at least N parity fragments per block (default 1); --fec 20 --fec-min 2 is
@@ -61,7 +61,11 @@ while !arguments.isEmpty {
     case "--log-input": options.inputMode = .log
     case "--no-input": options.inputMode = .off
     case "--drop-rate": options.dropRate = Double(value(argument)) ?? 0
-    case "--warm": options.warmSeconds = max(0, Double(value(argument)) ?? 300)
+    case "--warm":
+        guard let seconds = Double(value(argument)), !seconds.isNaN, seconds >= 0 else {
+            fail("--warm takes nonnegative seconds or inf")
+        }
+        options.warmSeconds = seconds
     case "--fec": options.fecPercent = max(0, min(200, Int(value(argument)) ?? 10))
     case "--fec-min": options.fecMinParity = max(1, min(64, Int(value(argument)) ?? 1))
     case "--test-pattern":

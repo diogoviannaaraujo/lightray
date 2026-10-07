@@ -246,10 +246,14 @@ public final class ClientRunner: @unchecked Sendable {
             case .picture(_, let id, let isKeyframe):
                 queue.async { [self] in
                     guard isCurrent(decoder, stream: stream, revision: revision, epoch: epoch) else { return }
-                    if firstDecodeLogged.insert(stream).inserted, connectedAt != 0 {
+                    let firstPicture = firstDecodeLogged.insert(stream).inserted
+                    if firstPicture, connectedAt != 0 {
                         log("stream \(stream): first_decoded_frame_us=\(monotonicMicros() - connectedAt) after_authenticated_connection")
                     }
                     endpoint.decoded(stream: stream, frameID: id, isKeyframe: isKeyframe)
+                    // Remove the waiting overlay and enable input immediately, instead of
+                    // waiting up to a second for the next statistics tick.
+                    if firstPicture { report(now: monotonicMicros(), force: true) }
                 }
             case .failed(let id, let status):
                 queue.async { [self] in
@@ -275,9 +279,9 @@ public final class ClientRunner: @unchecked Sendable {
         return decoder
     }
 
-    private func report(now: UInt64) {
-        guard now >= lastReport + 1_000_000, let session = endpoint.session else { return }
-        let seconds = Double(now - lastReport) / 1_000_000
+    private func report(now: UInt64, force: Bool = false) {
+        guard force || now >= lastReport + 1_000_000, let session = endpoint.session else { return }
+        let seconds = Double(max(1, now - lastReport)) / 1_000_000
         lastReport = now
         let c = session.connection
         let mbps = Double(c.stats.bytesReceived - lastBytes) * 8 / seconds / 1_000_000

@@ -15,31 +15,37 @@ protocol FrameSource: AnyObject {
     var onFailure: ((String) -> Void)? { get set }
     /// False once the source has stopped, whether or not `onFailure` ran.
     var isCapturing: Bool { get }
+    /// The consumer must be attached before this can deliver the first picture.
+    func start() async throws
     func stop()
 }
 
 /// Captures one display with ScreenCaptureKit, as NV12 at the display's pixel size (or scaled),
 /// with the cursor drawn in. Only complete frames are passed on: ScreenCaptureKit sends nothing
-/// new while the screen is still, which is when the host sends nothing either.
+/// new while the screen is still; the pipeline retains the latest complete picture.
 final class ScreenCapture: NSObject, FrameSource, SCStreamOutput, SCStreamDelegate {
     private let queue: DispatchQueue
+    private let displayID: CGDirectDisplayID
+    private let frameRate: Int
     private var stream: SCStream?
     private(set) var width = 0
     private(set) var height = 0
     var onFrame: ((CVPixelBuffer, UInt64) -> Void)?
     var onFailure: ((String) -> Void)?
 
-    init(queue: DispatchQueue) { self.queue = queue }
+    init(display: DisplayInfo, frameRate: Int, scale: Double, queue: DispatchQueue) {
+        self.queue = queue
+        self.displayID = display.id
+        self.frameRate = frameRate
+        self.width = Int(Double(display.width) * scale) & ~1
+        self.height = Int(Double(display.height) * scale) & ~1
+    }
 
-    func start(displayID: CGDirectDisplayID, frameRate: Int, scale: Double) async throws {
+    func start() async throws {
         let content = try await SCShareableContent.excludingDesktopWindows(false, onScreenWindowsOnly: true)
         guard let display = content.displays.first(where: { $0.displayID == displayID }) else {
             throw CaptureError("display \(displayID) is not available")
         }
-        let mode = CGDisplayCopyDisplayMode(displayID)
-        width = Int(Double(mode?.pixelWidth ?? display.width) * scale) & ~1
-        height = Int(Double(mode?.pixelHeight ?? display.height) * scale) & ~1
-
         let configuration = SCStreamConfiguration()
         configuration.width = width
         configuration.height = height
@@ -54,7 +60,7 @@ final class ScreenCapture: NSObject, FrameSource, SCStreamOutput, SCStreamDelega
         let stream = SCStream(filter: filter, configuration: configuration, delegate: self)
         try stream.addStreamOutput(self, type: .screen, sampleHandlerQueue: queue)
         try await stream.startCapture()
-        self.stream = stream
+        queue.sync { self.stream = stream }
     }
 
     var isCapturing: Bool { stream?.isCapturing ?? false }
@@ -77,7 +83,7 @@ final class ScreenCapture: NSObject, FrameSource, SCStreamOutput, SCStreamDelega
     }
 
     func stream(_ stream: SCStream, didStopWithError error: Error) {
-        onFailure?("capture stopped: \(error.localizedDescription)")
+        queue.async { [self] in onFailure?("capture stopped: \(error.localizedDescription)") }
     }
 }
 

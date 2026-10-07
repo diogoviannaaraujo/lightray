@@ -104,6 +104,36 @@ final class ClientTests: XCTestCase {
         XCTAssertFalse(session.isPresentingSession)
     }
 
+    /// Opt in with a real desktop host. Keep it idle between connections to exercise the
+    /// prepared pipeline instead of hiding first-picture failures behind a moving test pattern.
+    func testPreparedDesktopStartupAndReconnect() async throws {
+        struct Configuration: Decodable { let address: String; let token: String }
+        let file = URL.documentsDirectory.appending(path: "lightray-startup.json")
+        guard FileManager.default.fileExists(atPath: file.path) else {
+            throw XCTSkip("Install lightray-startup.json to run the prepared desktop test.")
+        }
+        let configuration = try JSONDecoder().decode(Configuration.self, from: Data(contentsOf: file))
+        let session = ClientSession()
+        defer { session.disconnect() }
+        let clock = ContinuousClock()
+        for trial in 1...3 {
+            let start = clock.now
+            session.connect(address: configuration.address, name: "Prepared Mac",
+                            token: configuration.token, remember: false)
+            try await waitUntil(timeout: .seconds(3)) { session.hasPicture }
+            print("LIGHTRAY_DESKTOP_STARTUP trial=\(trial) time_to_live=\(start.duration(to: clock.now))")
+            XCTAssertTrue(session.canSendInput)
+            // A stationary display must not become "interrupted" or disable input.
+            for _ in 0..<12 {
+                try await Task.sleep(for: .milliseconds(250))
+                XCTAssertTrue(session.hasPicture)
+                XCTAssertTrue(session.canSendInput)
+            }
+            session.disconnect()
+            try await Task.sleep(for: .seconds(1))
+        }
+    }
+
     private func waitUntil(timeout: Duration = .seconds(12), _ predicate: @MainActor () -> Bool) async throws {
         let clock = ContinuousClock()
         let end = clock.now.advanced(by: timeout)

@@ -12,8 +12,8 @@ struct HostOptions {
     var dropRate = 0.0
     /// A synthetic source of this size instead of the screen, as two displays.
     var testPattern: (width: Int, height: Int)?
-    /// How long capture and encoders stay warm after a session ends.
-    var warmSeconds = 300.0
+    /// Keep capture ready for the next connection unless an idle timeout is requested.
+    var warmSeconds = Double.infinity
     /// Reed–Solomon parity for clients that offer FEC, as a percentage of each block's data; 0
     /// turns it off. At least `fecMinParity` parity fragments per block.
     var fecPercent = 10
@@ -44,6 +44,7 @@ final class HostApp: @unchecked Sendable {
     private var warmToken = 0
     private var reconfigureToken = 0
     private var displayWatch: DispatchSourceTimer?
+    private var prewarming = false
 
     // Statistics, on `queue`.
     private var framesSent: [UInt8: Int] = [:]
@@ -70,8 +71,6 @@ final class HostApp: @unchecked Sendable {
             list = HostDisplays.testPatterns(width: size.width, height: size.height)
         } else {
             list = try await HostDisplays.current()
-            await MainActor.run { registerForDisplayChanges() }
-            watchDisplays()
         }
         for display in list {
             log("display \(display.id): \(display.name), \(display.width)×\(display.height)\(display.isPrimary ? ", primary" : "")")
@@ -80,6 +79,17 @@ final class HostApp: @unchecked Sendable {
 
         socket = try UDPSocket(family: AF_INET6, port: options.port, queue: queue)
         socket.dropRate = options.dropRate
+        // Pay capture/encoder setup once, before accepting the first connection.
+        if options.warmSeconds > 0, let primary = list.first(where: \.isPrimary) ?? list.first {
+            do {
+                let pipeline = try await makePipeline(1, showing: primary)
+                queue.sync {
+                    pipelines[1] = pipeline
+                    watch(pipeline)
+                }
+                log("primary display capture ready at \(pipeline.size.width)×\(pipeline.size.height)")
+            } catch { log("primary display could not be prepared yet: \(error)") }
+        }
         timer = DispatchSource.makeTimerSource(flags: .strict, queue: queue)
         timer.setEventHandler { [unowned self] in pump() }
         queue.sync {
@@ -89,11 +99,14 @@ final class HostApp: @unchecked Sendable {
                 pump()
             }
             timer.resume()
+            if options.testPattern == nil { watchDisplays() }
+            keepWarm()
         }
         let fec = options.fecPercent > 0
             ? String(format: ", FEC %d %% (encoder %.1f Mb/s)", options.fecPercent, Double(options.encoderBitrate) / 1_000_000)
             : ", no FEC"
         log("listening on UDP port \(socket.localPort), \(options.bitrate / 1_000_000) Mb/s per display\(fec), datagrams up to \(options.maxDatagramSize) bytes")
+        if options.testPattern == nil { await MainActor.run { registerForDisplayChanges() } }
 
         for signal in [SIGINT, SIGTERM] {
             Darwin.signal(signal, SIG_IGN)
@@ -135,6 +148,7 @@ final class HostApp: @unchecked Sendable {
             injector.reset()
             for pipeline in pipelines.values { pipeline.setStreaming(false) }
             keepWarm()
+            prewarmPrimary()
         case .paused:
             log("client silent: media paused, capture and encoders kept warm")
             injector.reset()
@@ -152,17 +166,18 @@ final class HostApp: @unchecked Sendable {
     }
 
     /// A new session learns the displays, then gets the primary one on its first video stream and
-    /// nothing on the rest. A pipeline still warm from an earlier session is reused. The list is
-    /// read again first: macOS does not always announce a change (see `watchDisplays`).
+    /// nothing on the rest. Use the watched display list and prepared pipeline immediately;
+    /// refresh the list in the background so enumeration cannot delay the first picture.
     private func startSession() {
-        guard let started = endpoint.session.map(ObjectIdentifier.init) else { return }
+        guard let session = endpoint.session else { return }
+        let started = ObjectIdentifier(session)
+        startSession(session)
         let testPattern = options.testPattern != nil
         Task {
             let list = testPattern ? nil : try? await HostDisplays.current()
             queue.async { [self] in
                 guard let session = endpoint.session, ObjectIdentifier(session) == started else { return }
                 if let list { apply(list) }
-                startSession(session)
                 pump()
             }
         }
@@ -188,11 +203,29 @@ final class HostApp: @unchecked Sendable {
     private func keepWarm() {
         warmToken += 1
         let token = warmToken
+        guard options.warmSeconds.isFinite else { return }
         queue.asyncAfter(deadline: .now() + options.warmSeconds) { [self] in
             guard token == warmToken, endpoint.session == nil else { return }
             log("warm window over: stopping capture and encoders")
-            for pipeline in pipelines.values { pipeline.stop() }
-            pipelines.removeAll()
+            for stream in Array(pipelines.keys) { unbind(stream) }
+        }
+    }
+
+    /// Restore the primary standby pipeline after display changes or a capture failure even
+    /// without a client. Finite --warm timeouts deliberately opt out of persistent preparation.
+    private func prewarmPrimary() {
+        guard !options.warmSeconds.isFinite, endpoint.session == nil, !prewarming,
+              let primary = displays.first(where: \.isPrimary) ?? displays.first else { return }
+        if let pipeline = pipelines[1], pipeline.display == primary, pipeline.isCapturing { return }
+        prewarming = true
+        bindAttempts[1, default: 0] += 1
+        start(1, showing: primary, attempt: bindAttempts[1]!, allowIdle: true) { [self] error in
+            if let error { log("primary display preparation will retry: \(error)") }
+            // Also handle a preparation overtaken by a new display or a short-lived session.
+            queue.asyncAfter(deadline: .now() + 2) { [self] in
+                prewarming = false
+                prewarmPrimary()
+            }
         }
     }
 
@@ -223,8 +256,7 @@ final class HostApp: @unchecked Sendable {
         if let current = pipelines[stream], current.display.id == info.id, current.display.width == info.width,
             current.display.height == info.height
         {
-            // Already showing it: the stream carries on. A new session has its keyframe from
-            // `keyframeNeeded`, and resuming streaming starts with one.
+            // Resuming sends the cached picture immediately, including on a still desktop.
             current.setStreaming(endpoint.isStreaming)
             reply(reqID, stream: stream, display: display)
             return
@@ -239,21 +271,31 @@ final class HostApp: @unchecked Sendable {
         }
     }
 
-    /// Starts capturing and encoding `info` for `stream`, then, on `queue`, puts the pipeline in
-    /// place and calls `done(nil)`, or calls `done` with the error. A start overtaken by a newer
-    /// attempt is stopped and not reported.
-    private func start(_ stream: UInt8, showing info: DisplayInfo, attempt: Int, done: @escaping (Error?) -> Void) {
+    /// Only the currently installed pipeline may send frames. A stopped source or encoder can
+    /// complete an old callback after its replacement has started.
+    private func makePipeline(_ stream: UInt8, showing info: DisplayInfo) async throws -> Pipeline {
+        let id = UUID()
+        return try await Pipeline.start(id: id, stream: stream, display: info, options: options) { frame in
+            self.queue.async { [self] in
+                guard pipelines[stream]?.id == id else { return }
+                endpoint.submit(frame, stream: stream, now: monotonicMicros())
+                pump()
+            }
+        }
+    }
+
+    /// Starts a binding on the network queue. Superseded client requests must not report a
+    /// successful binding; idle preparation still needs its completion to release the retry gate.
+    private func start(_ stream: UInt8, showing info: DisplayInfo, attempt: Int, allowIdle: Bool = false,
+                       done: @escaping (Error?) -> Void) {
         Task {
             do {
-                let pipeline = try await Pipeline.start(stream: stream, display: info, options: options) { frame in
-                    self.queue.async { [self] in
-                        endpoint.submit(frame, stream: stream, now: monotonicMicros())
-                        pump()
-                    }
-                }
+                let pipeline = try await makePipeline(stream, showing: info)
                 queue.async { [self] in
-                    guard attempt == bindAttempts[stream], endpoint.session?.videos[stream] != nil else {
+                    guard attempt == bindAttempts[stream],
+                          endpoint.session?.videos[stream] != nil || (allowIdle && endpoint.session == nil) else {
                         pipeline.stop()
+                        if allowIdle { done(nil) }
                         return
                     }
                     pipelines[stream]?.stop()
@@ -267,6 +309,7 @@ final class HostApp: @unchecked Sendable {
                 }
             } catch {
                 queue.async { [self] in
+                    guard attempt == bindAttempts[stream] || allowIdle else { return }
                     done(error)
                     pump()
                 }
@@ -296,6 +339,7 @@ final class HostApp: @unchecked Sendable {
         unbind(stream)
         guard endpoint.session?.videos[stream] != nil else {
             log("stream \(stream): \(reason)")
+            queue.asyncAfter(deadline: .now() + 0.25) { [self] in prewarmPrimary() }
             return
         }
         log("stream \(stream): \(reason); starting it again")
@@ -330,6 +374,7 @@ final class HostApp: @unchecked Sendable {
     }
 
     private func unbind(_ stream: UInt8) {
+        bindAttempts[stream, default: 0] += 1
         pipelines.removeValue(forKey: stream)?.stop()
         endpoint.resetStream(stream)
     }
@@ -355,6 +400,7 @@ final class HostApp: @unchecked Sendable {
             for pipeline in pipelines.values where !pipeline.isCapturing {
                 captureStopped(pipeline, reason: "capture stopped without an error")
             }
+            prewarmPrimary()
             let now = HostDisplays.signature()
             guard now != seen else { return }
             seen = now
@@ -386,9 +432,12 @@ final class HostApp: @unchecked Sendable {
         displays = list
         log("displays changed: \(list.map { "\($0.id) \($0.width)×\($0.height)" }.joined(separator: ", "))")
         guard endpoint.session != nil else {
-            for (stream, pipeline) in pipelines where !list.contains(where: { $0.id == pipeline.display.id }) {
+            for (stream, pipeline) in pipelines where !list.contains(where: {
+                $0.id == pipeline.display.id && $0.width == pipeline.display.width && $0.height == pipeline.display.height
+            }) {
                 unbind(stream)
             }
+            prewarmPrimary()
             return
         }
         endpoint.send(.displays(list))
