@@ -4,6 +4,9 @@ import LightrayCore
 
 /// Owns one session at a time and keeps the computer list available after disconnect.
 final class ConnectionLauncher: NSObject, NSApplicationDelegate, NSWindowDelegate {
+    var configureApplicationMenu: ((NSMenu) -> Void)?
+    var onShareThisMac: (() -> Void)?
+    var keepsRunningAfterWindowClose = false
     private var client: ClientApp?
     private let options: ClientOptions
     private let store = PairedHostsStore()
@@ -72,7 +75,12 @@ final class ConnectionLauncher: NSObject, NSApplicationDelegate, NSWindowDelegat
         pairingStatus.textColor = .secondaryLabelColor
         status.font = .systemFont(ofSize: 12)
         status.textColor = .secondaryLabelColor
-        let stack = NSStackView(views: [title, subtitle, NSTextField(labelWithString: "Computers"), computers, name, address, NSTextField(labelWithString: "Open the session on"), screen, importButton, pairingStatus, remember, connect, forget, status])
+        var views: [NSView] = [title, subtitle]
+        if onShareThisMac != nil {
+            views.append(NSButton(title: "Share This Mac…", target: self, action: #selector(shareThisMac)))
+        }
+        views += [NSTextField(labelWithString: "Computers"), computers, name, address, NSTextField(labelWithString: "Open the session on"), screen, importButton, pairingStatus, remember, connect, forget, status]
+        let stack = NSStackView(views: views)
         stack.orientation = .vertical
         stack.alignment = .leading
         stack.spacing = 12
@@ -139,6 +147,7 @@ final class ConnectionLauncher: NSObject, NSApplicationDelegate, NSWindowDelegat
         editing.addItem(withTitle: "Paste", action: #selector(NSText.paste(_:)), keyEquivalent: "v")
         editing.addItem(withTitle: "Select All", action: #selector(NSText.selectAll(_:)), keyEquivalent: "a")
         edit.submenu = editing
+        configureApplicationMenu?(menu)
         NSApp.mainMenu = menu
         placeWindow()
         window.makeKeyAndOrderFront(nil)
@@ -207,6 +216,7 @@ final class ConnectionLauncher: NSObject, NSApplicationDelegate, NSWindowDelegat
                 forget.isEnabled = true
             }
             let session = ClientApp(options: sessionOptions, pairing: pairing)
+            session.configureApplicationMenu = configureApplicationMenu
             session.onReturnToComputers = { [weak self] in
                 self?.connectionAttempt &+= 1
                 self?.client = nil
@@ -260,5 +270,14 @@ final class ConnectionLauncher: NSObject, NSApplicationDelegate, NSWindowDelegat
     }
 
     func applicationWillTerminate(_ notification: Notification) { client?.stopSession() }
-    func windowWillClose(_ notification: Notification) { NSApp.terminate(nil) }
+    func windowWillClose(_ notification: Notification) {
+        if !keepsRunningAfterWindowClose { NSApp.terminate(nil) }
+    }
+
+    @objc private func shareThisMac() { onShareThisMac?() }
+
+    func reopen() {
+        if let client { client.showWindows() }
+        else { showComputers() }
+    }
 }

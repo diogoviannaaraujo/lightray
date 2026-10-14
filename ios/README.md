@@ -68,7 +68,11 @@ Use the Mac's network address from a physical iPad. A simulator on the Mac can u
 - Tap with two fingers for a secondary click; drag with two fingers to scroll. Pencil also works
   as a pointer; pressure and tilt are not sent.
 - A mouse or trackpad supports hover, buttons and scrolling. A hardware keyboard sends physical
-  HID keys. iPadOS keeps its reserved system shortcuts. There is no software keyboard yet.
+  HID keys. iPadOS keeps its reserved system shortcuts.
+- The **keyboard** button shows or hides the onscreen keyboard. Tap a text field on the remote
+  desktop, then type; Return and Backspace work on the host. The keyboard closes when input is
+  disabled or the session leaves the foreground. Text entry requires an updated Mac host with
+  the provisional `TEXT` input message; older hosts ignore it.
 - **Displays** switches the single video stream between the host's available displays.
 - **Session** offers statistics, input enable/disable, Escape, Tab, release-all-keys and reconnect.
   **Disconnect** returns to Computers. Swipe a remembered computer to forget its pairing.
@@ -78,8 +82,10 @@ Use the Mac's network address from a physical iPad. A simulator on the Mac can u
 
 The interface uses SwiftUI and Observation, with a UIKit input surface. VideoToolbox decoding and
 the iOS 27 `AVSampleBufferVideoRenderer.Receiver` presentation path come from `LightrayCore`.
-Network setup happens away from the main actor; attempts time out after 12 seconds. An active
-connection prevents auto-lock; disconnecting or backgrounding restores it.
+Network setup happens away from the main actor; initial connections time out after 12 seconds.
+Once authenticated, an interrupted session keeps reconnecting while the app is in the foreground,
+refreshing its socket and host address after longer outages. Disconnect cancels recovery.
+An active connection prevents auto-lock; disconnecting or backgrounding restores it.
 
 ## Validation
 
@@ -112,8 +118,8 @@ The network integration test skips in ordinary test runs without that temporary 
 
 ## POC limits
 
-One session and one display at a time. Audio, clipboard, game controllers, discovery, software
-keyboard, picture-in-picture, and protocol-level park/resume are not implemented. Returning from
+One session and one display at a time. Audio, clipboard, game controllers, discovery,
+picture-in-picture, and protocol-level park/resume are not implemented. Returning from
 the background authenticates a new session; it does not claim protocol session continuity.
 The shared core's provisional input and display-selection formats match the current Mac host.
 Physical-device latency and touch/trackpad ergonomics still need validation on an available iPad.

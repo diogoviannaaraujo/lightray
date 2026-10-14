@@ -54,6 +54,7 @@ final class ClientApp: NSObject, NSApplicationDelegate, NSMenuItemValidation, @u
     private var preferences = SessionPreferences()
     var onReturnToComputers: (() -> Void)?
     var onConnectionState: ((Bool) -> Void)?
+    var configureApplicationMenu: ((NSMenu) -> Void)?
     private var didStop = false
 
     init(options: ClientOptions, pairing: Pairing) {
@@ -96,6 +97,11 @@ final class ClientApp: NSObject, NSApplicationDelegate, NSMenuItemValidation, @u
 
     func applicationWillTerminate(_ notification: Notification) {
         stopSession()
+    }
+
+    func showWindows() {
+        for window in windows.values { window.window.makeKeyAndOrderFront(nil) }
+        NSApp.activate()
     }
 
     /// Ends the session, telling the host, and closes its windows.
@@ -147,6 +153,7 @@ final class ClientApp: NSObject, NSApplicationDelegate, NSMenuItemValidation, @u
             item.target = self
         }
         inputItem.submenu = inputMenu
+        configureApplicationMenu?(menu)
         NSApp.mainMenu = menu
     }
 

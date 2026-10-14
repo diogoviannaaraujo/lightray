@@ -255,6 +255,7 @@ func receiverRejectsInvalidParityLength(length: UInt16) {
 @Test func inputMessagesRoundTrip() {
     let messages: [InputMessage] = [
         .key(usage: 0x04, down: true, isRepeat: false), .key(usage: 0xe3, down: false, isRepeat: true),
+        .text("Olá 👩🏽‍💻"), .text(String(repeating: "é", count: 512)),
         .pointer(x: 0, y: 65535, display: 0x0102_0304), .button(.right, down: true), .scroll(dx: -3, dy: 240, units: .wheelNotch120),
         .scroll(dx: 0, dy: -12, units: .pixels),
     ]
@@ -264,6 +265,16 @@ func receiverRejectsInvalidParityLength(length: UInt16) {
     #expect(InputMessage([0x10, 0x00, 0x01, 0x00, 0x02]) == .pointer(x: 1, y: 2, display: 0))
     #expect(InputMessage([0x7f]) == nil)
     #expect(InputMessage([0x10, 0x00]) == nil)
+}
+
+@Test func textInputRejectsMalformedOrOversizedUTF8() {
+    #expect(InputMessage.text("é").encoded == [0x02, 0x00, 0x02, 0xC3, 0xA9])
+    #expect(InputMessage.text("é").device == .keyboard)
+    for bytes: Bytes in [
+        [0x02], [0x02, 0, 0], [0x02, 0, 2, 0xC3],
+        [0x02, 0, 1, 0xFF], [0x02, 0, 2, 0xC0, 0x80],
+        [0x02, 0x04, 0x01] + Bytes(repeating: 0x61, count: 1025),
+    ] { #expect(InputMessage(bytes) == nil) }
 }
 
 @Test func controlMessagesRoundTrip() {

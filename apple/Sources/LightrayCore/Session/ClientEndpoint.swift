@@ -256,7 +256,7 @@ public final class ClientEndpoint {
     public func send(_ message: InputMessage, now: UInt64) -> Bool {
         guard let session, isConnected else { return false }
         switch message {
-        case .key:
+        case .key, .text:
             guard let stream = session.keyboardStream else { return false }
             guard session.connection.send(message: message.encoded, on: stream) else {
                 inputOverflow(session, now: now)

@@ -8,6 +8,9 @@
 public enum InputMessage: Equatable, Sendable {
     /// A key, as a usage on HID page 0x07. `isRepeat` marks the client's autorepeat.
     case key(usage: UInt16, down: Bool, isRepeat: Bool)
+    /// Committed UTF-8 text, independent of the host's keyboard layout. At most 1024 bytes.
+    case text(String)
+    public static let maximumTextBytes = 1024
     /// The pointer's position on one of the host's displays: 0 is its left or top edge, 65535 its
     /// right or bottom. `display` is the host's `display_id`; 0, or absent from an older client,
     /// means the host's primary display.
@@ -24,14 +27,17 @@ public enum InputMessage: Equatable, Sendable {
 
     enum MessageType {
         static let key: UInt8 = 0x01
+        static let text: UInt8 = 0x02
         static let pointer: UInt8 = 0x10
         static let button: UInt8 = 0x11
         static let scroll: UInt8 = 0x12
     }
 
     public var device: Device {
-        if case .key = self { return .keyboard }
-        return .pointer
+        switch self {
+        case .key, .text: return .keyboard
+        default: return .pointer
+        }
     }
 
     public var encoded: Bytes {
@@ -41,6 +47,12 @@ public enum InputMessage: Equatable, Sendable {
             w.u8(MessageType.key)
             w.u16(usage)
             w.u8((down ? 1 : 0) | (isRepeat ? 2 : 0))
+        case .text(let text):
+            let bytes = Array(text.utf8)
+            precondition(!bytes.isEmpty && bytes.count <= Self.maximumTextBytes)
+            w.u8(MessageType.text)
+            w.u16(UInt16(bytes.count))
+            w.append(bytes)
         case .pointer(let x, let y, let display):
             w.u8(MessageType.pointer)
             w.u16(x)
@@ -68,6 +80,11 @@ public enum InputMessage: Equatable, Sendable {
         case MessageType.key:
             guard let usage = try? r.u16(), let flags = try? r.u8() else { return nil }
             self = .key(usage: usage, down: flags & 1 != 0, isRepeat: flags & 2 != 0)
+        case MessageType.text:
+            guard let count = try? r.u16(), count > 0, count <= Self.maximumTextBytes,
+                  let bytes = try? r.take(Int(count)),
+                  let text = String(validating: bytes, as: UTF8.self) else { return nil }
+            self = .text(text)
         case MessageType.pointer:
             guard let x = try? r.u16(), let y = try? r.u16() else { return nil }
             self = .pointer(x: x, y: y, display: (try? r.u32()) ?? 0)

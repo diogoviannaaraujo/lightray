@@ -33,6 +33,7 @@ final class ClientSession {
     @ObservationIgnored private var deadline: Task<Void, Never>?
     @ObservationIgnored private var stream: UInt8 = 1
     @ObservationIgnored private var preferredDisplay: UInt32 = 0
+    @ObservationIgnored private var hasAuthenticated = false
     @ObservationIgnored private var heldKeys = Set<UInt16>()
     @ObservationIgnored private var heldButtons = Set<UInt8>()
 
@@ -107,6 +108,7 @@ final class ClientSession {
         stopAttempt()
         activeHost = nil
         pairing = nil
+        hasAuthenticated = false
         phase = .idle
         status = "Choose a computer to get started."
         displays = []
@@ -136,7 +138,7 @@ final class ClientSession {
             attempt = current
             resetPicture()
             phase = .connecting
-            status = "Connecting to \(host.name)…"
+            status = hasAuthenticated ? "Reconnecting to \(host.name)…" : "Connecting to \(host.name)…"
             current.runner.onEvent = { [weak self, weak current] event in
                 guard let self, let current, self.attempt === current, !current.cancelled else { return }
                 self.handle(event, runner: current.runner)
@@ -152,7 +154,11 @@ final class ClientSession {
                     current.starting = false
                     current.runner.stop()
                     guard let self, self.attempt === current, !current.cancelled else { return }
-                    self.fail("Could not reach this computer. Check its address and your network. \(error.localizedDescription)")
+                    if self.hasAuthenticated {
+                        self.retry(current, after: .seconds(3))
+                    } else {
+                        self.fail("Could not reach this computer. Check its address and your network. \(error.localizedDescription)")
+                    }
                 }
             }
         } catch { fail("The computer address is invalid.") }
@@ -181,7 +187,23 @@ final class ClientSession {
         deadline = Task { [weak self, weak current] in
             do { try await Task.sleep(for: .seconds(12)) } catch { return }
             guard let self, let current, self.attempt === current, self.phase == .connecting else { return }
-            self.fail("The host did not authenticate within 12 seconds. Confirm it is running, the pairing token matches, and Local Network access is enabled for Lightray in Settings.")
+            if self.hasAuthenticated {
+                // Refresh DNS and the socket as well as the handshake after a longer outage.
+                // An established session stays available until the user disconnects it.
+                self.reconnect()
+            } else {
+                self.fail("The host did not authenticate within 12 seconds. Confirm it is running, the pairing token matches, and Local Network access is enabled for Lightray in Settings.")
+            }
+        }
+    }
+
+    private func retry(_ current: Attempt, after delay: Duration) {
+        deadline?.cancel()
+        status = "Waiting for \(activeHost?.name ?? "the host") · reconnecting automatically…"
+        deadline = Task { [weak self, weak current] in
+            do { try await Task.sleep(for: delay) } catch { return }
+            guard let self, let current, self.attempt === current, self.phase == .connecting else { return }
+            self.reconnect()
         }
     }
 
@@ -198,7 +220,7 @@ final class ClientSession {
             let wasConnected = phase == .connected
             resetPicture()
             phase = .connecting
-            status = "Connecting…"
+            status = hasAuthenticated ? "Waiting for the host · reconnecting automatically…" : "Connecting…"
             selectedDisplay = 0
             pendingDisplay = nil
             displays = []
@@ -208,6 +230,7 @@ final class ClientSession {
         case .connected(let streams):
             guard let first = streams.first else { fail("The host did not offer a video stream."); return }
             stream = first
+            hasAuthenticated = true
             phase = .connected
             status = "Connected · waiting for video"
             deadline?.cancel()

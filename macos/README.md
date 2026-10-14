@@ -22,6 +22,31 @@ swift test --package-path apple
 
 ## Graphical client
 
+### Installable Mac app
+
+Build the native Apple Silicon app and its drag-to-Applications disk image:
+
+```bash
+python3 macos/scripts/package-app.py
+```
+
+The outputs are `macos/.build/app/Lightray.app` and `Lightray-0.1.0-arm64.dmg`.
+Copy the app to Applications and open it. **Share This Mac** configures the port, streaming
+quality, keyboard/mouse access, and pairing export. Grant **Lightray** Screen Recording and
+Accessibility access in System Settings, then choose **Start Sharing**. The default Balanced
+profile uses half resolution at 30 fps for iPad. Existing host pairing files are preserved.
+
+The Dock app and menu bar controls keep sharing available after its windows close. Quitting
+Lightray stops its bundled host; sharing must be started again after reopening the app.
+Host diagnostics are available through **Show Host Log**, at `~/Library/Logs/Lightray/host.log`.
+
+The bundle contains the native AppKit client and its host helper; it needs no terminal or web
+runtime to run. The packaging script defaults to ad-hoc signing for local builds. Pass
+`--sign "SIGNING_IDENTITY"` to sign with an installed certificate. A development-signed build
+is for local testing; public distribution still requires Developer ID signing and notarization.
+
+### Command-line launcher
+
 Start `macos/.build/release/lightray-client` without a host to open Computers.
 Enter a hostname/IP and port, import the pairing file supplied by the host, choose a local display, and connect.
 Remember this computer stores public metadata separately from the protected pairing file.
@@ -180,6 +205,7 @@ Each input event is one reliable message; its first byte is the type.
 | Type | Body | Meaning |
 |---|---|---|
 | `0x01` `KEY` | `usage:u16, flags:u8` | A usage on HID page 0x07. Flags: bit 0 down, bit 1 autorepeat |
+| `0x02` `TEXT` | `length:u16, utf8:length bytes` | Committed text on the keyboard stream, independent of the host keyboard layout. Length is 1–1024 bytes; invalid UTF-8 is rejected. The Mac host injects Unicode keyboard events. Older hosts ignore this message |
 | `0x10` `POINTER` | `x:u16, y:u16, display:u32` | Position on the host's display `display`: 0 is its left or top edge, 65535 its right or bottom. A `display` of 0, or none, means the primary display; an unknown one is ignored |
 | `0x11` `BUTTON` | `button:u8, down:u8` | 1 left, 2 right, 3 middle, 4 back, 5 forward |
 | `0x12` `SCROLL` | `dx:i16, dy:i16, units:u8` | Units: 0 is 1/120 of a wheel notch, 1 is pixels. Positive `dy` scrolls up, as the client's Mac reports it after its own natural-scrolling setting; the host posts it unchanged |
@@ -302,7 +328,7 @@ queue of its own: for capture and encoding on the host, and for decoding on the 
 - Rate control: the bitrate is fixed, for each stream.
 - `SETTINGS` and control messages other than choosing displays: the host's options set the
   streams, the same for all.
-- The cursor channel, relative pointer motion, gamepads and text input.
+- The cursor channel, relative pointer motion and gamepads.
 - Capturing system shortcuts on the client.
 
 ## Session controls and host preferences

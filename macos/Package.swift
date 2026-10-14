@@ -29,5 +29,10 @@ let package = Package(
             dependencies: ["lightray-host"],
             swiftSettings: [.swiftLanguageMode(.v5)]
         ),
+        .testTarget(
+            name: "LightrayDesktopTests",
+            dependencies: ["lightray-client"],
+            swiftSettings: [.swiftLanguageMode(.v5)]
+        ),
     ]
 )

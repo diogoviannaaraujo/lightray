@@ -6,6 +6,7 @@ struct ContentView: View {
     @Bindable var session: ClientSession
     @Environment(\.scenePhase) private var scenePhase
     @State private var showingAddComputer = false
+    @State private var showingKeyboard = false
 
     var body: some View {
         NavigationStack {
@@ -24,6 +25,12 @@ struct ContentView: View {
                         Button("Disconnect", systemImage: "xmark") { session.disconnect() }
                     }
                     ToolbarItemGroup(placement: .topBarTrailing) {
+                        Button(showingKeyboard ? "Hide keyboard" : "Show keyboard",
+                               systemImage: showingKeyboard ? "keyboard.chevron.compact.down" : "keyboard") {
+                            showingKeyboard.toggle()
+                        }
+                        .disabled(!session.canSendInput || scenePhase != .active)
+                        .accessibilityIdentifier("toggleKeyboard")
                         displayMenu
                         Menu("Session", systemImage: "ellipsis") {
                             Toggle("Statistics", systemImage: "chart.bar", isOn: $session.showStatistics)
@@ -57,8 +64,14 @@ struct ContentView: View {
         .onChange(of: session.inputEnabled) { _, enabled in
             if !enabled { session.releaseInput() }
         }
+        .onChange(of: session.canSendInput) { _, enabled in
+            if !enabled { showingKeyboard = false }
+        }
         .onChange(of: scenePhase) { _, phase in
-            if phase != .active { session.releaseInput() }
+            if phase != .active {
+                showingKeyboard = false
+                session.releaseInput()
+            }
             if phase == .background { session.suspend() }
             if phase == .active { session.foreground() }
         }
@@ -120,7 +133,9 @@ struct ContentView: View {
                           displayID: session.selectedDisplay,
                           inputEnabled: session.canSendInput && scenePhase == .active,
                           inputResetGeneration: session.inputResetGeneration,
-                          onInput: session.send)
+                          softwareKeyboardVisible: showingKeyboard,
+                          onInput: session.send,
+                          onKeyboardDismissed: { showingKeyboard = false })
                 .id(ObjectIdentifier(session.renderer))
                 .accessibilityLabel("Remote display")
 
@@ -154,6 +169,7 @@ struct ContentView: View {
         }
         .clipShape(Rectangle())
         .persistentSystemOverlays(.hidden)
+        .onDisappear { showingKeyboard = false }
     }
 
     private var displayMenu: some View {

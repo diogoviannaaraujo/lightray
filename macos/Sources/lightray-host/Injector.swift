@@ -35,6 +35,7 @@ final class Injector {
         }
         switch message {
         case .key(let usage, let down, let isRepeat): key(usage, down: down, isRepeat: isRepeat)
+        case .text(let text): insertText(text)
         case .pointer(let x, let y, let display):
             // A position on a display the host does not have is ignored.
             guard let bounds = bounds(of: display, in: displays) else { return }
@@ -55,6 +56,21 @@ final class Injector {
     }
 
     // MARK: Keyboard
+
+    private func insertText(_ text: String) {
+        guard mode == .inject else { return }
+        // Quartz keyboard events have a limited Unicode payload. Each scalar occupies at
+        // most two UTF-16 units, including characters outside the BMP such as emoji.
+        for scalar in text.unicodeScalars {
+            let units = Array(String(scalar).utf16)
+            for down in [true, false] {
+                guard let event = CGEvent(keyboardEventSource: source, virtualKey: 0, keyDown: down) else { continue }
+                event.flags = []
+                event.keyboardSetUnicodeString(stringLength: units.count, unicodeString: units)
+                event.post(tap: .cghidEventTap)
+            }
+        }
+    }
 
     private func flags(for usage: UInt16?) -> CGEventFlags {
         var raw: UInt64 = 0x100  // NX_NONCOALSESCEDMASK, as the keyboard driver sets it.

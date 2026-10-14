@@ -10,8 +10,10 @@ struct StreamSurface: UIViewRepresentable {
     var displayID: UInt32 = 0
     var inputEnabled = true
     var inputResetGeneration: UInt64 = 0
+    var softwareKeyboardVisible = false
     var onInput: (InputMessage) -> Void
     var onFocusLost: () -> Void = {}
+    var onKeyboardDismissed: () -> Void = {}
 
     func makeUIView(context: Context) -> StreamSurfaceView {
         let view = StreamSurfaceView(frame: .zero)
@@ -22,7 +24,9 @@ struct StreamSurface: UIViewRepresentable {
     func updateUIView(_ view: StreamSurfaceView, context: Context) {
         view.configure(renderer: renderer, videoSize: videoSize, displayID: displayID,
                        inputEnabled: inputEnabled, inputResetGeneration: inputResetGeneration,
-                       onInput: onInput, onFocusLost: onFocusLost)
+                       softwareKeyboardVisible: softwareKeyboardVisible,
+                       onInput: onInput, onFocusLost: onFocusLost,
+                       onKeyboardDismissed: onKeyboardDismissed)
     }
 
     static func dismantleUIView(_ view: StreamSurfaceView, coordinator: ()) {
@@ -31,7 +35,7 @@ struct StreamSurface: UIViewRepresentable {
 }
 
 @MainActor
-final class StreamSurfaceView: UIView, UIGestureRecognizerDelegate, UIPointerInteractionDelegate {
+final class StreamSurfaceView: UIView, UIKeyInput, UIGestureRecognizerDelegate, UIPointerInteractionDelegate {
     private var renderer: VideoRenderer?
     private var videoSize = CGSize.zero
     private var displayID: UInt32 = 0
@@ -39,6 +43,9 @@ final class StreamSurfaceView: UIView, UIGestureRecognizerDelegate, UIPointerInt
     private var inputResetGeneration: UInt64 = 0
     private var onInput: ((InputMessage) -> Void)?
     private var onFocusLost: (() -> Void)?
+    private var onKeyboardDismissed: (() -> Void)?
+    private(set) var softwareKeyboardVisible = false
+    private let hiddenKeyboard = UIView(frame: .zero)
     private var keyboard = RemoteKeyboard()
     private var heldButtons = Set<InputMessage.PointerButton>()
     private var pointerSequenceActive = false
@@ -92,6 +99,11 @@ final class StreamSurfaceView: UIView, UIGestureRecognizerDelegate, UIPointerInt
         addGestureRecognizer(hover)
         pointerInteraction = UIPointerInteraction(delegate: self)
         addInteraction(pointerInteraction)
+        inputAssistantItem.leadingBarButtonGroups = []
+        inputAssistantItem.trailingBarButtonGroups = []
+
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidHide),
+                                               name: UIResponder.keyboardDidHideNotification, object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDeactivated),
                                                name: UIApplication.willResignActiveNotification, object: nil)
@@ -105,7 +117,9 @@ final class StreamSurfaceView: UIView, UIGestureRecognizerDelegate, UIPointerInt
 
     func configure(renderer: VideoRenderer, videoSize: CGSize, displayID: UInt32, inputEnabled: Bool,
                    inputResetGeneration: UInt64,
-                   onInput: @escaping (InputMessage) -> Void, onFocusLost: @escaping () -> Void) {
+                   softwareKeyboardVisible: Bool = false,
+                   onInput: @escaping (InputMessage) -> Void, onFocusLost: @escaping () -> Void,
+                   onKeyboardDismissed: @escaping () -> Void = {}) {
         let changesTarget = self.renderer !== renderer || self.displayID != displayID
         let resetsInput = self.inputResetGeneration != inputResetGeneration
         if changesTarget || resetsInput || (self.inputEnabled && !inputEnabled) {
@@ -123,22 +137,27 @@ final class StreamSurfaceView: UIView, UIGestureRecognizerDelegate, UIPointerInt
         self.displayID = displayID
         self.onInput = onInput
         self.onFocusLost = onFocusLost
+        self.onKeyboardDismissed = onKeyboardDismissed
         self.inputEnabled = inputEnabled
         self.inputResetGeneration = inputResetGeneration
         for gesture in gestureRecognizers ?? [] where gesture.isEnabled != inputEnabled {
             gesture.isEnabled = inputEnabled
         }
+        setSoftwareKeyboardVisible(softwareKeyboardVisible && inputEnabled)
         if shouldFocus, canSendInput { becomeFirstResponder() }
         if !inputEnabled, isFirstResponder { _ = resignFirstResponder() }
         pointerInteraction.invalidate()
     }
 
     func detach() {
+        setSoftwareKeyboardVisible(false)
+        _ = resignFirstResponder()
         releaseEverything()
         renderer?.displayLayer.removeFromSuperlayer()
         renderer = nil
         onInput = nil
         onFocusLost = nil
+        onKeyboardDismissed = nil
         inputEnabled = false
     }
 
@@ -177,6 +196,10 @@ final class StreamSurfaceView: UIView, UIGestureRecognizerDelegate, UIPointerInt
     }
 
     private func lostFocus() {
+        if softwareKeyboardVisible {
+            setSoftwareKeyboardVisible(false)
+            onKeyboardDismissed?()
+        }
         releaseEverything()
         // Cancel ongoing drags so reactivation cannot resume a partially released gesture.
         for gesture in gestureRecognizers ?? [] {
@@ -198,6 +221,60 @@ final class StreamSurfaceView: UIView, UIGestureRecognizerDelegate, UIPointerInt
         heldButtons.removeAll()
         pointerSequenceActive = false
         scrollRemainder = .zero
+    }
+
+    // MARK: Onscreen keyboard
+
+    // Keep first-responder status for hardware keys while suppressing the software keyboard.
+    override var inputView: UIView? { softwareKeyboardVisible ? nil : hiddenKeyboard }
+    var autocapitalizationType: UITextAutocapitalizationType = .none
+    var autocorrectionType: UITextAutocorrectionType = .no
+    var spellCheckingType: UITextSpellCheckingType = .no
+    var smartQuotesType: UITextSmartQuotesType = .no
+    var smartDashesType: UITextSmartDashesType = .no
+    var smartInsertDeleteType: UITextSmartInsertDeleteType = .no
+
+    // The document lives on the host, so Backspace must remain available even before typing.
+    var hasText: Bool { true }
+
+    func setSoftwareKeyboardVisible(_ visible: Bool) {
+        guard softwareKeyboardVisible != visible else { return }
+        softwareKeyboardVisible = visible
+        if visible, canSendInput { becomeFirstResponder() }
+        if isFirstResponder { reloadInputViews() }
+    }
+
+    @objc private func keyboardDidHide() {
+        // Also follow the keyboard's own dismiss button, without dismissing a replacement
+        // responder's keyboard when this surface is removed.
+        guard softwareKeyboardVisible else { return }
+        setSoftwareKeyboardVisible(false)
+        onKeyboardDismissed?()
+    }
+
+    func insertText(_ text: String) {
+        guard softwareKeyboardVisible, canSendInput, isFirstResponder else { return }
+        for character in text {
+            switch character {
+            case "\n", "\r", "\r\n": tapKey(0x28)
+            case "\t": tapKey(0x2B)
+            default:
+                // Scalar-sized messages also bound large dictation/paste callbacks, without
+                // truncating a UTF-8 character or assuming the host's keyboard layout.
+                for scalar in character.unicodeScalars { onInput?(.text(String(scalar))) }
+            }
+        }
+    }
+
+    func deleteBackward() {
+        guard softwareKeyboardVisible, canSendInput, isFirstResponder else { return }
+        tapKey(0x2A)
+    }
+
+    private func tapKey(_ usage: UInt16) {
+        guard !keyboard.held.contains(usage) else { return }
+        emit(keyboard.key(usage, down: true))
+        emit(keyboard.key(usage, down: false))
     }
 
     // MARK: Touch gestures

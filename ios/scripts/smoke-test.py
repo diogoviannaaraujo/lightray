@@ -76,6 +76,7 @@ def main():
         host_text = (output / "smoke-host.log").read_text()
         # Assert input reached the host, in addition to the app-side assertions.
         for expected in ["key(usage: 41, down: true", "key(usage: 41, down: false",
+                         'text("Lightray café 👋")', "key(usage: 42, down: true", "key(usage: 40, down: true",
                          "pointer(x: 32768, y: 32768", "button(LightrayCore.InputMessage.PointerButton.left, down: false)"]:
             if expected not in host_text:
                 raise AssertionError(f"Missing input evidence in host log: {expected}")

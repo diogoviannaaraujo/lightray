@@ -46,6 +46,9 @@ if arguments.first == "pair" {
 }
 
 var options = HostOptions()
+var readyFile: String?
+var parentPID: Int32?
+var parentWatch: DispatchSourceProcess?
 func value(_ name: String) -> String {
     guard !arguments.isEmpty else { fail("\(name) needs a value\n\n\(usage)") }
     return arguments.removeFirst()
@@ -53,6 +56,10 @@ func value(_ name: String) -> String {
 while !arguments.isEmpty {
     let argument = arguments.removeFirst()
     switch argument {
+    case "--ready-file": readyFile = value(argument)
+    case "--parent-pid":
+        guard let pid = Int32(value(argument)), pid > 1 else { fail("invalid parent process") }
+        parentPID = pid
     case "--port": options.port = UInt16(value(argument)) ?? options.port
     case "--fps": options.frameRate = max(1, min(240, Int(value(argument)) ?? 60))
     case "--bitrate": options.bitrate = Int((Double(value(argument)) ?? 20) * 1_000_000)
@@ -102,6 +109,16 @@ let app = HostApp(options: options, pairing: pairing)
 Task {
     do {
         try await app.run()
+        if let parentPID {
+            guard getppid() == parentPID else { raise(SIGTERM); return }
+            let watch = DispatchSource.makeProcessSource(identifier: parentPID, eventMask: .exit, queue: .main)
+            watch.setEventHandler { raise(SIGTERM) }
+            parentWatch = watch
+            watch.resume()
+            // Cover the parent exiting between the first check and installing the watch.
+            if getppid() != parentPID { raise(SIGTERM); return }
+        }
+        if let readyFile { try Data("ready\n".utf8).write(to: URL(fileURLWithPath: readyFile), options: .atomic) }
     } catch {
         fail("lightray-host: \(error)")
     }

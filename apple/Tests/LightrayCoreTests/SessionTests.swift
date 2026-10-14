@@ -323,6 +323,28 @@ func buttonOverflowResetsInput(pendingMotion: Bool) throws {
     #expect(link.inputs.filter { $0.device == .pointer } == sent.filter { $0.device == .pointer })
 }
 
+@Test func softwareTextAndEditingKeysStayOrderedAcrossLoss() throws {
+    let link = SimulatedLink()
+    link.client.start(now: link.now)
+    link.run(for: 100_000)
+    try #require(link.client.isConnected)
+    link.loss = 0.2
+    link.jitter = 10_000
+    let messages: [InputMessage] = [
+        .text("Olá 👩🏽‍💻"),
+        .key(usage: 0x2A, down: true, isRepeat: false),
+        .key(usage: 0x2A, down: false, isRepeat: false),
+        .text("!"),
+        .key(usage: 0x28, down: true, isRepeat: false),
+        .key(usage: 0x28, down: false, isRepeat: false),
+    ]
+    for message in messages { #expect(link.client.send(message, now: link.now)) }
+    link.run(for: 1_000_000)
+    link.loss = 0
+    link.run(for: 500_000)
+    #expect(link.inputs == messages)
+}
+
 @Test func pointerMotionIsMergedButButtonsAreNot() throws {
     let link = SimulatedLink()
     link.client.start(now: link.now)
