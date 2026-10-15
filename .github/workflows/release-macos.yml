@@ -39,25 +39,36 @@ jobs:
         env:
           IS_TAG: ${{ github.ref_type == 'tag' }}
         run: |
-          version=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' macos/App/Info.plist)
+          version=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' apple/mac-client/App/Info.plist)
           if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "::error::CFBundleShortVersionString must use MAJOR.MINOR.PATCH."
             exit 1
           fi
           if [[ "$IS_TAG" == true && "$GITHUB_REF_NAME" != "v$version" ]]; then
-            echo "::error::Release tag must match v$version from macos/App/Info.plist."
+            echo "::error::Release tag must match v$version from apple/mac-client/App/Info.plist."
             exit 1
           fi
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
       - name: Test shared Apple core
-        run: swift test --package-path apple
+        run: swift test --package-path apple/core
 
-      - name: Test Mac host and client
-        run: swift test --package-path macos
+      - name: Test Mac host and build client
+        run: |
+          swift test --package-path apple/mac-host
+          swift build --package-path apple/mac-client
+
+      - name: Build iPad simulator app
+        run: |
+          xcodebuild -project apple/ios-client/Lightray.xcodeproj -scheme Lightray \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath "$RUNNER_TEMP/lightray-ios" build
+
+      - name: Check protocol examples and documentation
+        run: swift run --package-path tools/vectors lightray-vectors check
 
       - name: Build and package app
-        run: python3 macos/scripts/package-app.py --sign - --output "$RUNNER_TEMP/lightray-app"
+        run: python3 apple/scripts/package-app.py --app all --sign - --output "$RUNNER_TEMP/lightray-app"
 
       - name: Package command-line executables and checksums
         env:
@@ -65,11 +76,13 @@ jobs:
         run: |
           mkdir -p dist
           cp "$RUNNER_TEMP/lightray-app/Lightray-$VERSION-arm64.dmg" dist/
-          binary_dir=$(swift build -c release --package-path macos --arch arm64 --show-bin-path)
-          lipo -verify_arch arm64 "$binary_dir/lightray-client"
-          lipo -verify_arch arm64 "$binary_dir/lightray-host"
-          tar -czf "dist/Lightray-$VERSION-macos-arm64-cli.tar.gz" \
-            -C "$binary_dir" lightray-client lightray-host
+          cp "$RUNNER_TEMP/lightray-app/LightrayHost-$VERSION-arm64.dmg" dist/
+          client_bin=$(swift build -c release --package-path apple/mac-client --arch arm64 --show-bin-path)
+          host_bin=$(swift build -c release --package-path apple/mac-host --arch arm64 --show-bin-path)
+          lipo -verify_arch arm64 "$client_bin/lightray-client"
+          lipo -verify_arch arm64 "$host_bin/lightray-host"
+          COPYFILE_DISABLE=1 tar -czf "dist/Lightray-$VERSION-macos-arm64-cli.tar.gz" \
+            -C "$client_bin" lightray-client -C "$host_bin" lightray-host
           cd dist
           shasum -a 256 ./*.dmg ./*.tar.gz > SHA256SUMS.txt
           shasum -a 256 -c SHA256SUMS.txt
@@ -106,7 +119,10 @@ jobs:
           cat > release-notes.md <<'EOF'
           Requires an Apple Silicon Mac running macOS 27 or later.
 
-          - Install the app from the DMG. It bundles both the graphical client and host helper.
+          - Install Lightray from its DMG to connect to other computers.
+          - Install Lightray Host from its separate DMG to share this Mac. Start Sharing enables its background service now and at login; Stop Sharing keeps it off.
+          - Quit the old combined Lightray app before replacing it. Existing pairing and client preferences are preserved.
+          - Grant capture and input permissions to Lightray Host and its service as requested during setup.
           - The CLI archive contains the standalone `lightray-client` and `lightray-host` executables.
           - Verify downloads with `shasum -a 256 -c SHA256SUMS.txt`.
 

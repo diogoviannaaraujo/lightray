@@ -60,8 +60,8 @@ swift test --package-path tools/vectors
 The core tests consume the checked-in fixture to verify coefficients, parity bytes, zero padding, and recovery.
 
 ```sh
-python3 tools/vectors/fec_reference.py --check apple/Tests/LightrayCoreTests/Fixtures/fec-reference.json
-swift test --package-path apple --filter fecMatchesIndependentFixture
+python3 tools/vectors/fec_reference.py --check apple/core/Tests/LightrayCoreTests/Fixtures/fec-reference.json
+swift test --package-path apple/core --filter fecMatchesIndependentFixture
 ```
 
 To regenerate after reviewing an intentional change, use `--output` with the same fixture path and inspect the diff.

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>AssociatedBundleIdentifiers</key>
+	<array>
+		<string>io.lightray.mac.host</string>
+	</array>
+	<key>BundleProgram</key>
+	<string>Contents/Library/LoginItems/LightrayHostService.app/Contents/MacOS/lightray-host</string>
+	<key>KeepAlive</key>
+	<true/>
+	<key>Label</key>
+	<string>io.lightray.mac.host.service</string>
+	<key>LimitLoadToSessionType</key>
+	<string>Aqua</string>
+	<key>MachServices</key>
+	<dict>
+		<key>io.lightray.mac.host.service</key>
+		<true/>
+	</dict>
+	<key>ProgramArguments</key>
+	<array>
+		<string>lightray-host</string>
+		<string>--service</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>ThrottleInterval</key>
+	<integer>10</integer>
+</dict>
+</plist>
