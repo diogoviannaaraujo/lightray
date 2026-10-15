@@ -1,0 +1,117 @@
+name: Release macOS
+
+on:
+  push:
+    tags:
+      - 'v[0-9]*.[0-9]*.[0-9]*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-macos-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build Apple Silicon executables
+    runs-on: xcode-27
+    timeout-minutes: 30
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Check toolchain
+        run: |
+          xcodebuild -version
+          swift --version
+          test "$(uname -m)" = arm64
+
+      - name: Validate release version
+        id: version
+        env:
+          IS_TAG: ${{ github.ref_type == 'tag' }}
+        run: |
+          version=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' macos/App/Info.plist)
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::CFBundleShortVersionString must use MAJOR.MINOR.PATCH."
+            exit 1
+          fi
+          if [[ "$IS_TAG" == true && "$GITHUB_REF_NAME" != "v$version" ]]; then
+            echo "::error::Release tag must match v$version from macos/App/Info.plist."
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Test shared Apple core
+        run: swift test --package-path apple
+
+      - name: Test Mac host and client
+        run: swift test --package-path macos
+
+      - name: Build and package app
+        run: python3 macos/scripts/package-app.py --sign - --output "$RUNNER_TEMP/lightray-app"
+
+      - name: Package command-line executables and checksums
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          mkdir -p dist
+          cp "$RUNNER_TEMP/lightray-app/Lightray-$VERSION-arm64.dmg" dist/
+          binary_dir=$(swift build -c release --package-path macos --arch arm64 --show-bin-path)
+          lipo -verify_arch arm64 "$binary_dir/lightray-client"
+          lipo -verify_arch arm64 "$binary_dir/lightray-host"
+          tar -czf "dist/Lightray-$VERSION-macos-arm64-cli.tar.gz" \
+            -C "$binary_dir" lightray-client lightray-host
+          cd dist
+          shasum -a 256 ./*.dmg ./*.tar.gz > SHA256SUMS.txt
+          shasum -a 256 -c SHA256SUMS.txt
+
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: lightray-macos-arm64
+          path: dist/
+          if-no-files-found: error
+          retention-days: 14
+
+  release:
+    name: Create draft GitHub release
+    if: github.event_name == 'push' && github.ref_type == 'tag'
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: lightray-macos-arm64
+          path: dist
+
+      - name: Create draft release with executables
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          cat > release-notes.md <<'EOF'
+          Requires an Apple Silicon Mac running macOS 27 or later.
+
+          - Install the app from the DMG. It bundles both the graphical client and host helper.
+          - The CLI archive contains the standalone `lightray-client` and `lightray-host` executables.
+          - Verify downloads with `shasum -a 256 -c SHA256SUMS.txt`.
+
+          These builds are ad-hoc signed and are not notarized. macOS Gatekeeper may block them.
+          EOF
+          gh release create "$RELEASE_TAG" dist/* \
+            --verify-tag --draft --title "Lightray $VERSION" \
+            --notes-file release-notes.md --generate-notes
