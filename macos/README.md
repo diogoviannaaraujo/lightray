@@ -31,6 +31,8 @@ python3 macos/scripts/package-app.py
 ```
 
 The outputs are `macos/.build/app/Lightray.app` and `Lightray-0.1.0-arm64.dmg`.
+The app icon is compiled from the shared [`assets/lightray.icon`](../assets/README.md)
+Icon Composer source, including its appearance variants.
 Copy the app to Applications and open it. **Share This Mac** configures the port, streaming
 quality, keyboard/mouse access, and pairing export. Grant **Lightray** Screen Recording and
 Accessibility access in System Settings, then choose **Start Sharing**. The default Balanced
@@ -44,6 +46,38 @@ The bundle contains the native AppKit client and its host helper; it needs no te
 runtime to run. The packaging script defaults to ad-hoc signing for local builds. Pass
 `--sign "SIGNING_IDENTITY"` to sign with an installed certificate. A development-signed build
 is for local testing; public distribution still requires Developer ID signing and notarization.
+
+### GitHub Actions releases
+
+The [Release macOS workflow](../.github/workflows/release-macos.yml) tests both Swift packages
+on the `xcode-27` Apple Silicon runner, builds the app, and produces:
+
+- `Lightray-VERSION-arm64.dmg`, containing the installable app and bundled host helper;
+- `Lightray-VERSION-macos-arm64-cli.tar.gz`, containing standalone `lightray-client` and
+  `lightray-host` executables with their executable permissions preserved;
+- `SHA256SUMS.txt`, for checking the downloads with `shasum -a 256 -c SHA256SUMS.txt`.
+
+To release, update `CFBundleShortVersionString` and increment `CFBundleVersion` in
+`macos/App/Info.plist`, commit the changes, then push a matching version tag, for example:
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+The tag must match `CFBundleShortVersionString` exactly, prefixed with `v`. After tests and
+packaging succeed, the workflow creates a **draft** GitHub release with all three files attached.
+Review it in GitHub Releases before publishing. Release creation requires the workflow's
+`contents: write` permission; no custom secrets are needed. An existing release for the tag
+causes release creation to fail rather than replacing its files.
+
+For a build without creating a release, run **Release macOS → Run workflow** in GitHub Actions.
+Both manual and tag builds upload a `lightray-macos-arm64` workflow artifact retained for 14 days.
+Release assets remain attached to the release independently of that retention period.
+
+These builds target Apple Silicon and macOS 27 or later. They use ad-hoc signatures and are not
+notarized; Gatekeeper may block them. Developer ID signing and notarization must be added before
+distributing a build that opens without that restriction.
 
 ### Command-line launcher
 

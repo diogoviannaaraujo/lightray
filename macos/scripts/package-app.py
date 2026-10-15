@@ -37,11 +37,20 @@ def main():
         resources.mkdir()
         shutil.copy2(binary_dir / "lightray-client", executable_dir / "Lightray")
         shutil.copy2(binary_dir / "lightray-host", executable_dir / "lightray-host")
-        shutil.copy2(package / "App/Info.plist", app / "Contents/Info.plist")
         (app / "Contents/PkgInfo").write_bytes(b"APPL????")
-        iconset = stage / "Lightray.iconset"
-        run("swift", package / "scripts/draw-icon.swift", iconset)
-        run("iconutil", "--convert", "icns", "--output", resources / "Lightray.icns", iconset)
+        icon = package.parent / "assets/lightray.icon"
+        icon_info = stage / "icon-info.plist"
+        with (package / "App/Info.plist").open("rb") as source:
+            info = plistlib.load(source)
+        run("xcrun", "actool", icon, "--compile", resources,
+            "--output-format", "human-readable-text", "--notices", "--warnings",
+            "--platform", "macosx", "--minimum-deployment-target", info["LSMinimumSystemVersion"],
+            "--target-device", "mac", "--app-icon", icon.stem,
+            "--output-partial-info-plist", icon_info)
+        with icon_info.open("rb") as source:
+            info.update(plistlib.load(source))
+        with (app / "Contents/Info.plist").open("wb") as destination_info:
+            plistlib.dump(info, destination_info)
         # Sign embedded code first, then seal the complete app. Ad-hoc builds stay local.
         signing = ["--force", "--sign", options.sign]
         if options.sign != "-":

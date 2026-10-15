@@ -5,7 +5,6 @@
     <key>CFBundleDevelopmentRegion</key><string>en</string>
     <key>CFBundleDisplayName</key><string>Lightray</string>
     <key>CFBundleExecutable</key><string>Lightray</string>
-    <key>CFBundleIconFile</key><string>Lightray</string>
     <key>CFBundleIdentifier</key><string>io.lightray.mac</string>
     <key>CFBundleInfoDictionaryVersion</key><string>6.0</string>
     <key>CFBundleName</key><string>Lightray</string>

@@ -8,6 +8,7 @@ The app uses Swift 6 language mode and complete concurrency checking.
 
 Requires Xcode 27 with the iOS 27 SDK. Keep `ios/` beside `apple/` in the checkout; the Xcode
 project references that package locally and needs no third-party dependencies.
+The app icon uses the shared [`assets/lightray.icon`](../assets/README.md) Icon Composer source.
 
 Open `ios/Lightray.xcodeproj`, select the **Lightray** scheme, and choose an iPad simulator
 or a connected iPad running iPadOS 27 or later. For a physical device, choose your development
