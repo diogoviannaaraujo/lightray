@@ -1,5 +1,5 @@
 /target/
 /artifacts/
-**/bin/
-**/obj/
+/ui/**/bin/
+/ui/**/obj/
 *.user
