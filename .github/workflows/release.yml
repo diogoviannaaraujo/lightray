@@ -17,7 +17,7 @@ jobs:
   build:
     name: Build Apple Silicon executables
     runs-on: xcode-27
-    timeout-minutes: 30
+    timeout-minutes: 45
     outputs:
       version: ${{ steps.version.outputs.version }}
     defaults:
@@ -67,8 +67,115 @@ jobs:
       - name: Check protocol examples and documentation
         run: swift run --package-path tools/vectors lightray-vectors check
 
+      - name: Import Developer ID certificate
+        id: signing
+        env:
+          IS_TAG: ${{ github.ref_type == 'tag' }}
+          CERTIFICATE: ${{ secrets.MACOS_DEVELOPER_ID_P12 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.MACOS_DEVELOPER_ID_PASSWORD }}
+          NOTARY_KEY: ${{ secrets.APPLE_NOTARY_KEY }}
+          NOTARY_KEY_ID: ${{ secrets.APPLE_NOTARY_KEY_ID }}
+          NOTARY_ISSUER_ID: ${{ secrets.APPLE_NOTARY_ISSUER_ID }}
+        run: |
+          if [[ -z "$CERTIFICATE" ]]; then
+            if [[ "$IS_TAG" == true ]]; then
+              echo "::error::Tagged releases must be signed; set the Developer ID secrets listed in apple/README.md."
+              exit 1
+            fi
+            echo "::warning::Developer ID secrets are not set; packaging with ad-hoc signatures."
+            echo "identity=-" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          for name in CERTIFICATE_PASSWORD NOTARY_KEY NOTARY_KEY_ID NOTARY_ISSUER_ID; do
+            if [[ -z "${!name}" ]]; then
+              echo "::error::$name is empty; set every Developer ID secret listed in apple/README.md."
+              exit 1
+            fi
+          done
+          keychain="$RUNNER_TEMP/lightray-signing.keychain-db"
+          password=$(openssl rand -base64 32)
+          security create-keychain -p "$password" "$keychain"
+          security set-keychain-settings -lut 21600 "$keychain"
+          security unlock-keychain -p "$password" "$keychain"
+          echo "keychain=$keychain" >> "$GITHUB_OUTPUT"
+          base64 --decode <<< "$CERTIFICATE" > "$RUNNER_TEMP/developer-id.p12"
+          security import "$RUNNER_TEMP/developer-id.p12" -k "$keychain" -f pkcs12 \
+            -P "$CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          rm "$RUNNER_TEMP/developer-id.p12"
+          # An identity exported from Keychain Access omits Apple's intermediate certificate.
+          curl -fsSL https://www.apple.com/certificateauthority/DeveloperIDG2CA.cer \
+            -o "$RUNNER_TEMP/DeveloperIDG2CA.cer"
+          security import "$RUNNER_TEMP/DeveloperIDG2CA.cer" -k "$keychain"
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$password" "$keychain" > /dev/null
+          security list-keychains -d user -s "$keychain" "$(security default-keychain -d user | tr -d ' "')"
+          identity=$(security find-identity -v -p codesigning "$keychain" |
+            awk '/"Developer ID Application: / { print $2; exit }')
+          if [[ -z "$identity" ]]; then
+            echo "::error::MACOS_DEVELOPER_ID_P12 holds no valid Developer ID Application identity."
+            exit 1
+          fi
+          security find-identity -v -p codesigning "$keychain" | grep "$identity"
+          printf '%s\n' "$NOTARY_KEY" > "$RUNNER_TEMP/notary-key.p8"
+          echo "identity=$identity" >> "$GITHUB_OUTPUT"
+
       - name: Build and package app
-        run: python3 apple/scripts/package-app.py --app all --sign - --output "$RUNNER_TEMP/lightray-app"
+        env:
+          IDENTITY: ${{ steps.signing.outputs.identity }}
+        run: python3 apple/scripts/package-app.py --app all --sign "$IDENTITY" --output "$RUNNER_TEMP/lightray-app"
+
+      - name: Build and sign command-line executables
+        env:
+          IDENTITY: ${{ steps.signing.outputs.identity }}
+        run: |
+          cli="$RUNNER_TEMP/lightray-cli"
+          mkdir -p "$cli"
+          client_bin=$(swift build -c release --package-path apple/mac-client --arch arm64 --show-bin-path)
+          host_bin=$(swift build -c release --package-path apple/mac-host --arch arm64 --show-bin-path)
+          cp "$client_bin/lightray-client" "$host_bin/lightray-host" "$cli/"
+          for tool in lightray-client lightray-host; do
+            lipo -verify_arch arm64 "$cli/$tool"
+            if [[ "$IDENTITY" != - ]]; then
+              codesign --force --sign "$IDENTITY" --options runtime --timestamp \
+                --identifier "io.lightray.mac.cli.${tool#lightray-}" "$cli/$tool"
+            fi
+            codesign --verify --strict --verbose=2 "$cli/$tool"
+          done
+
+      - name: Notarize disk images and command-line executables
+        if: steps.signing.outputs.identity != '-'
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          NOTARY_KEY_ID: ${{ secrets.APPLE_NOTARY_KEY_ID }}
+          NOTARY_ISSUER_ID: ${{ secrets.APPLE_NOTARY_ISSUER_ID }}
+        run: |
+          notarize() {
+            local result id status
+            result=$(xcrun notarytool submit "$1" --key "$RUNNER_TEMP/notary-key.p8" \
+              --key-id "$NOTARY_KEY_ID" --issuer "$NOTARY_ISSUER_ID" \
+              --wait --timeout 20m --output-format json) || true
+            if ! id=$(plutil -extract id raw -o - - <<< "$result") ||
+               ! status=$(plutil -extract status raw -o - - <<< "$result"); then
+              echo "::error::notarytool could not submit $(basename "$1"): $result"
+              return 1
+            fi
+            echo "$(basename "$1"): $status ($id)"
+            if [[ "$status" != Accepted ]]; then
+              xcrun notarytool log "$id" --key "$RUNNER_TEMP/notary-key.p8" \
+                --key-id "$NOTARY_KEY_ID" --issuer "$NOTARY_ISSUER_ID"
+              echo "::error::Apple did not notarize $(basename "$1")."
+              return 1
+            fi
+          }
+          app_dir="$RUNNER_TEMP/lightray-app"
+          ditto -c -k "$RUNNER_TEMP/lightray-cli" "$RUNNER_TEMP/lightray-cli.zip"
+          notarize "$RUNNER_TEMP/lightray-cli.zip"
+          for dmg in "$app_dir/Lightray-$VERSION-arm64.dmg" "$app_dir/LightrayHost-$VERSION-arm64.dmg"; do
+            notarize "$dmg"
+            xcrun stapler staple "$dmg"
+            xcrun stapler validate "$dmg"
+            spctl --assess --type open --context context:primary-signature --verbose=2 "$dmg"
+          done
+          spctl --assess --type execute --verbose=2 "$app_dir/Lightray.app" "$app_dir/Lightray Host.app"
 
       - name: Package command-line executables and checksums
         env:
@@ -77,12 +184,8 @@ jobs:
           mkdir -p dist
           cp "$RUNNER_TEMP/lightray-app/Lightray-$VERSION-arm64.dmg" dist/
           cp "$RUNNER_TEMP/lightray-app/LightrayHost-$VERSION-arm64.dmg" dist/
-          client_bin=$(swift build -c release --package-path apple/mac-client --arch arm64 --show-bin-path)
-          host_bin=$(swift build -c release --package-path apple/mac-host --arch arm64 --show-bin-path)
-          lipo -verify_arch arm64 "$client_bin/lightray-client"
-          lipo -verify_arch arm64 "$host_bin/lightray-host"
           COPYFILE_DISABLE=1 tar -czf "dist/Lightray-$VERSION-macos-arm64-cli.tar.gz" \
-            -C "$client_bin" lightray-client -C "$host_bin" lightray-host
+            -C "$RUNNER_TEMP/lightray-cli" lightray-client lightray-host
           cd dist
           shasum -a 256 ./*.dmg ./*.tar.gz > SHA256SUMS.txt
           shasum -a 256 -c SHA256SUMS.txt
@@ -94,6 +197,14 @@ jobs:
           path: dist/
           if-no-files-found: error
           retention-days: 14
+
+      - name: Remove signing keychain
+        if: always() && steps.signing.outputs.keychain != ''
+        env:
+          KEYCHAIN: ${{ steps.signing.outputs.keychain }}
+        run: |
+          security delete-keychain "$KEYCHAIN"
+          rm -f "$RUNNER_TEMP/notary-key.p8"
 
   windows:
     name: Build Windows x64 applications
@@ -147,7 +258,7 @@ jobs:
           - Grant capture and input permissions to Lightray Host and its service as requested during setup.
           - The CLI archive contains the standalone `lightray-client` and `lightray-host` executables.
 
-          These builds are ad-hoc signed and are not notarized. macOS Gatekeeper may block them.
+          The apps, disk images, and CLI executables are signed with Developer ID and notarized by Apple.
 
           ### Windows
 

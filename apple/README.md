@@ -39,8 +39,8 @@ Use `--app client` or `--app host` to package one role. Outputs default to `appl
 
 The script compiles the shared Icon Composer source, signs the nested host service before its
 containing app, and verifies both bundles. It defaults to local ad-hoc signatures; pass
-`--sign "SIGNING_IDENTITY"` for an installed signing certificate. Public distribution still
-requires Developer ID signing and notarization.
+`--sign "SIGNING_IDENTITY"` for an installed signing certificate. Public distribution also
+requires notarization, which the release workflow performs (see [Release signing](#release-signing)).
 
 Use the same Apple-issued signing identity for installed-service lifecycle and upgrade tests.
 Ad-hoc builds remain available for local development, but rebuilding changes their identity and
@@ -56,6 +56,26 @@ All Mac app/service plists must have matching versions and build numbers, and th
 in `windows/Cargo.toml` must match them. Update them together, commit, and push a matching `vMAJOR.MINOR.PATCH` tag to create a draft release. Existing releases
 are never overwritten. Manual workflow runs upload artifacts without creating a release.
 Artifacts are retained for 14 days; published release assets persist independently.
+
+### Release signing
+
+The workflow signs both apps, their disk images, and the CLI executables with a Developer ID
+Application certificate, notarizes the disk images and a zip of the CLI executables, and staples
+the disk images. It reads these repository secrets:
+
+| Secret | Contents |
+|---|---|
+| `MACOS_DEVELOPER_ID_P12` | The Developer ID Application certificate and private key, exported as `.p12`, base64-encoded |
+| `MACOS_DEVELOPER_ID_PASSWORD` | The `.p12` export password |
+| `APPLE_NOTARY_KEY` | The App Store Connect API key file (`AuthKey_KEYID.p8`), as text |
+| `APPLE_NOTARY_KEY_ID` | That key's ID |
+| `APPLE_NOTARY_ISSUER_ID` | The issuer ID shown above the team keys in App Store Connect |
+
+The Account Holder creates the certificate in Xcode (Settings → Accounts → the team → Manage
+Certificates → + → Developer ID Application) and exports it from Keychain Access with its private
+key. Tagged releases fail without these secrets; manual runs fall back to ad-hoc signatures with a
+warning. The first signed release changes the apps' code identity, so macOS asks for Lightray
+Host's screen and input permissions and background approval once more.
 
 ## Installed-service acceptance
 
