@@ -102,11 +102,15 @@ jobs:
           security import "$RUNNER_TEMP/developer-id.p12" -k "$keychain" -f pkcs12 \
             -P "$CERTIFICATE_PASSWORD" -T /usr/bin/codesign
           rm "$RUNNER_TEMP/developer-id.p12"
-          # An identity exported from Keychain Access omits Apple's intermediate certificate.
+          # The .p12 may omit Apple's intermediate certificate, or already carry it.
           # Developer ID certificates come from the original CA (until 2027-02-01) or from G2.
           for ca in DeveloperIDCA DeveloperIDG2CA; do
             curl -fsSL "https://www.apple.com/certificateauthority/$ca.cer" -o "$RUNNER_TEMP/$ca.cer"
-            security import "$RUNNER_TEMP/$ca.cer" -k "$keychain"
+            if ! output=$(security import "$RUNNER_TEMP/$ca.cer" -k "$keychain" 2>&1) &&
+               [[ "$output" != *"already exists"* ]]; then
+              echo "$output"
+              exit 1
+            fi
           done
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$password" "$keychain" > /dev/null
           security list-keychains -d user -s "$keychain" "$(security default-keychain -d user | tr -d ' "')"
