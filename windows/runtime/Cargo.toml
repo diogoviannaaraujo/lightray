@@ -1,0 +1,25 @@
+[package]
+name = "lightray-runtime"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+name = "lightray_runtime"
+crate-type = ["cdylib", "rlib"]
+
+[[bin]]
+name = "lightray-host-agent"
+path = "src/bin/host.rs"
+
+[[bin]]
+name = "lightray-check"
+path = "src/bin/check.rs"
+
+[dependencies]
+lightray-core = { path = "../core" }
+lightray-windows = { path = "../platform" }
+anyhow = "1"
+socket2 = "0.6"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+windows = { version = "0.62", features = ["Win32_Foundation", "Win32_System_Pipes", "Win32_System_Threading", "Win32_Storage_FileSystem", "Win32_Security", "Win32_Security_Authorization", "Win32_System_RemoteDesktop", "Win32_UI_WindowsAndMessaging", "Win32_System_Memory"] }

@@ -1,0 +1,182 @@
+{
+  "configuration": {
+    "decode_enabled": true,
+    "loss_percent_each_direction": 0.0,
+    "loss_seed": 258748791473,
+    "seconds": 600.0
+  },
+  "cpu": {
+    "elapsed_wall_us": 600302610,
+    "equivalent_busy_cores": 0.08758603431692559,
+    "process_cpu_us": 52578125
+  },
+  "frames": {
+    "attempts": 36000,
+    "decoded_and_presented": 36000,
+    "decoded_fps": 60.0,
+    "decoder_buffered": 0,
+    "decoder_failures": 0,
+    "delivered": 36000,
+    "delivered_bytes": 3370796,
+    "delivered_fps": 60.0,
+    "encoded": 36000,
+    "encoded_bytes": 3370796,
+    "encoded_fps": 60.0,
+    "fec_repaired_fragments": 0,
+    "last_delivery_age_us": 312608,
+    "retransmitted_fragments": 0
+  },
+  "initialization": {
+    "authenticated_handshake_us": 466,
+    "decoder_and_renderer_us": 61018,
+    "nvenc_us": 268909
+  },
+  "kind": "lightray_native_udp_validation",
+  "memory": {
+    "final": {
+      "cpu_us": 52859375,
+      "peak_working_set_bytes": 117354496,
+      "private_bytes": 231481344,
+      "working_set_bytes": 117354496
+    },
+    "final_retained_protocol_bytes": 0,
+    "first_half_mean_private_bytes": 226064698.02666667,
+    "half_to_half_private_bytes_change": 3687467.182635665,
+    "initial": {
+      "cpu_us": 281250,
+      "peak_working_set_bytes": 71733248,
+      "private_bytes": 155783168,
+      "working_set_bytes": 71733248
+    },
+    "last_half_mean_private_bytes": 229752165.20930234,
+    "note": "Process samples are real measurements; memory stability requires inspection over a sufficiently long run.",
+    "observed_peak_working_set_bytes": 117354496,
+    "peak_retained_protocol_bytes": 5164
+  },
+  "network": {
+    "client": {
+      "dropped_by_fault_injection": 0,
+      "received": 74996,
+      "received_bytes": 49222628,
+      "sent": 28488,
+      "sent_bytes": 1518545
+    },
+    "host": {
+      "dropped_by_fault_injection": 0,
+      "received": 28488,
+      "received_bytes": 1518545,
+      "sent": 74996,
+      "sent_bytes": 49222628
+    }
+  },
+  "sessions": {
+    "disconnects": [],
+    "established": 1
+  },
+  "streaming_started_us": 1868,
+  "timing": {
+    "capture_and_color_conversion_cpu_stage": {
+      "maximum_us": 4537,
+      "mean_us": 39.64030555555556,
+      "minimum_us": 10,
+      "p50_us": 34,
+      "p95_us": 78,
+      "p99_us": 102,
+      "samples": 36000
+    },
+    "capture_to_delivered_frame": {
+      "maximum_us": 26120,
+      "mean_us": 4315.259805555555,
+      "minimum_us": 2233,
+      "p50_us": 3886,
+      "p95_us": 7100,
+      "p99_us": 11669,
+      "samples": 36000
+    },
+    "core_and_udp_cpu_call": {
+      "maximum_us": 3358,
+      "mean_us": 70.77774149207471,
+      "minimum_us": 4,
+      "p50_us": 16,
+      "p95_us": 441,
+      "p99_us": 509,
+      "samples": 336833
+    },
+    "decode_convert_present_cpu_call": {
+      "maximum_us": 25564,
+      "mean_us": 282.74833333333333,
+      "minimum_us": 164,
+      "p50_us": 264,
+      "p95_us": 421,
+      "p99_us": 597,
+      "samples": 36000
+    },
+    "frame_schedule_lateness": {
+      "maximum_us": 51391,
+      "mean_us": 333.91825,
+      "minimum_us": 0,
+      "p50_us": 313,
+      "p95_us": 606,
+      "p99_us": 827,
+      "samples": 36000
+    },
+    "gpu_convert_and_present_cpu_stage": {
+      "maximum_us": 2772,
+      "mean_us": 78.79047222222222,
+      "minimum_us": 45,
+      "p50_us": 70,
+      "p95_us": 146,
+      "p99_us": 204,
+      "samples": 36000
+    },
+    "mf_decode_cpu_stage": {
+      "maximum_us": 23565,
+      "mean_us": 202.26983333333334,
+      "minimum_us": 114,
+      "p50_us": 188,
+      "p95_us": 307,
+      "p99_us": 449,
+      "samples": 36000
+    },
+    "nvenc_cpu_stage": {
+      "maximum_us": 25555,
+      "mean_us": 3792.5698055555554,
+      "minimum_us": 1778,
+      "p50_us": 3371,
+      "p95_us": 6551,
+      "p99_us": 11055,
+      "samples": 36000
+    },
+    "separate_gpu_capture_us": null,
+    "separate_gpu_decode_us": null,
+    "separate_gpu_encode_us": null,
+    "separate_gpu_present_us": null,
+    "synthetic_capture_convert_encode_cpu_call": {
+      "maximum_us": 25621,
+      "mean_us": 3833.4060833333333,
+      "minimum_us": 1803,
+      "p50_us": 3412,
+      "p95_us": 6599,
+      "p99_us": 11099,
+      "samples": 36000
+    }
+  },
+  "validation": {
+    "apple_interoperability": "PENDING MacBook validation",
+    "desktop_capture": "UNVALIDATED (synthetic source)",
+    "encrypted_udp_streaming": true,
+    "hardware_decoding_and_gpu_presentation": true,
+    "native_encoding": true,
+    "ten_minute_duration": true,
+    "timing_note": "CPU call durations include GPU synchronization where the platform blocks; separate GPU stages are not measured."
+  },
+  "video": {
+    "bitrate_target": 20000000,
+    "capture_source": "GPU generated moving pattern",
+    "codec": "HEVC Main SDR",
+    "fps_target": 60,
+    "height": 1080,
+    "transport": "authenticated Lightray v1 over real IPv4 UDP loopback",
+    "width": 1920
+  }
+}

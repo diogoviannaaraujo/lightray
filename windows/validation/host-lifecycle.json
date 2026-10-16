@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-15",
+  "status": "passed",
+  "command": "lightray-check --service-smoke",
+  "isolation": "unique test settings directory, synthetic video, remote input disabled",
+  "checks": {
+    "current_user_login_task_registered": true,
+    "agent_became_ready": true,
+    "agent_survived_settings_handle_destruction": true,
+    "fresh_settings_handle_stopped_sharing": true,
+    "login_task_removed": true,
+    "agent_exited": true,
+    "sharing_persisted_disabled": true,
+    "concurrent_acceptance_refused_existing_service": true
+  },
+  "postcheck": {
+    "test_task_remaining": false,
+    "host_agents_remaining": 0
+  },
+  "limits": [
+    "Verifies login task configuration and explicit agent startup, not a physical Windows logout/login cycle.",
+    "Does not test secure desktop, physical keyboard focus, or Mac interoperability."
+  ]
+}

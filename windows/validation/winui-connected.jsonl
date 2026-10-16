@@ -1,0 +1,21 @@
+{"observed_at":"2026-10-15T23:35:18.6660341+00:00","kind":"disconnected","message":"Connecting to host\u2026"}
+{"observed_at":"2026-10-15T23:35:18.6767734+00:00","kind":"connected","streams":[1,16,17,18]}
+{"observed_at":"2026-10-15T23:35:18.6784091+00:00","kind":"session_reset","streams":[1,16,17,18]}
+{"observed_at":"2026-10-15T23:35:18.6818736+00:00","kind":"binding","stream":1,"display":1}
+{"observed_at":"2026-10-15T23:35:18.7205159+00:00","kind":"binding","stream":1,"display":1}
+{"observed_at":"2026-10-15T23:35:18.7208786+00:00","kind":"binding","stream":16,"display":0}
+{"observed_at":"2026-10-15T23:35:18.7214508+00:00","kind":"binding","stream":17,"display":0}
+{"observed_at":"2026-10-15T23:35:18.7216522+00:00","kind":"binding","stream":18,"display":0}
+{"observed_at":"2026-10-15T23:35:18.7218072+00:00","kind":"surface","stream":1}
+{"observed_at":"2026-10-15T23:35:18.7221288+00:00","kind":"stats","stream":1,"width":1920,"height":1080,"fps":0,"live":true,"message":"Live \u00B7 click the video to control \u00B7 Ctrl\u002BAlt\u002BShift\u002BF12 releases input"}
+{"kind":"surface_attached","stream":1,"observed_at":"2026-10-15T23:35:18.7451117+00:00"}
+{"observed_at":"2026-10-15T23:35:19.5136471+00:00","kind":"stats","stream":1,"width":1920,"height":1080,"fps":54,"live":true,"message":"1920 \u00D7 1080 \u00B7 54 fps \u00B7 RTT 2.9 ms \u00B7 decode/present 1.01 ms","decode_present_ms":1.0132222222222222,"rtt_ms":2.863}
+{"observed_at":"2026-10-15T23:35:20.5077277+00:00","kind":"stats","stream":1,"width":1920,"height":1080,"fps":60,"live":true,"message":"1920 \u00D7 1080 \u00B7 60 fps \u00B7 RTT 2.7 ms \u00B7 decode/present 0.38 ms","decode_present_ms":0.38361666666666666,"rtt_ms":2.664}
+{"observed_at":"2026-10-15T23:35:21.5019709+00:00","kind":"stats","stream":1,"width":1920,"height":1080,"fps":60,"live":true,"message":"1920 \u00D7 1080 \u00B7 60 fps \u00B7 RTT 2.7 ms \u00B7 decode/present 0.44 ms","decode_present_ms":0.4385333333333334,"rtt_ms":2.707}
+{"observed_at":"2026-10-15T23:35:22.4926458+00:00","kind":"stats","stream":1,"width":1920,"height":1080,"fps":60,"live":true,"message":"1920 \u00D7 1080 \u00B7 60 fps \u00B7 RTT 2.1 ms \u00B7 decode/present 0.56 ms","decode_present_ms":0.5554,"rtt_ms":2.135}
+{"observed_at":"2026-10-15T23:35:23.515966+00:00","kind":"stats","stream":1,"width":1920,"height":1080,"fps":60,"live":true,"message":"1920 \u00D7 1080 \u00B7 60 fps \u00B7 RTT 2.4 ms \u00B7 decode/present 0.54 ms","decode_present_ms":0.5411666666666666,"rtt_ms":2.415}
+{"observed_at":"2026-10-15T23:35:24.5127677+00:00","kind":"stats","stream":1,"width":1920,"height":1080,"fps":60,"live":true,"message":"1920 \u00D7 1080 \u00B7 60 fps \u00B7 RTT 2.5 ms \u00B7 decode/present 0.68 ms","decode_present_ms":0.6828833333333333,"rtt_ms":2.487}
+{"observed_at":"2026-10-15T23:35:25.5018417+00:00","kind":"stats","stream":1,"width":1920,"height":1080,"fps":60,"live":true,"message":"1920 \u00D7 1080 \u00B7 60 fps \u00B7 RTT 2.5 ms \u00B7 decode/present 0.67 ms","decode_present_ms":0.6652833333333333,"rtt_ms":2.456}
+{"observed_at":"2026-10-15T23:35:26.4979728+00:00","kind":"stats","stream":1,"width":1920,"height":1080,"fps":60,"live":true,"message":"1920 \u00D7 1080 \u00B7 60 fps \u00B7 RTT 2.5 ms \u00B7 decode/present 0.83 ms","decode_present_ms":0.8332166666666667,"rtt_ms":2.526}
+{"observed_at":"2026-10-15T23:35:27.520218+00:00","kind":"stats","stream":1,"width":1920,"height":1080,"fps":60,"live":true,"message":"1920 \u00D7 1080 \u00B7 60 fps \u00B7 RTT 2.3 ms \u00B7 decode/present 0.80 ms","decode_present_ms":0.7968833333333333,"rtt_ms":2.27}
+{"observed_at":"2026-10-15T23:35:28.5136599+00:00","kind":"stats","stream":1,"width":1920,"height":1080,"fps":60,"live":true,"message":"1920 \u00D7 1080 \u00B7 60 fps \u00B7 RTT 2.5 ms \u00B7 decode/present 0.84 ms","decode_present_ms":0.8447666666666667,"rtt_ms":2.45}

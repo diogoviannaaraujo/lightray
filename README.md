@@ -29,7 +29,8 @@ must not bundle, start, or manage a local host. iOS/iPadOS has a client only.
 
 On macOS, install **Lightray** to connect to devices and **Lightray Host** to share this Mac.
 Start Sharing enables the host service now and at login; Stop Sharing keeps it off until explicitly
-started again. Windows will follow the same application model when its port is implemented.
+started again. The [Windows applications](windows/README.md) follow the same model, with a
+current-user login agent and separate WinUI 3 interfaces.
 
 ## Layout
 
@@ -59,6 +60,7 @@ Repository directories:
 | [`apple/mac-client/`](apple/mac-client/README.md) | Lightray client app and `lightray-client` executable |
 | [`apple/mac-host/`](apple/mac-host/README.md) | Lightray Host settings app, login service, and `lightray-host` executable |
 | [`apple/ios-client/`](apple/ios-client/README.md) | Native SwiftUI iPadOS 27 client using the shared core |
+| [`windows/`](windows/README.md) | Separate Windows host and client, a shared portable Rust core, native NVIDIA/D3D11 media backends, WinUI 3 interfaces, tests, and packaging |
 | [`tools/windows/`](tools/windows/README.md) | The Windows laboratory from pull request #3: a C++ host that captures with DXGI or Windows Graphics Capture, encodes with NVENC and injects input, and the probes and scripts around it |
 
 How the parts fit together:
@@ -90,10 +92,11 @@ How the parts fit together:
 - **iPad.** The proof of concept in [`apple/ios-client/`](apple/ios-client/README.md) connects to the Mac host, streams one
   display at a time, sends touch, pointer and hardware-keyboard input, and reconnects when returning
   from the background. It targets iPadOS 27 and shares `apple/core/` with the Mac apps.
-- **Windows.** The laboratory host does not build on main, and nothing in `tools/windows/` is
-  maintained. It took its protocol layer from the Swift package, which is now for Apple platforms
-  only. Windows is to be ported to Rust, with separate host and client apps following the
-  application model above.
+- **Windows.** The implementation in [`windows/`](windows/README.md) uses shared Rust protocol/media
+  engines and separate C# WinUI 3 applications. The initial target is Windows 11 x64 with NVIDIA,
+  SDR HEVC, and a 1080p60 baseline. Hardware loopback and Apple fixtures are tested locally;
+  Mac-to-Windows LAN acceptance remains pending. The historical laboratory in `tools/windows/`
+  still depends on the obsolete Swift bridge and remains research material.
 
 ## Build and test
 

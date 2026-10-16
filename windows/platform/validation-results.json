@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-15",
+  "platform": "Windows x64",
+  "hardware": "NVIDIA GeForce RTX 4090",
+  "native_media_soak": {
+    "status": "passed",
+    "width": 1920,
+    "height": 1080,
+    "encoded": 36000,
+    "decoded": 36000,
+    "seconds": 600.0003631,
+    "bytes": 3417501,
+    "capture_p95_ms": 0.0777,
+    "encode_p95_ms": 7.4684,
+    "decode_p95_ms": 0.2924,
+    "present_p95_ms": 0.0976
+  },
+  "memory_observations": [
+    {
+      "private_bytes": 223862784,
+      "elapsed_seconds": 230,
+      "working_set_bytes": 112775168
+    },
+    {
+      "private_bytes": 224673792,
+      "elapsed_seconds": 360,
+      "working_set_bytes": 113594368
+    },
+    {
+      "private_bytes": 224538624,
+      "elapsed_seconds": 510,
+      "working_set_bytes": 113721344
+    }
+  ],
+  "source_validation": {
+    "passed": 7,
+    "includes": [
+      "DPAPI round trip and tamper rejection",
+      "HID scan mappings",
+      "Malformed length-prefixed HEVC",
+      "Apple VideoToolbox SPS dimensions and truncation",
+      "Apple VideoToolbox GPU decode with six lost frames and IDR recovery",
+      "Real WGC frame pool invalidation and recreation",
+      "GPU resolution changes, reset, and swap chain resize"
+    ],
+    "command": "cargo test --manifest-path windows/Cargo.toml -p lightray-windows -- --include-ignored",
+    "failed": 0
+  },
+  "limits": [
+    "The ten-minute run used the native media example without network transport.",
+    "The composition swap chain was not attached to a visible WinUI panel. Presentation figures measure CPU submission rather than displayed frames or input-to-photon latency.",
+    "Timing observations include concurrent development and other GPU validation activity.",
+    "Memory snapshots are observations, not a formal memory-growth regression test.",
+    "Live MacBook interoperability remains pending."
+  ]
+}
