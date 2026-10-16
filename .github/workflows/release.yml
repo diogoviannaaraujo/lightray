@@ -1,4 +1,4 @@
-name: Release macOS
+name: Release
 
 on:
   push:
@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: release-macos-${{ github.ref }}
+  group: release-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -95,10 +95,17 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+  windows:
+    name: Build Windows x64 applications
+    needs: build
+    uses: ./.github/workflows/windows.yml
+    with:
+      version: ${{ needs.build.outputs.version }}
+
   release:
     name: Create draft GitHub release
     if: github.event_name == 'push' && github.ref_type == 'tag'
-    needs: build
+    needs: [build, windows]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -106,8 +113,21 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: lightray-macos-arm64
-          path: dist
+          pattern: lightray-*
+          path: downloads
+
+      - name: Collect release files and checksums
+        env:
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          mkdir dist
+          cp downloads/lightray-macos-arm64/*.dmg downloads/lightray-macos-arm64/*.tar.gz dist/
+          for app in Host Client; do
+            cp "downloads/lightray-windows-x64/Lightray-$app-win-x64.zip" "dist/Lightray-$app-$VERSION-win-x64.zip"
+          done
+          cd dist
+          sha256sum ./* > SHA256SUMS.txt
+          sha256sum -c SHA256SUMS.txt
 
       - name: Create draft release with executables
         env:
@@ -117,6 +137,8 @@ jobs:
           VERSION: ${{ needs.build.outputs.version }}
         run: |
           cat > release-notes.md <<'EOF'
+          ### macOS
+
           Requires an Apple Silicon Mac running macOS 27 or later.
 
           - Install Lightray from its DMG to connect to other computers.
@@ -124,9 +146,20 @@ jobs:
           - Quit the old combined Lightray app before replacing it. Existing pairing and client preferences are preserved.
           - Grant capture and input permissions to Lightray Host and its service as requested during setup.
           - The CLI archive contains the standalone `lightray-client` and `lightray-host` executables.
-          - Verify downloads with `shasum -a 256 -c SHA256SUMS.txt`.
 
           These builds are ad-hoc signed and are not notarized. macOS Gatekeeper may block them.
+
+          ### Windows
+
+          Requires Windows 11 x64. The host is tested on NVIDIA GPUs (RTX 4090) at 1080p60.
+
+          - Extract the Host or Client zip outside `%LOCALAPPDATA%\Programs`, then run its `Install.ps1` in PowerShell.
+          - Installing the client alone installs no sharing agent. Installing the host does not enable sharing; open Lightray Host and choose Start Sharing.
+          - Allow `lightray-host-agent.exe` through Windows Firewall on the private profile (UDP 7373 by default).
+
+          These builds are unsigned. Windows SmartScreen may warn before running them.
+
+          Verify downloads with `shasum -a 256 -c SHA256SUMS.txt` (or `sha256sum -c` on Linux).
           EOF
           gh release create "$RELEASE_TAG" dist/* \
             --verify-tag --draft --title "Lightray $VERSION" \

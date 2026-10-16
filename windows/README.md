@@ -24,7 +24,7 @@ windows/artifacts/Lightray-Host-win-x64.zip
 windows/artifacts/Lightray-Client-win-x64.zip
 ```
 
-`-SmokeTest` additionally starts each WinUI application with isolated settings and verifies its automatic five-second shutdown. It requires an interactive Windows desktop. The CI workflow builds both bundles; GPU and desktop checks are local hardware tests.
+`-SmokeTest` additionally starts each WinUI application with isolated settings and verifies its automatic five-second shutdown. It requires an interactive Windows desktop. The CI workflow builds both bundles; GPU and desktop checks are local hardware tests. Pushing a `vMAJOR.MINOR.PATCH` tag runs the [release workflow](../.github/workflows/release.yml), which attaches `Lightray-Host-VERSION-win-x64.zip` and `Lightray-Client-VERSION-win-x64.zip` to the draft release. The workspace version in `Cargo.toml` must match the tag.
 
 For a quicker development build:
 

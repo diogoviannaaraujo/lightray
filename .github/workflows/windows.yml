@@ -15,6 +15,12 @@ on:
       - 'apple/core/Tests/LightrayCoreTests/Fixtures/**'
       - '.github/workflows/windows.yml'
   workflow_dispatch:
+  workflow_call:
+    inputs:
+      version:
+        description: Release version in MAJOR.MINOR.PATCH form
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -54,8 +60,20 @@ jobs:
             windows/target
           key: windows-x64-rust-1.98-${{ hashFiles('windows/Cargo.lock') }}
           restore-keys: windows-x64-rust-1.98-
+      - name: Validate release version
+        if: inputs.version != ''
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          $cargo = Select-String -Path windows/Cargo.toml -Pattern '^version = "(.+)"$' | Select-Object -First 1
+          if (-not $cargo -or $cargo.Matches[0].Groups[1].Value -ne $env:VERSION) {
+            Write-Output "::error::Workspace version in windows/Cargo.toml must match $env:VERSION."
+            exit 1
+          }
       - name: Validate, build, test the ABI, and package both applications
-        run: ./windows/scripts/Build.ps1
+        env:
+          VERSION: ${{ inputs.version || '0.1.0' }}
+        run: ./windows/scripts/Build.ps1 -Version $env:VERSION
       - uses: actions/upload-artifact@v4
         with:
           name: lightray-windows-x64

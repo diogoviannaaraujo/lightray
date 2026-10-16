@@ -47,11 +47,13 @@ Ad-hoc builds remain available for local development, but rebuilding changes the
 can invalidate macOS background-service and privacy approvals. When changing signing identities,
 stop sharing and explicitly review Lightray Host's approval in System Settings before retesting.
 
-The [release workflow](../.github/workflows/release-macos.yml) tests core and host, builds the
+The [release workflow](../.github/workflows/release.yml) tests core and host, builds the
 client and iPad simulator app, checks protocol examples, then packages both DMGs. It also produces
-`Lightray-VERSION-macos-arm64-cli.tar.gz` with both CLI executables and `SHA256SUMS.txt`.
-All Mac app/service plists must have matching versions and build numbers. Update them together,
-commit, and push a matching `vMAJOR.MINOR.PATCH` tag to create a draft release. Existing releases
+`Lightray-VERSION-macos-arm64-cli.tar.gz` with both CLI executables. The same workflow builds
+the [Windows applications](../windows/README.md), and the draft release carries both platforms'
+files with one `SHA256SUMS.txt`.
+All Mac app/service plists must have matching versions and build numbers, and the workspace version
+in `windows/Cargo.toml` must match them. Update them together, commit, and push a matching `vMAJOR.MINOR.PATCH` tag to create a draft release. Existing releases
 are never overwritten. Manual workflow runs upload artifacts without creating a release.
 Artifacts are retained for 14 days; published release assets persist independently.
 
