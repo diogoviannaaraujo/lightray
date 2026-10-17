@@ -5,6 +5,11 @@ on:
     tags:
       - 'v[0-9]*.[0-9]*.[0-9]*'
   workflow_dispatch:
+    inputs:
+      testflight:
+        description: Upload the iPad app to TestFlight
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -67,15 +72,15 @@ jobs:
       - name: Check protocol examples and documentation
         run: swift run --package-path tools/vectors lightray-vectors check
 
-      - name: Import Developer ID certificate
+      - name: Check Developer ID secrets
         id: signing
         env:
           IS_TAG: ${{ github.ref_type == 'tag' }}
           CERTIFICATE: ${{ secrets.MACOS_DEVELOPER_ID_P12 }}
           CERTIFICATE_PASSWORD: ${{ secrets.MACOS_DEVELOPER_ID_PASSWORD }}
-          NOTARY_KEY: ${{ secrets.APPLE_NOTARY_KEY }}
-          NOTARY_KEY_ID: ${{ secrets.APPLE_NOTARY_KEY_ID }}
-          NOTARY_ISSUER_ID: ${{ secrets.APPLE_NOTARY_ISSUER_ID }}
+          API_KEY: ${{ secrets.APPLE_NOTARY_KEY }}
+          API_KEY_ID: ${{ secrets.APPLE_NOTARY_KEY_ID }}
+          API_ISSUER_ID: ${{ secrets.APPLE_NOTARY_ISSUER_ID }}
         run: |
           if [[ -z "$CERTIFICATE" ]]; then
             if [[ "$IS_TAG" == true ]]; then
@@ -83,55 +88,36 @@ jobs:
               exit 1
             fi
             echo "::warning::Developer ID secrets are not set; packaging with ad-hoc signatures."
-            echo "identity=-" >> "$GITHUB_OUTPUT"
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          for name in CERTIFICATE_PASSWORD NOTARY_KEY NOTARY_KEY_ID NOTARY_ISSUER_ID; do
+          for name in CERTIFICATE_PASSWORD API_KEY API_KEY_ID API_ISSUER_ID; do
             if [[ -z "${!name}" ]]; then
               echo "::error::$name is empty; set every Developer ID secret listed in apple/README.md."
               exit 1
             fi
           done
-          keychain="$RUNNER_TEMP/lightray-signing.keychain-db"
-          password=$(openssl rand -base64 32)
-          security create-keychain -p "$password" "$keychain"
-          security set-keychain-settings -lut 21600 "$keychain"
-          security unlock-keychain -p "$password" "$keychain"
-          echo "keychain=$keychain" >> "$GITHUB_OUTPUT"
-          base64 --decode <<< "$CERTIFICATE" > "$RUNNER_TEMP/developer-id.p12"
-          security import "$RUNNER_TEMP/developer-id.p12" -k "$keychain" -f pkcs12 \
-            -P "$CERTIFICATE_PASSWORD" -T /usr/bin/codesign
-          rm "$RUNNER_TEMP/developer-id.p12"
-          # The .p12 may omit Apple's intermediate certificate, or already carry it.
+          echo "enabled=true" >> "$GITHUB_OUTPUT"
+
+      - name: Import Developer ID certificate
+        id: certificate
+        if: steps.signing.outputs.enabled == 'true'
+        uses: ./.github/actions/import-signing-identity
+        with:
+          p12: ${{ secrets.MACOS_DEVELOPER_ID_P12 }}
+          password: ${{ secrets.MACOS_DEVELOPER_ID_PASSWORD }}
+          kind: Developer ID Application
           # Developer ID certificates come from the original CA (until 2027-02-01) or from G2.
-          for ca in DeveloperIDCA DeveloperIDG2CA; do
-            curl -fsSL "https://www.apple.com/certificateauthority/$ca.cer" -o "$RUNNER_TEMP/$ca.cer"
-            if ! output=$(security import "$RUNNER_TEMP/$ca.cer" -k "$keychain" 2>&1) &&
-               [[ "$output" != *"already exists"* ]]; then
-              echo "$output"
-              exit 1
-            fi
-          done
-          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$password" "$keychain" > /dev/null
-          security list-keychains -d user -s "$keychain" "$(security default-keychain -d user | tr -d ' "')"
-          identity=$(security find-identity -v -p codesigning "$keychain" |
-            awk '/"Developer ID Application: / { print $2; exit }')
-          if [[ -z "$identity" ]]; then
-            echo "::error::MACOS_DEVELOPER_ID_P12 holds no valid Developer ID Application identity."
-            exit 1
-          fi
-          security find-identity -v -p codesigning "$keychain" | grep "$identity"
-          printf '%s\n' "$NOTARY_KEY" > "$RUNNER_TEMP/notary-key.p8"
-          echo "identity=$identity" >> "$GITHUB_OUTPUT"
+          intermediates: DeveloperIDCA DeveloperIDG2CA
 
       - name: Build and package app
         env:
-          IDENTITY: ${{ steps.signing.outputs.identity }}
+          IDENTITY: ${{ steps.certificate.outputs.identity || '-' }}
         run: python3 apple/scripts/package-app.py --app all --sign "$IDENTITY" --output "$RUNNER_TEMP/lightray-app"
 
       - name: Build and sign command-line executables
         env:
-          IDENTITY: ${{ steps.signing.outputs.identity }}
+          IDENTITY: ${{ steps.certificate.outputs.identity || '-' }}
         run: |
           cli="$RUNNER_TEMP/lightray-cli"
           mkdir -p "$cli"
@@ -142,18 +128,21 @@ jobs:
             lipo -verify_arch arm64 "$cli/$tool"
             if [[ "$IDENTITY" != - ]]; then
               codesign --force --sign "$IDENTITY" --options runtime --timestamp \
-                --identifier "io.lightray.mac.cli.${tool#lightray-}" "$cli/$tool"
+                --identifier "com.getlightray.${tool#lightray-}.cli" "$cli/$tool"
             fi
             codesign --verify --strict --verbose=2 "$cli/$tool"
           done
 
       - name: Notarize disk images and command-line executables
-        if: steps.signing.outputs.identity != '-'
+        if: steps.signing.outputs.enabled == 'true'
         env:
           VERSION: ${{ steps.version.outputs.version }}
+          NOTARY_KEY: ${{ secrets.APPLE_NOTARY_KEY }}
           NOTARY_KEY_ID: ${{ secrets.APPLE_NOTARY_KEY_ID }}
           NOTARY_ISSUER_ID: ${{ secrets.APPLE_NOTARY_ISSUER_ID }}
         run: |
+          trap 'rm -f "$RUNNER_TEMP/notary-key.p8"' EXIT
+          printf '%s\n' "$NOTARY_KEY" > "$RUNNER_TEMP/notary-key.p8"
           notarize() {
             local result id status
             result=$(xcrun notarytool submit "$1" --key "$RUNNER_TEMP/notary-key.p8" \
@@ -205,12 +194,10 @@ jobs:
           retention-days: 14
 
       - name: Remove signing keychain
-        if: always() && steps.signing.outputs.keychain != ''
+        if: always() && steps.certificate.outputs.keychain != ''
         env:
-          KEYCHAIN: ${{ steps.signing.outputs.keychain }}
-        run: |
-          security delete-keychain "$KEYCHAIN"
-          rm -f "$RUNNER_TEMP/notary-key.p8"
+          KEYCHAIN: ${{ steps.certificate.outputs.keychain }}
+        run: security delete-keychain "$KEYCHAIN"
 
   windows:
     name: Build Windows x64 applications
@@ -218,6 +205,141 @@ jobs:
     uses: ./.github/workflows/windows.yml
     with:
       version: ${{ needs.build.outputs.version }}
+
+  testflight:
+    name: Upload iPad app to TestFlight
+    if: github.ref_type == 'tag' || inputs.testflight
+    needs: build
+    runs-on: xcode-27
+    timeout-minutes: 60
+    env:
+      PROJECT: apple/ios-client/Lightray.xcodeproj
+      # Build settings of the Lightray app target's Release configuration.
+      APP_RELEASE: objects.A10000000000000000000013.buildSettings
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Check TestFlight secrets and version
+        id: app
+        env:
+          VERSION: ${{ needs.build.outputs.version }}
+          CERTIFICATE: ${{ secrets.IOS_DISTRIBUTION_P12 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.IOS_DISTRIBUTION_PASSWORD }}
+          PROFILE: ${{ secrets.IOS_APP_STORE_PROFILE }}
+          API_KEY: ${{ secrets.APPLE_NOTARY_KEY }}
+          API_KEY_ID: ${{ secrets.APPLE_NOTARY_KEY_ID }}
+          API_ISSUER_ID: ${{ secrets.APPLE_NOTARY_ISSUER_ID }}
+        run: |
+          for name in CERTIFICATE CERTIFICATE_PASSWORD PROFILE API_KEY API_KEY_ID API_ISSUER_ID; do
+            if [[ -z "${!name}" ]]; then
+              echo "::error::$name is empty; set every TestFlight secret listed in apple/README.md."
+              exit 1
+            fi
+          done
+          marketing=$(plutil -extract "$APP_RELEASE.MARKETING_VERSION" raw -o - "$PROJECT/project.pbxproj")
+          if [[ "$marketing" != "$VERSION" ]]; then
+            echo "::error::The iPad MARKETING_VERSION ($marketing) must match $VERSION."
+            exit 1
+          fi
+          bundle_id=$(plutil -extract "$APP_RELEASE.PRODUCT_BUNDLE_IDENTIFIER" raw -o - "$PROJECT/project.pbxproj")
+          echo "bundle-id=$bundle_id" >> "$GITHUB_OUTPUT"
+
+      - name: Import Apple Distribution certificate
+        id: certificate
+        uses: ./.github/actions/import-signing-identity
+        with:
+          p12: ${{ secrets.IOS_DISTRIBUTION_P12 }}
+          password: ${{ secrets.IOS_DISTRIBUTION_PASSWORD }}
+          kind: Apple Distribution
+          intermediates: AppleWWDRCAG3
+
+      - name: Install App Store provisioning profile
+        id: profile
+        env:
+          PROFILE: ${{ secrets.IOS_APP_STORE_PROFILE }}
+          BUNDLE_ID: ${{ steps.app.outputs.bundle-id }}
+        run: |
+          profile="$RUNNER_TEMP/app-store.mobileprovision"
+          base64 --decode <<< "$PROFILE" > "$profile"
+          security cms -D -i "$profile" > "$RUNNER_TEMP/app-store-profile.plist"
+          field() { plutil -extract "$1" raw -o - "$RUNNER_TEMP/app-store-profile.plist"; }
+          team=$(field TeamIdentifier.0)
+          if [[ "$(field Entitlements.application-identifier)" != "$team.$BUNDLE_ID" ]]; then
+            echo "::error::IOS_APP_STORE_PROFILE is not a profile for $BUNDLE_ID."
+            exit 1
+          fi
+          if field ProvisionedDevices > /dev/null 2>&1; then
+            echo "::error::IOS_APP_STORE_PROFILE lists devices; use an App Store Connect distribution profile."
+            exit 1
+          fi
+          for dir in "$HOME/Library/MobileDevice/Provisioning Profiles" \
+                     "$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles"; do
+            mkdir -p "$dir"
+            cp "$profile" "$dir/$(field UUID).mobileprovision"
+          done
+          echo "Profile \"$(field Name)\" for team $team expires $(field ExpirationDate)."
+          echo "name=$(field Name)" >> "$GITHUB_OUTPUT"
+          echo "team=$team" >> "$GITHUB_OUTPUT"
+
+      - name: Archive iPad app
+        env:
+          BUILD_NUMBER: ${{ github.run_number }}.${{ github.run_attempt }}
+          TEAM: ${{ steps.profile.outputs.team }}
+          PROFILE_NAME: ${{ steps.profile.outputs.name }}
+        run: |
+          # Sign only the app target: Swift package targets reject a provisioning profile
+          # given on the command line. plutil cannot write Xcode's text project format, so
+          # the project is converted to XML, which Xcode also reads.
+          project="$PROJECT/project.pbxproj"
+          plutil -convert xml1 "$project"
+          plutil -replace "$APP_RELEASE.CODE_SIGN_STYLE" -string Manual "$project"
+          plutil -replace "$APP_RELEASE.DEVELOPMENT_TEAM" -string "$TEAM" "$project"
+          plutil -replace "$APP_RELEASE.CODE_SIGN_IDENTITY" -string "Apple Distribution" "$project"
+          plutil -replace "$APP_RELEASE.PROVISIONING_PROFILE_SPECIFIER" -string "$PROFILE_NAME" "$project"
+          xcodebuild archive -project "$PROJECT" -scheme Lightray -configuration Release \
+            -destination 'generic/platform=iOS' -archivePath "$RUNNER_TEMP/Lightray.xcarchive" \
+            -derivedDataPath "$RUNNER_TEMP/lightray-ios-archive" CURRENT_PROJECT_VERSION="$BUILD_NUMBER"
+
+      - name: Export and upload to TestFlight
+        env:
+          BUNDLE_ID: ${{ steps.app.outputs.bundle-id }}
+          TEAM: ${{ steps.profile.outputs.team }}
+          PROFILE_NAME: ${{ steps.profile.outputs.name }}
+          API_KEY: ${{ secrets.APPLE_NOTARY_KEY }}
+          API_KEY_ID: ${{ secrets.APPLE_NOTARY_KEY_ID }}
+          API_ISSUER_ID: ${{ secrets.APPLE_NOTARY_ISSUER_ID }}
+        run: |
+          options="$RUNNER_TEMP/ExportOptions.plist"
+          python3 - "$options" <<'EOF'
+          import os, plistlib, sys
+          with open(sys.argv[1], 'wb') as destination:
+              plistlib.dump({
+                  'method': 'app-store-connect',
+                  'teamID': os.environ['TEAM'],
+                  'signingStyle': 'manual',
+                  'signingCertificate': 'Apple Distribution',
+                  'provisioningProfiles': {os.environ['BUNDLE_ID']: os.environ['PROFILE_NAME']},
+                  'manageAppVersionAndBuildNumber': False,
+              }, destination)
+          EOF
+          xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/Lightray.xcarchive" \
+            -exportPath "$RUNNER_TEMP/lightray-ipa" -exportOptionsPlist "$options"
+          ipa=$(find "$RUNNER_TEMP/lightray-ipa" -maxdepth 1 -name '*.ipa' -print -quit)
+          trap 'rm -f "$RUNNER_TEMP/app-store-connect.p8"' EXIT
+          printf '%s\n' "$API_KEY" > "$RUNNER_TEMP/app-store-connect.p8"
+          xcrun altool --upload-package "$ipa" --api-key "$API_KEY_ID" --api-issuer "$API_ISSUER_ID" \
+            --p8-file-path "$RUNNER_TEMP/app-store-connect.p8" --wait
+
+      - name: Remove signing keychain
+        if: always() && steps.certificate.outputs.keychain != ''
+        env:
+          KEYCHAIN: ${{ steps.certificate.outputs.keychain }}
+        run: security delete-keychain "$KEYCHAIN"
 
   release:
     name: Create draft GitHub release

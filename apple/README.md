@@ -67,7 +67,7 @@ the disk images. It reads these repository secrets:
 |---|---|
 | `MACOS_DEVELOPER_ID_P12` | The Developer ID Application certificate and private key, exported as `.p12`, base64-encoded |
 | `MACOS_DEVELOPER_ID_PASSWORD` | The `.p12` export password |
-| `APPLE_NOTARY_KEY` | The App Store Connect API key file (`AuthKey_KEYID.p8`), as text |
+| `APPLE_NOTARY_KEY` | The App Store Connect API key file (`AuthKey_KEYID.p8`), as text; it also uploads TestFlight builds |
 | `APPLE_NOTARY_KEY_ID` | That key's ID |
 | `APPLE_NOTARY_ISSUER_ID` | The issuer ID shown above the team keys in App Store Connect |
 
@@ -76,6 +76,25 @@ Certificates → + → Developer ID Application) and exports it from Keychain Ac
 key. Tagged releases fail without these secrets; manual runs fall back to ad-hoc signatures with a
 warning. The first signed release changes the apps' code identity, so macOS asks for Lightray
 Host's screen and input permissions and background approval once more.
+
+### TestFlight
+
+Tagged releases also upload the iPad app to TestFlight; a manual run does so when its
+**Upload the iPad app to TestFlight** box is ticked. The job signs only the app target with an
+Apple Distribution certificate and an App Store provisioning profile, sets the build number to
+`RUN_NUMBER.RUN_ATTEMPT`, and uploads with the API key above, which needs at least Developer
+access. The iPad `MARKETING_VERSION` must match the Mac apps' version. Besides the API key secrets,
+the job reads:
+
+| Secret | Contents |
+|---|---|
+| `IOS_DISTRIBUTION_P12` | The Apple Distribution certificate and private key, exported as `.p12`, base64-encoded |
+| `IOS_DISTRIBUTION_PASSWORD` | The `.p12` export password |
+| `IOS_APP_STORE_PROFILE` | An App Store Connect provisioning profile for `com.getlightray.client`, base64-encoded |
+
+The bundle ID must be registered under Identifiers, and an App Store Connect app record must use it,
+before the first upload. Both the certificate and the profile expire after a year; renew them
+together and replace the three secrets.
 
 ## Installed-service acceptance
 
