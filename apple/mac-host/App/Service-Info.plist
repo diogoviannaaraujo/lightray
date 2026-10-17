@@ -9,7 +9,7 @@
 	<key>CFBundleExecutable</key>
 	<string>lightray-host</string>
 	<key>CFBundleIdentifier</key>
-	<string>io.lightray.mac.host.service</string>
+	<string>com.getlightray.host.service</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>

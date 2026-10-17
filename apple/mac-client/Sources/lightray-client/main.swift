@@ -105,7 +105,7 @@ if let pairingPath {
 
 let app = NSApplication.shared
 let delegate: NSApplicationDelegate
-if Bundle.main.bundleIdentifier == "io.lightray.mac", options.launcher {
+if Bundle.main.bundleIdentifier == "com.getlightray.client", options.launcher {
     delegate = DesktopApplication(options: options, pairing: pairing)
 }
 else if options.launcher { delegate = ConnectionLauncher(options: options, pairing: pairing) }

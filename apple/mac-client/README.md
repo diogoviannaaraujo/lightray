@@ -14,8 +14,10 @@ python3 apple/scripts/package-app.py --app client
 
 Copy `apple/.build/apps/Lightray.app` to Applications from `Lightray-0.1.0-arm64.dmg`.
 The app contains no host helper and never enables sharing on this Mac.
-Quit the old combined Lightray app before replacing it; saved computers, pairing files,
-and session preferences are preserved under the existing `io.lightray.mac` identity.
+Quit the old Lightray app before replacing it. Its bundle identifier is `com.getlightray.client`,
+shared with the iPad app. Builds before the rename used `io.lightray.mac`: pairing files carry over,
+but saved computers and session preferences stay under the old identifier until copied once with
+`defaults export io.lightray.mac - | defaults import com.getlightray.client -`.
 Closing its last window keeps the Dock app available; clicking its icon reopens it.
 Quitting the client disconnects its remote session and has no effect on a local host service.
 

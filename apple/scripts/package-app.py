@@ -67,8 +67,8 @@ def package_app(role, options, output):
             helper = app / 'Contents/Library/LoginItems/LightrayHostService.app'
             copy_executable(binary_dir / 'lightray-host', helper / 'Contents/MacOS/lightray-host')
             write_plist(helper / 'Contents/Info.plist', read_plist(package / 'App/Service-Info.plist'))
-            write_plist(app / 'Contents/Library/LaunchAgents/io.lightray.mac.host.service.plist',
-                        read_plist(package / 'App/io.lightray.mac.host.service.plist'))
+            write_plist(app / 'Contents/Library/LaunchAgents/com.getlightray.host.service.plist',
+                        read_plist(package / 'App/com.getlightray.host.service.plist'))
             run('codesign', *signing, helper)
         run('codesign', *signing, app)
         run('codesign', '--verify', '--deep', '--strict', app)

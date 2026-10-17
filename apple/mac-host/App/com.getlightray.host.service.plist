@@ -4,19 +4,19 @@
 <dict>
 	<key>AssociatedBundleIdentifiers</key>
 	<array>
-		<string>io.lightray.mac.host</string>
+		<string>com.getlightray.host</string>
 	</array>
 	<key>BundleProgram</key>
 	<string>Contents/Library/LoginItems/LightrayHostService.app/Contents/MacOS/lightray-host</string>
 	<key>KeepAlive</key>
 	<true/>
 	<key>Label</key>
-	<string>io.lightray.mac.host.service</string>
+	<string>com.getlightray.host.service</string>
 	<key>LimitLoadToSessionType</key>
 	<string>Aqua</string>
 	<key>MachServices</key>
 	<dict>
-		<key>io.lightray.mac.host.service</key>
+		<key>com.getlightray.host.service</key>
 		<true/>
 	</dict>
 	<key>ProgramArguments</key>

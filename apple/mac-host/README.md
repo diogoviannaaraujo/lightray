@@ -44,7 +44,7 @@ Host app opens after an upgrade; approval revoked in System Settings is never si
 Before removing the Host app, choose Stop Sharing to unregister it.
 
 The service runs in the logged-in graphical user session. It provides no pre-login access and
-installs no root daemon. Its label and Mach service are `io.lightray.mac.host.service`.
+installs no root daemon. Its label and Mach service are `com.getlightray.host.service`.
 Settings live in `~/Library/Application Support/Lightray/Host/settings.json` (private directory,
 owner-only file); pairing remains in `~/Library/Application Support/Lightray/host-pairing`.
 **Show Host Log** opens `~/Library/Logs/Lightray/host.log`; the previous oversized log is retained.

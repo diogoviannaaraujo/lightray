@@ -31,8 +31,8 @@ xcodebuild -project apple/ios-client/Lightray.xcodeproj -scheme Lightray \
 ```
 
 The project leaves the signing team unset so it can be built with another developer's account.
-Its development bundle identifier is `io.lightray.ipad`; override `PRODUCT_BUNDLE_IDENTIFIER`
-if your team's provisioning setup requires a different identifier.
+Its bundle identifier is `com.getlightray.client`, shared with the Mac client; override
+`PRODUCT_BUNDLE_IDENTIFIER` if your team's provisioning setup requires a different identifier.
 
 The app supports portrait, landscape, and resizable iPad windows. It keeps one app window and
 one remote session at a time. Allow **Local Network** access when connecting to a computer.

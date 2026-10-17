@@ -66,8 +66,8 @@ public struct HostSettingsStore: Sendable {
 }
 
 public enum HostIdentity {
-    public static let app = "io.lightray.mac.host"
-    public static let service = "io.lightray.mac.host.service"
+    public static let app = "com.getlightray.host"
+    public static let service = "com.getlightray.host.service"
     public static let plist = service + ".plist"
     public static let helperPath = "Contents/Library/LoginItems/LightrayHostService.app"
     public static var logURL: URL {

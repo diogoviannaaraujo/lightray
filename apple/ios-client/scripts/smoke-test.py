@@ -44,7 +44,7 @@ def main():
     app = output / "simulator/Build/Products/Debug-iphonesimulator/Lightray.app"
     run("xcrun", "simctl", "install", options.simulator, str(app))
     container = Path(run("xcrun", "simctl", "get_app_container", options.simulator,
-                         "io.lightray.ipad", "data", capture_output=True).stdout.strip())
+                         "com.getlightray.client", "data", capture_output=True).stdout.strip())
     configuration = container / "Documents/lightray-smoke.json"
     configuration.parent.mkdir(parents=True, exist_ok=True)
     host = None
