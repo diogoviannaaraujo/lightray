@@ -26,11 +26,19 @@ import LightrayHostSupport
     var unavailable = false
     var stops = 0
     var permissions: [String] = []
+    var statusReply: (() async throws -> HostSnapshot)?
+    var permissionReply: (() async throws -> HostSnapshot)?
     func status() async throws -> HostSnapshot {
+        if let statusReply { return try await statusReply() }
         if unavailable { throw HostFailure.message("unavailable") }
         return snapshot
     }
-    func requestPermission(_ permission: String) async throws -> HostSnapshot { permissions.append(permission); return snapshot }
+    func requestPermission(_ permission: String) async throws -> HostSnapshot {
+        permissions.append(permission)
+        if let permissionReply { return try await permissionReply() }
+        if unavailable { throw HostFailure.message("unavailable") }
+        return snapshot
+    }
     func stopSharing() async throws {
         stops += 1
         if unavailable { throw HostFailure.message("unavailable") }
@@ -131,16 +139,100 @@ import LightrayHostSupport
     }
     func testPermissionsAndRuntimeReadinessAreReportedByAgent() async {
         let service = makeService()
+        XCTAssertFalse(service.hasServiceSnapshot)
         await service.start(port: 7373, quality: .balanced, allowInput: true)
+        XCTAssertFalse(service.hasServiceSnapshot)
         control.snapshot = HostSnapshot(state: .blocked, message: "Screen permission required")
         await service.refresh()
         XCTAssertEqual(service.snapshot.state, .blocked)
+        XCTAssertTrue(service.hasServiceSnapshot)
         XCTAssertFalse(service.snapshot.screenAllowed)
         await service.requestPermission("screen")
         XCTAssertEqual(control.permissions, ["screen"])
         control.snapshot = HostSnapshot(state: .failed, message: "bind: Address already in use")
         await service.refresh()
         XCTAssertEqual(service.snapshot.message, "bind: Address already in use")
+    }
+    func testServiceDisconnectionClearsPermissionKnowledgeUntilAgentReplies() async {
+        registration.state = .enabled
+        let service = makeService()
+        await service.refresh()
+        XCTAssertTrue(service.hasServiceSnapshot)
+        control.unavailable = true
+        await service.refresh()
+        XCTAssertFalse(service.hasServiceSnapshot)
+        control.unavailable = false
+        await service.refresh()
+        XCTAssertTrue(service.hasServiceSnapshot)
+        await service.stop()
+        XCTAssertFalse(service.hasServiceSnapshot)
+    }
+    func testBackgroundApprovalClearsPermissionKnowledge() async {
+        registration.state = .enabled
+        let service = makeService()
+        await service.refresh()
+        XCTAssertTrue(service.hasServiceSnapshot)
+        registration.state = .requiresApproval
+        await service.refresh()
+        XCTAssertFalse(service.hasServiceSnapshot)
+        XCTAssertEqual(service.snapshot.state, .blocked)
+    }
+    func testStaleStatusDoesNotRestorePermissionKnowledgeAfterStop() async {
+        registration.state = .enabled
+        let service = makeService()
+        let requested = expectation(description: "Status requested")
+        var reply: CheckedContinuation<HostSnapshot, Error>?
+        control.statusReply = {
+            try await withCheckedThrowingContinuation {
+                reply = $0
+                requested.fulfill()
+            }
+        }
+        let refresh = Task { await service.refresh() }
+        await fulfillment(of: [requested], timeout: 1)
+        await service.stop()
+        reply?.resume(returning: control.snapshot)
+        await refresh.value
+        XCTAssertEqual(service.snapshot.state, .stopped)
+        XCTAssertFalse(service.hasServiceSnapshot)
+    }
+    func testStalePermissionReplyDoesNotRestoreStoppedServiceState() async {
+        registration.state = .enabled
+        let service = makeService()
+        let requested = expectation(description: "Permission requested")
+        var reply: CheckedContinuation<HostSnapshot, Error>?
+        control.permissionReply = {
+            try await withCheckedThrowingContinuation {
+                reply = $0
+                requested.fulfill()
+            }
+        }
+        let request = Task { await service.requestPermission("screen") }
+        await fulfillment(of: [requested], timeout: 1)
+        await service.stop()
+        reply?.resume(returning: control.snapshot)
+        await request.value
+        XCTAssertEqual(service.snapshot.state, .stopped)
+        XCTAssertFalse(service.hasServiceSnapshot)
+    }
+    func testPermissionRequestInvalidatesOlderStatusReply() async {
+        registration.state = .enabled
+        let service = makeService()
+        let requested = expectation(description: "Status requested")
+        var reply: CheckedContinuation<HostSnapshot, Error>?
+        control.statusReply = {
+            try await withCheckedThrowingContinuation {
+                reply = $0
+                requested.fulfill()
+            }
+        }
+        let refresh = Task { await service.refresh() }
+        await fulfillment(of: [requested], timeout: 1)
+        await service.requestPermission("screen")
+        reply?.resume(returning: HostSnapshot(state: .blocked, message: "Old permission state"))
+        await refresh.value
+        XCTAssertEqual(service.snapshot, control.snapshot)
+        XCTAssertTrue(service.hasServiceSnapshot)
     }
     func testInvalidPortDoesNotRegisterOrOverwriteSettings() async throws {
         let service = makeService()

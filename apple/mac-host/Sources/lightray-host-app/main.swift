@@ -10,6 +10,9 @@ import AppKit
         let appMenu = NSMenu()
         appMenu.addItem(withTitle: "About Lightray Host", action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: "")
         appMenu.addItem(.separator())
+        let settings = appMenu.addItem(withTitle: "Settings…", action: #selector(showSettings), keyEquivalent: ",")
+        settings.target = self
+        appMenu.addItem(.separator())
         appMenu.addItem(withTitle: "Quit Lightray Host", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         item.submenu = appMenu; menu.addItem(item)
         let editItem = NSMenuItem(title: "Edit", action: nil, keyEquivalent: "")
@@ -26,6 +29,7 @@ import AppKit
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
         sharing?.showWindow(nil); return true
     }
+    @objc private func showSettings() { sharing?.showWindow(nil) }
     // Quitting only closes the settings UI. launchd owns the service.
 }
 

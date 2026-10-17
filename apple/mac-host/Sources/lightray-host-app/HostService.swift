@@ -8,7 +8,10 @@ import LightrayHostSupport
     private(set) var busy = false
     private(set) var settings = HostSettings()
     private(set) var configurationError: String?
+    /// Permission flags are authoritative only after a reply from the current service.
+    private(set) var hasServiceSnapshot = false
     private var refreshing = false
+    private var requestingPermission = false
     private var revision = 0
     let store: HostSettingsStore
     let registration: ServiceRegistration
@@ -29,7 +32,7 @@ import LightrayHostSupport
 
     func start(port: UInt16, quality: HostQuality, allowInput: Bool) async {
         guard !busy, configurationError == nil else { return }
-        busy = true; revision += 1; onChange?()
+        busy = true; revision += 1; hasServiceSnapshot = false; onChange?()
         defer { busy = false; onChange?() }
         do {
             var next = settings
@@ -47,7 +50,7 @@ import LightrayHostSupport
 
     func stop() async {
         guard !busy else { return }
-        busy = true; revision += 1; onChange?()
+        busy = true; revision += 1; hasServiceSnapshot = false; onChange?()
         defer { busy = false; onChange?() }
         settings.enabled = false
         var settingsError = configurationError
@@ -66,43 +69,65 @@ import LightrayHostSupport
     }
 
     func refresh() async {
-        guard !busy, !refreshing, configurationError == nil else { return }
+        guard !busy, !refreshing, !requestingPermission, configurationError == nil else { return }
         refreshing = true
         let observedRevision = revision
         defer { refreshing = false; onChange?() }
         switch registration.state {
         case .notRegistered:
+            hasServiceSnapshot = false
             snapshot = HostSnapshot(state: settings.enabled ? .failed : .stopped,
                                     message: settings.enabled ? "The service is not registered. Choose Start Sharing to retry." : "Sharing is off.")
         case .requiresApproval:
+            hasServiceSnapshot = false
             snapshot = HostSnapshot(state: .blocked, message: "Background sharing needs approval in System Settings → Login Items & Extensions.")
         case .notFound:
+            hasServiceSnapshot = false
             snapshot = HostSnapshot(state: .failed, message: "The bundled host service was not found. Reinstall Lightray Host.")
         case .enabled:
             do {
                 let value = try await control.status()
-                if revision == observedRevision { snapshot = value }
+                if revision == observedRevision {
+                    snapshot = value
+                    hasServiceSnapshot = true
+                }
             } catch {
-                if revision == observedRevision { snapshot = HostSnapshot(state: .failed, message: error.localizedDescription) }
+                if revision == observedRevision {
+                    hasServiceSnapshot = false
+                    snapshot = HostSnapshot(state: .failed, message: error.localizedDescription)
+                }
             }
         }
     }
 
     func requestPermission(_ permission: String) async {
-        guard !busy, registration.state == .enabled else {
+        guard !busy, !requestingPermission else { return }
+        guard registration.state == .enabled else {
+            hasServiceSnapshot = false
             snapshot = HostSnapshot(state: .blocked, message: "Choose Start Sharing first, then allow the service's permissions.")
             onChange?(); return
         }
-        do { snapshot = try await control.requestPermission(permission) }
-        catch { snapshot = HostSnapshot(state: .failed, message: error.localizedDescription) }
-        onChange?()
+        requestingPermission = true
+        revision += 1
+        let observedRevision = revision
+        defer { requestingPermission = false; onChange?() }
+        do {
+            let value = try await control.requestPermission(permission)
+            guard revision == observedRevision else { return }
+            snapshot = value
+            hasServiceSnapshot = true
+        } catch {
+            guard revision == observedRevision else { return }
+            hasServiceSnapshot = false
+            snapshot = HostSnapshot(state: .failed, message: error.localizedDescription)
+        }
     }
 
     /// Only update an already approved, enabled service. Never undo a System Settings decision.
     func refreshAfterUpgrade() async {
         guard !busy, configurationError == nil, settings.enabled, registration.state == .enabled,
               settings.registeredBuild != build else { await refresh(); return }
-        busy = true; revision += 1; onChange?()
+        busy = true; revision += 1; hasServiceSnapshot = false; onChange?()
         defer { busy = false; onChange?() }
         do {
             try? await control.stopSharing()

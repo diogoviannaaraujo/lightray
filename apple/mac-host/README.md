@@ -20,17 +20,26 @@ initially disabled. The client and host need no terminal or web runtime.
 
 ## Sharing and login
 
-Open Lightray Host, choose the port, quality, and keyboard/mouse access, then **Start Sharing**.
+Open Lightray Host settings and use the sidebar to choose **General**, **Streaming**,
+**Permissions**, **Pairing**, or **Diagnostics**. Settings are grouped into sections. Choose the
+port, quality, and keyboard/mouse access, then **Start Sharing**. Stop sharing before changing
+these options; they are saved the next time sharing starts. Use **Settings…** (⌘,) to reopen the window.
 The default is port 7373 and Balanced quality (half resolution, 30 fps). Start Sharing registers
 the per-user background service immediately and at subsequent logins. Approve background activity
 in **System Settings → Login Items & Extensions** if requested.
 
-Use **Screen Recording…** and **Accessibility…** to grant permissions to the service that actually
+Warning banners at the top of every settings page offer **Install & Activate** when the service
+is not registered, **Open System Settings** when background approval is needed, or
+**Activate Service** when sharing has failed or stopped. A missing bundled helper requires
+reinstalling the app. Permission banners appear only after the service reports missing access;
+Accessibility is required only when remote control is enabled.
+
+Use **Allow Screen Recording…** and **Allow Accessibility…** to grant permissions to the service that actually
 captures and injects input. macOS may list Screen Recording under **Lightray Host** and
 Accessibility under **LightrayHostService**. Start Sharing first so that process is available. Accessibility is
 optional when keyboard/mouse control is disabled. The UI reports the service's permissions;
 permissions previously granted to the old combined app may need to be granted again.
-After changing permissions, use **Retry Sharing** if macOS requires a fresh process.
+After changing permissions, use **Retry Sharing** in **Diagnostics** if macOS requires a fresh process.
 Permission prompts occur only during explicit setup, not automatically at login.
 
 The background service owns the menu bar indicator. It opens no window or Dock icon at login.
