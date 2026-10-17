@@ -4,16 +4,20 @@ import SwiftUI
 import UIKit
 
 /// The shared low-latency renderer, with iPad touch and physical input translated to host input.
+/// Fingers work as a touchpad and pinch to zoom; a mouse, trackpad or Pencil points directly.
 struct StreamSurface: UIViewRepresentable {
     let renderer: VideoRenderer
     var videoSize: CGSize
     var displayID: UInt32 = 0
     var inputEnabled = true
     var inputResetGeneration: UInt64 = 0
+    var zoomResetGeneration: UInt64 = 0
     var softwareKeyboardVisible = false
     var onInput: (InputMessage) -> Void
     var onFocusLost: () -> Void = {}
     var onKeyboardDismissed: () -> Void = {}
+    var onZoomedChange: (Bool) -> Void = { _ in }
+    var onTouch: () -> Void = {}
 
     func makeUIView(context: Context) -> StreamSurfaceView {
         let view = StreamSurfaceView(frame: .zero)
@@ -24,9 +28,11 @@ struct StreamSurface: UIViewRepresentable {
     func updateUIView(_ view: StreamSurfaceView, context: Context) {
         view.configure(renderer: renderer, videoSize: videoSize, displayID: displayID,
                        inputEnabled: inputEnabled, inputResetGeneration: inputResetGeneration,
+                       zoomResetGeneration: zoomResetGeneration,
                        softwareKeyboardVisible: softwareKeyboardVisible,
                        onInput: onInput, onFocusLost: onFocusLost,
-                       onKeyboardDismissed: onKeyboardDismissed)
+                       onKeyboardDismissed: onKeyboardDismissed,
+                       onZoomedChange: onZoomedChange, onTouch: onTouch)
     }
 
     static func dismantleUIView(_ view: StreamSurfaceView, coordinator: ()) {
@@ -36,14 +42,22 @@ struct StreamSurface: UIViewRepresentable {
 
 @MainActor
 final class StreamSurfaceView: UIView, UIKeyInput, UIGestureRecognizerDelegate, UIPointerInteractionDelegate {
+    private enum TwoFingerMode { case undecided, zoom, scroll }
+    /// How far two fingers must drag, or a pinch scale (as a logarithm), before deciding which it is.
+    private static let scrollDecisionDistance: CGFloat = 20
+    private static let zoomDecisionScale: CGFloat = 0.1
+
     private var renderer: VideoRenderer?
     private var videoSize = CGSize.zero
     private var displayID: UInt32 = 0
     private var inputEnabled = false
     private var inputResetGeneration: UInt64 = 0
+    private var zoomResetGeneration: UInt64 = 0
     private var onInput: ((InputMessage) -> Void)?
     private var onFocusLost: (() -> Void)?
     private var onKeyboardDismissed: (() -> Void)?
+    private var onZoomedChange: ((Bool) -> Void)?
+    private var onTouch: (() -> Void)?
     private(set) var softwareKeyboardVisible = false
     private let hiddenKeyboard = UIView(frame: .zero)
     private var keyboard = RemoteKeyboard()
@@ -52,13 +66,36 @@ final class StreamSurfaceView: UIView, UIKeyInput, UIGestureRecognizerDelegate, 
     private var scrollRemainder = CGPoint.zero
     private var pointerInteraction: UIPointerInteraction!
 
+    /// Where this client last put the host's cursor, which the host draws into the picture.
+    private(set) var cursor = CGPoint(x: 0.5, y: 0.5)
+    private var cursorSynced = false
+    private(set) var zoom: CGFloat = 1
+    /// Where the whole picture is shown, beyond the surface's edges once zoomed.
+    private(set) var contentFrame = CGRect.zero
+    private var followMode = RemoteViewport.Follow.center
+    /// Pencil moves the cursor without moving the picture, and so does a change of follow mode;
+    /// the next update animates to catch up.
+    private var viewportStale = false
+    private var reportedZoomed: Bool?
+    private var tapDrag = TapDrag()
+    private var releaseTask: Task<Void, Never>?
+    private var twoFingerMode = TwoFingerMode.undecided
+    private var pendingScroll = CGPoint.zero
+    private var pinchStartZoom: CGFloat = 1
+
+    private let touchScroll = UIPanGestureRecognizer()
+    private let touchPinch = UIPinchGestureRecognizer()
+    private let pencilTap = UITapGestureRecognizer()
+    private let pencilDrag = UIPanGestureRecognizer()
+    private let pointerScroll = UIPanGestureRecognizer()
+    private let pointerPinch = UIPinchGestureRecognizer()
+
     private var canSendInput: Bool {
         inputEnabled && window?.isKeyWindow == true && window?.windowScene?.activationState == .foregroundActive
     }
 
-    private var videoRect: CGRect {
-        guard videoSize.width > 0, videoSize.height > 0, bounds.width > 0, bounds.height > 0 else { return .zero }
-        return AVMakeRect(aspectRatio: videoSize, insideRect: bounds)
+    private var viewport: RemoteViewport {
+        RemoteViewport(bounds: bounds.size, videoSize: videoSize, zoom: zoom)
     }
 
     override init(frame: CGRect) {
@@ -67,32 +104,47 @@ final class StreamSurfaceView: UIView, UIKeyInput, UIGestureRecognizerDelegate, 
         isMultipleTouchEnabled = true
         clipsToBounds = true
         accessibilityLabel = "Remote display"
-        accessibilityHint = "Tap to click. Drag with one finger. Tap with two fingers to right-click. Drag with two fingers to scroll."
+        accessibilityHint = "Works as a touchpad. Drag to move the pointer, tap to click, tap with two fingers to right-click, double-tap and drag to drag, drag with two fingers to scroll, and pinch to zoom."
 
+        let fingers = [NSNumber(value: UITouch.TouchType.direct.rawValue)]
         let tap = UITapGestureRecognizer(target: self, action: #selector(tapped(_:)))
         let secondaryTap = UITapGestureRecognizer(target: self, action: #selector(secondaryTapped(_:)))
         secondaryTap.numberOfTouchesRequired = 2
-        let drag = UIPanGestureRecognizer(target: self, action: #selector(dragged(_:)))
-        drag.maximumNumberOfTouches = 1
-        let scroll = UIPanGestureRecognizer(target: self, action: #selector(scrolled(_:)))
-        scroll.minimumNumberOfTouches = 2
-        scroll.maximumNumberOfTouches = 2
-
-        for gesture in [tap, secondaryTap, drag, scroll] {
-            gesture.allowedTouchTypes = [NSNumber(value: UITouch.TouchType.direct.rawValue),
-                                         NSNumber(value: UITouch.TouchType.pencil.rawValue)]
+        let move = UIPanGestureRecognizer(target: self, action: #selector(touchpadMoved(_:)))
+        move.maximumNumberOfTouches = 1
+        touchScroll.addTarget(self, action: #selector(touchScrolled(_:)))
+        touchScroll.minimumNumberOfTouches = 2
+        touchScroll.maximumNumberOfTouches = 2
+        touchPinch.addTarget(self, action: #selector(pinched(_:)))
+        for gesture in [tap, secondaryTap, move, touchScroll, touchPinch] {
+            gesture.allowedTouchTypes = fingers
             gesture.delegate = self
             addGestureRecognizer(gesture)
         }
         tap.require(toFail: secondaryTap)
-        tap.require(toFail: drag)
-        secondaryTap.require(toFail: scroll)
+        tap.require(toFail: move)
+        secondaryTap.require(toFail: touchScroll)
+        secondaryTap.require(toFail: touchPinch)
 
-        let pointerScroll = UIPanGestureRecognizer(target: self, action: #selector(scrolled(_:)))
+        pencilTap.addTarget(self, action: #selector(pencilTapped(_:)))
+        pencilDrag.addTarget(self, action: #selector(pencilDragged(_:)))
+        pencilDrag.maximumNumberOfTouches = 1
+        for gesture in [pencilTap, pencilDrag] {
+            gesture.allowedTouchTypes = [NSNumber(value: UITouch.TouchType.pencil.rawValue)]
+            gesture.delegate = self
+            addGestureRecognizer(gesture)
+        }
+        pencilTap.require(toFail: pencilDrag)
+
+        pointerScroll.addTarget(self, action: #selector(pointerScrolled(_:)))
         pointerScroll.allowedTouchTypes = []
         pointerScroll.allowedScrollTypesMask = .all
-        pointerScroll.delegate = self
-        addGestureRecognizer(pointerScroll)
+        pointerPinch.addTarget(self, action: #selector(pinched(_:)))
+        pointerPinch.allowedTouchTypes = [NSNumber(value: UITouch.TouchType.indirectPointer.rawValue)]
+        for gesture in [pointerScroll, pointerPinch] {
+            gesture.delegate = self
+            addGestureRecognizer(gesture)
+        }
 
         let hover = UIHoverGestureRecognizer(target: self, action: #selector(hovered(_:)))
         hover.allowedTouchTypes = [NSNumber(value: UITouch.TouchType.indirectPointer.rawValue)]
@@ -116,12 +168,15 @@ final class StreamSurfaceView: UIView, UIKeyInput, UIGestureRecognizerDelegate, 
     required init?(coder: NSCoder) { fatalError("Use init(frame:)") }
 
     func configure(renderer: VideoRenderer, videoSize: CGSize, displayID: UInt32, inputEnabled: Bool,
-                   inputResetGeneration: UInt64,
+                   inputResetGeneration: UInt64, zoomResetGeneration: UInt64 = 0,
                    softwareKeyboardVisible: Bool = false,
                    onInput: @escaping (InputMessage) -> Void, onFocusLost: @escaping () -> Void,
-                   onKeyboardDismissed: @escaping () -> Void = {}) {
+                   onKeyboardDismissed: @escaping () -> Void = {},
+                   onZoomedChange: @escaping (Bool) -> Void = { _ in }, onTouch: @escaping () -> Void = {}) {
         let changesTarget = self.renderer !== renderer || self.displayID != displayID
         let resetsInput = self.inputResetGeneration != inputResetGeneration
+        let resetsView = changesTarget || self.videoSize != videoSize
+        let resetsZoom = resetsView || self.zoomResetGeneration != zoomResetGeneration
         if changesTarget || resetsInput || (self.inputEnabled && !inputEnabled) {
             releaseEverything()
             for gesture in gestureRecognizers ?? [] { gesture.isEnabled = false }
@@ -138,8 +193,18 @@ final class StreamSurfaceView: UIView, UIKeyInput, UIGestureRecognizerDelegate, 
         self.onInput = onInput
         self.onFocusLost = onFocusLost
         self.onKeyboardDismissed = onKeyboardDismissed
+        self.onZoomedChange = onZoomedChange
+        self.onTouch = onTouch
         self.inputEnabled = inputEnabled
         self.inputResetGeneration = inputResetGeneration
+        self.zoomResetGeneration = zoomResetGeneration
+        if resetsView {
+            // Nothing says where the host's cursor is now; start from the middle.
+            cursor = CGPoint(x: 0.5, y: 0.5)
+            cursorSynced = false
+            followMode = .center
+        }
+        if resetsZoom { setZoom(1, animated: !resetsView) } else { reportZoom() }
         for gesture in gestureRecognizers ?? [] where gesture.isEnabled != inputEnabled {
             gesture.isEnabled = inputEnabled
         }
@@ -158,15 +223,22 @@ final class StreamSurfaceView: UIView, UIKeyInput, UIGestureRecognizerDelegate, 
         onInput = nil
         onFocusLost = nil
         onKeyboardDismissed = nil
+        onZoomedChange = nil
+        onTouch = nil
         inputEnabled = false
     }
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-        renderer?.displayLayer.frame = bounds
-        CATransaction.commit()
+        if let displayLayer = renderer?.displayLayer {
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)
+            // The layer carries the zoom transform, so set its size and place rather than its frame.
+            displayLayer.bounds = CGRect(origin: .zero, size: bounds.size)
+            displayLayer.position = CGPoint(x: bounds.midX, y: bounds.midY)
+            CATransaction.commit()
+        }
+        applyViewport()
         pointerInteraction.invalidate()
     }
 
@@ -214,6 +286,11 @@ final class StreamSurfaceView: UIView, UIKeyInput, UIGestureRecognizerDelegate, 
     }
 
     private func releaseEverything() {
+        releaseTask?.cancel()
+        releaseTask = nil
+        tapDrag = TapDrag()
+        twoFingerMode = .undecided
+        pendingScroll = .zero
         emit(keyboard.releaseAll())
         for button in heldButtons.sorted(by: { $0.rawValue < $1.rawValue }) {
             onInput?(.button(button, down: false))
@@ -277,68 +354,230 @@ final class StreamSurfaceView: UIView, UIKeyInput, UIGestureRecognizerDelegate, 
         emit(keyboard.key(usage, down: false))
     }
 
-    // MARK: Touch gestures
+    // MARK: Cursor and zoom
+
+    /// Moves the picture to follow the cursor, as the most recent kind of input wants.
+    private func applyViewport(animated: Bool = false) {
+        let viewport = viewport
+        contentFrame = viewport.contentFrame(cursor: cursor, follow: followMode)
+        viewportStale = false
+        guard let displayLayer = renderer?.displayLayer else { return }
+        CATransaction.begin()
+        CATransaction.setDisableActions(!animated)
+        displayLayer.setAffineTransform(viewport.transform(for: contentFrame))
+        CATransaction.commit()
+    }
+
+    private func setFollowMode(_ mode: RemoteViewport.Follow) {
+        guard followMode != mode else { return }
+        followMode = mode
+        viewportStale = true
+    }
+
+    private func follow(_ mode: RemoteViewport.Follow) {
+        setFollowMode(mode)
+        applyViewport(animated: viewportStale && zoom > 1)
+    }
+
+    /// Zooms around the cursor, from 1× (the whole display) to `RemoteViewport.maximumZoom`.
+    func setZoom(_ value: CGFloat, animated: Bool = false) {
+        zoom = RemoteViewport.clampedZoom(value)
+        applyViewport(animated: animated || viewportStale)
+        pointerInteraction.invalidate()
+        reportZoom()
+    }
+
+    private func reportZoom() {
+        let zoomed = zoom > 1
+        guard reportedZoomed != zoomed else { return }
+        reportedZoomed = zoomed
+        // SwiftUI may be updating this view; report once it has finished.
+        Task { [weak self] in self?.onZoomedChange?(zoomed) }
+    }
+
+    private func sendCursor() {
+        guard canSendInput else { return }
+        cursorSynced = true
+        onInput?(.pointer(x: UInt16((cursor.x * 65535).rounded()), y: UInt16((cursor.y * 65535).rounded()),
+                          display: displayID))
+    }
+
+    /// The host's cursor may be anywhere until this client first places it.
+    private func syncCursor() {
+        if !cursorSynced { sendCursor() }
+    }
+
+    /// Touchpad movement: moves the cursor by a finger's translation, keeping it centred when zoomed.
+    func moveCursor(by translation: CGPoint, speed: CGFloat = 0) {
+        guard canSendInput else { return }
+        let delta = viewport.hostDelta(forTranslation: translation, speed: speed)
+        cursor = CGPoint(x: min(max(cursor.x + delta.dx, 0), 1), y: min(max(cursor.y + delta.dy, 0), 1))
+        follow(.center)
+        sendCursor()
+    }
+
+    /// Pencil: points at the picture where it touches, without moving the picture under it.
+    @discardableResult
+    private func pointDirectly(at point: CGPoint, clamp: Bool = false) -> Bool {
+        guard canSendInput, let host = RemoteViewport.hostPoint(at: point, in: contentFrame, clamp: clamp) else {
+            return false
+        }
+        cursor = host
+        viewportStale = true
+        sendCursor()
+        return true
+    }
+
+    /// Mouse and trackpad: the whole surface spans the display, and a zoomed picture pans with
+    /// the pointer so the cursor stays under it.
+    @discardableResult
+    private func pointWithMouse(at point: CGPoint, clamp: Bool = false) -> Bool {
+        guard canSendInput, let host = viewport.hostPoint(forPointerAt: point, clamp: clamp) else { return false }
+        cursor = host
+        follow(.proportional)
+        sendCursor()
+        return true
+    }
+
+    // MARK: Touchpad
 
     override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         // Hover may enter through a letterbox margin and subsequently move into the picture.
         if gestureRecognizer is UIHoverGestureRecognizer { return true }
-        return canSendInput && videoRect.contains(gestureRecognizer.location(in: self))
+        guard canSendInput else { return false }
+        let location = gestureRecognizer.location(in: self)
+        if gestureRecognizer === pencilTap || gestureRecognizer === pencilDrag {
+            return contentFrame.contains(location)
+        }
+        if gestureRecognizer === pointerScroll { return viewport.hostPoint(forPointerAt: location) != nil }
+        // Fingers can use the whole surface, letterbox included.
+        return true
     }
 
-    @objc private func tapped(_ gesture: UITapGestureRecognizer) {
-        click(.left, at: gesture.location(in: self))
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer,
+                           shouldRecognizeSimultaneouslyWith other: UIGestureRecognizer) -> Bool {
+        // Two fingers both pinch and drag; whichever passes its threshold first decides.
+        let pair = [gestureRecognizer, other]
+        return pair.contains(touchPinch) && pair.contains(touchScroll)
     }
 
-    @objc private func secondaryTapped(_ gesture: UITapGestureRecognizer) {
-        click(.right, at: gesture.location(in: self))
-    }
-
-    private func click(_ button: InputMessage.PointerButton, at point: CGPoint) {
-        guard canSendInput, movePointer(to: point) else { return }
-        becomeFirstResponder()
-        setButton(button, down: true)
-        setButton(button, down: false)
-    }
-
-    @objc private func dragged(_ gesture: UIPanGestureRecognizer) {
-        switch gesture.state {
-        case .began:
-            guard canSendInput else { return }
-            becomeFirstResponder()
-            let point = gesture.location(in: self)
-            let translation = gesture.translation(in: self)
-            // Press where the gesture began, before moving to its current position.
-            guard movePointer(to: CGPoint(x: point.x - translation.x, y: point.y - translation.y)) else { return }
-            setButton(.left, down: true)
-            _ = movePointer(to: point, clamp: true)
-        case .changed:
-            guard heldButtons.contains(.left) else { return }
-            _ = movePointer(to: gesture.location(in: self), clamp: true)
-        case .ended:
-            if heldButtons.contains(.left) { _ = movePointer(to: gesture.location(in: self), clamp: true) }
-            setButton(.left, down: false)
-        case .cancelled, .failed:
-            setButton(.left, down: false)
-        default: break
+    private func perform(_ actions: [TapDrag.Action]) {
+        for action in actions {
+            switch action {
+            case .press: setButton(.left, down: true)
+            case .release: setButton(.left, down: false)
+            case .cancelRelease:
+                releaseTask?.cancel()
+                releaseTask = nil
+            case .scheduleRelease:
+                releaseTask?.cancel()
+                releaseTask = Task { [weak self] in
+                    do { try await Task.sleep(for: TapDrag.holdInterval) } catch { return }
+                    guard let self else { return }
+                    self.perform(self.tapDrag.handle(.releaseTimer))
+                }
+            }
         }
     }
 
-    @objc private func scrolled(_ gesture: UIPanGestureRecognizer) {
+    @objc private func tapped(_ gesture: UITapGestureRecognizer) {
+        guard canSendInput else { return }
+        becomeFirstResponder()
+        syncCursor()
+        perform(tapDrag.handle(.tap))
+    }
+
+    @objc private func secondaryTapped(_ gesture: UITapGestureRecognizer) {
+        guard canSendInput else { return }
+        becomeFirstResponder()
+        perform(tapDrag.handle(.otherGesture))
+        syncCursor()
+        setButton(.right, down: true)
+        setButton(.right, down: false)
+    }
+
+    @objc private func touchpadMoved(_ gesture: UIPanGestureRecognizer) {
+        let state = gesture.state
+        guard state == .began || state == .changed || state == .ended else {
+            if state == .cancelled || state == .failed { perform(tapDrag.handle(.dragEnded)) }
+            return
+        }
+        if canSendInput {
+            if state == .began {
+                becomeFirstResponder()
+                // After a tap, this keeps its button held for the drag.
+                perform(tapDrag.handle(.dragBegan))
+            }
+            let translation = gesture.translation(in: self)
+            gesture.setTranslation(.zero, in: self)
+            let velocity = gesture.velocity(in: self)
+            moveCursor(by: translation, speed: hypot(velocity.x, velocity.y))
+        }
+        if state == .ended { perform(tapDrag.handle(.dragEnded)) }
+    }
+
+    @objc private func touchScrolled(_ gesture: UIPanGestureRecognizer) {
         guard canSendInput else { return }
         switch gesture.state {
         case .began:
+            if !touchPinch.isActive { twoFingerMode = .undecided }
+            pendingScroll = .zero
             scrollRemainder = .zero
             becomeFirstResponder()
-            _ = movePointer(to: gesture.location(in: self))
         case .changed, .ended: break
         default: return
         }
         let translation = gesture.translation(in: self)
         gesture.setTranslation(.zero, in: self)
-        let rect = videoRect
-        guard rect.width > 0, rect.height > 0 else { return }
-        let x = translation.x * videoSize.width / rect.width + scrollRemainder.x
-        let y = translation.y * videoSize.height / rect.height + scrollRemainder.y
+        switch twoFingerMode {
+        case .zoom: break
+        case .scroll: scroll(by: translation)
+        case .undecided:
+            pendingScroll.x += translation.x
+            pendingScroll.y += translation.y
+            guard hypot(pendingScroll.x, pendingScroll.y) > Self.scrollDecisionDistance else { return }
+            twoFingerMode = .scroll
+            perform(tapDrag.handle(.otherGesture))
+            syncCursor()
+            scroll(by: pendingScroll)
+            pendingScroll = .zero
+        }
+    }
+
+    @objc private func pinched(_ gesture: UIPinchGestureRecognizer) {
+        let touch = gesture === touchPinch
+        switch gesture.state {
+        case .began:
+            pinchStartZoom = zoom
+            if touch, !touchScroll.isActive { twoFingerMode = .undecided }
+        case .changed: break
+        case .ended, .cancelled:
+            // Settle a pinch that barely left the whole display.
+            if zoom > 1, zoom < 1.05 { setZoom(1, animated: true) }
+            return
+        default: return
+        }
+        if touch {
+            switch twoFingerMode {
+            case .scroll: return
+            case .zoom: break
+            case .undecided:
+                guard abs(log(gesture.scale)) > Self.zoomDecisionScale else { return }
+                twoFingerMode = .zoom
+                perform(tapDrag.handle(.otherGesture))
+            }
+        }
+        // Zoom centres on the cursor wherever the pinch is.
+        setFollowMode(touch ? .center : .proportional)
+        setZoom(pinchStartZoom * gesture.scale)
+    }
+
+    private func scroll(by translation: CGPoint) {
+        let size = viewport.contentSize
+        guard size.width > 0, size.height > 0 else { return }
+        // Scroll the host by as many pixels as the fingers cross on the picture as shown.
+        let x = translation.x * videoSize.width / size.width + scrollRemainder.x
+        let y = translation.y * videoSize.height / size.height + scrollRemainder.y
         let dx = x.rounded(.towardZero)
         let dy = y.rounded(.towardZero)
         scrollRemainder = CGPoint(x: x - dx, y: y - dy)
@@ -346,22 +585,72 @@ final class StreamSurfaceView: UIView, UIKeyInput, UIGestureRecognizerDelegate, 
         onInput?(.scroll(dx: Int16(clamping: Int(dx)), dy: Int16(clamping: Int(dy)), units: .pixels))
     }
 
+    /// A touch that lands while a tap holds the button, then lifts without dragging or tapping,
+    /// lets go. Recognisers for the same touch act first, so a second tap still makes a double click.
+    private func directTouchesEnded(_ touches: Set<UITouch>, event: UIEvent?) {
+        guard tapDrag.state == .armed, touches.contains(where: { $0.type == .direct }) else { return }
+        let fingerDown = event?.allTouches?.contains {
+            $0.type == .direct && $0.phase != .ended && $0.phase != .cancelled
+        } ?? false
+        guard !fingerDown else { return }
+        Task { [weak self] in
+            guard let self else { return }
+            self.perform(self.tapDrag.handle(.touchesEndedWithoutGesture))
+        }
+    }
+
+    // MARK: Pencil
+
+    @objc private func pencilTapped(_ gesture: UITapGestureRecognizer) {
+        guard canSendInput, pointDirectly(at: gesture.location(in: self)) else { return }
+        becomeFirstResponder()
+        setButton(.left, down: true)
+        setButton(.left, down: false)
+    }
+
+    @objc private func pencilDragged(_ gesture: UIPanGestureRecognizer) {
+        switch gesture.state {
+        case .began:
+            guard canSendInput else { return }
+            becomeFirstResponder()
+            let point = gesture.location(in: self)
+            let translation = gesture.translation(in: self)
+            // Press where the gesture began, before moving to its current position.
+            guard pointDirectly(at: CGPoint(x: point.x - translation.x, y: point.y - translation.y)) else { return }
+            setButton(.left, down: true)
+            pointDirectly(at: point, clamp: true)
+        case .changed:
+            guard heldButtons.contains(.left) else { return }
+            pointDirectly(at: gesture.location(in: self), clamp: true)
+        case .ended:
+            if heldButtons.contains(.left) { pointDirectly(at: gesture.location(in: self), clamp: true) }
+            setButton(.left, down: false)
+        case .cancelled, .failed:
+            setButton(.left, down: false)
+        default: break
+        }
+    }
+
     // MARK: Mouse and trackpad
 
     @objc private func hovered(_ gesture: UIHoverGestureRecognizer) {
         guard gesture.state == .began || gesture.state == .changed else { return }
-        _ = movePointer(to: gesture.location(in: self))
+        pointWithMouse(at: gesture.location(in: self))
     }
 
-    @discardableResult
-    private func movePointer(to point: CGPoint, clamp: Bool = false) -> Bool {
-        guard canSendInput else { return false }
-        let rect = videoRect
-        guard rect.width > 0, rect.height > 0, clamp || rect.contains(point) else { return false }
-        let x = min(max((point.x - rect.minX) / rect.width, 0), 1)
-        let y = min(max((point.y - rect.minY) / rect.height, 0), 1)
-        onInput?(.pointer(x: UInt16((x * 65535).rounded()), y: UInt16((y * 65535).rounded()), display: displayID))
-        return true
+    @objc private func pointerScrolled(_ gesture: UIPanGestureRecognizer) {
+        guard canSendInput else { return }
+        switch gesture.state {
+        case .began:
+            scrollRemainder = .zero
+            becomeFirstResponder()
+            pointWithMouse(at: gesture.location(in: self))
+        case .changed, .ended: break
+        default: return
+        }
+        let translation = gesture.translation(in: self)
+        gesture.setTranslation(.zero, in: self)
+        scroll(by: translation)
     }
 
     private func setButton(_ button: InputMessage.PointerButton, down: Bool) {
@@ -377,7 +666,7 @@ final class StreamSurfaceView: UIView, UIKeyInput, UIGestureRecognizerDelegate, 
         guard let touch = touches.first(where: { $0.type == .indirectPointer }) else { return }
         guard starting || pointerSequenceActive else { return }
         let wasDragging = !heldButtons.isEmpty
-        guard canSendInput, movePointer(to: touch.location(in: self), clamp: wasDragging) else {
+        guard canSendInput, pointWithMouse(at: touch.location(in: self), clamp: wasDragging) else {
             if ending { releaseEverything() }
             return
         }
@@ -394,6 +683,8 @@ final class StreamSurfaceView: UIView, UIKeyInput, UIGestureRecognizerDelegate, 
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        onTouch?()
+        if canSendInput, touches.contains(where: { $0.type == .direct }) { perform(tapDrag.handle(.touchDown)) }
         updatePointerTouches(touches, event: event, starting: true)
         super.touchesBegan(touches, with: event)
     }
@@ -405,18 +696,20 @@ final class StreamSurfaceView: UIView, UIKeyInput, UIGestureRecognizerDelegate, 
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         updatePointerTouches(touches, event: event, ending: true)
+        directTouchesEnded(touches, event: event)
         super.touchesEnded(touches, with: event)
     }
 
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         if touches.contains(where: { $0.type == .indirectPointer }) { releaseEverything() }
+        directTouchesEnded(touches, event: event)
         super.touchesCancelled(touches, with: event)
     }
 
     func pointerInteraction(_ interaction: UIPointerInteraction, regionFor request: UIPointerRegionRequest,
                             defaultRegion: UIPointerRegion) -> UIPointerRegion? {
-        guard canSendInput, videoRect.contains(request.location) else { return nil }
-        return UIPointerRegion(rect: videoRect)
+        guard canSendInput, viewport.hostPoint(forPointerAt: request.location) != nil else { return nil }
+        return UIPointerRegion(rect: contentFrame.intersection(bounds))
     }
 
     func pointerInteraction(_ interaction: UIPointerInteraction, styleFor region: UIPointerRegion) -> UIPointerStyle? {
@@ -464,4 +757,8 @@ final class StreamSurfaceView: UIView, UIKeyInput, UIGestureRecognizerDelegate, 
         emit(keyboard.releaseAll())
         super.pressesCancelled(presses, with: event)
     }
+}
+
+private extension UIGestureRecognizer {
+    var isActive: Bool { state == .began || state == .changed }
 }

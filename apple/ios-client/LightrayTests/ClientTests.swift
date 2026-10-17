@@ -66,6 +66,177 @@ final class ClientTests: XCTestCase {
         XCTAssertEqual(inputs, text + keys)
     }
 
+    func testViewportFitsAndCentresOnTheCursor() {
+        let bounds = CGSize(width: 1000, height: 1000)
+        var viewport = RemoteViewport(bounds: bounds, videoSize: CGSize(width: 2000, height: 1000))
+        let fitted = CGRect(x: 0, y: 250, width: 1000, height: 500)
+        XCTAssertEqual(viewport.fitted, fitted)
+        for follow in [RemoteViewport.Follow.center, .proportional] {
+            XCTAssertEqual(viewport.contentFrame(cursor: CGPoint(x: 0.9, y: 0.1), follow: follow), fitted)
+        }
+
+        // Wider than the surface, but still letterboxed vertically.
+        viewport.zoom = 2
+        XCTAssertEqual(viewport.contentFrame(cursor: CGPoint(x: 0.5, y: 0.5), follow: .center),
+                       CGRect(x: -500, y: 0, width: 2000, height: 1000))
+        XCTAssertEqual(viewport.contentFrame(cursor: CGPoint(x: 0.4, y: 0.5), follow: .center).minX, -300)
+        // Short of the picture's edges, so no empty space shows.
+        XCTAssertEqual(viewport.contentFrame(cursor: .zero, follow: .center).minX, 0)
+        XCTAssertEqual(viewport.contentFrame(cursor: CGPoint(x: 1, y: 1), follow: .center).minX, -1000)
+
+        viewport.zoom = 4
+        XCTAssertEqual(viewport.contentFrame(cursor: CGPoint(x: 0.5, y: 0.25), follow: .center),
+                       CGRect(x: -1500, y: 0, width: 4000, height: 2000))
+
+        viewport.zoom = 3
+        let target = viewport.contentFrame(cursor: CGPoint(x: 0.7, y: 0.6), follow: .center)
+        let centre = CGPoint(x: bounds.width / 2, y: bounds.height / 2)
+        let moved = fitted.offsetBy(dx: -centre.x, dy: -centre.y)
+            .applying(viewport.transform(for: target))
+            .offsetBy(dx: centre.x, dy: centre.y)
+        assertEqual(moved, target)
+
+        viewport.zoom = 10
+        XCTAssertEqual(viewport.zoom, RemoteViewport.maximumZoom)
+        viewport.zoom = 0.5
+        XCTAssertEqual(viewport.zoom, 1)
+    }
+
+    func testMouseMagnifierKeepsTheCursorUnderThePointer() throws {
+        let bounds = CGSize(width: 1000, height: 1000)
+        let video = CGSize(width: 2000, height: 1000)
+        let zoomed = RemoteViewport(bounds: bounds, videoSize: video, zoom: 3)
+        for point in [CGPoint.zero, CGPoint(x: 250, y: 400), CGPoint(x: 730, y: 90), CGPoint(x: 1000, y: 1000)] {
+            let host = try XCTUnwrap(zoomed.hostPoint(forPointerAt: point))
+            let frame = zoomed.contentFrame(cursor: host, follow: .proportional)
+            XCTAssertEqual(frame.minX + host.x * frame.width, point.x, accuracy: 0.001)
+            XCTAssertEqual(frame.minY + host.y * frame.height, point.y, accuracy: 0.001)
+            XCTAssertTrue(frame.contains(CGRect(origin: .zero, size: bounds)))
+        }
+
+        // At 1×, a letterbox margin is off the display unless clamped.
+        let fit = RemoteViewport(bounds: bounds, videoSize: video)
+        XCTAssertEqual(fit.hostPoint(forPointerAt: CGPoint(x: 250, y: 500)), CGPoint(x: 0.25, y: 0.5))
+        XCTAssertNil(fit.hostPoint(forPointerAt: CGPoint(x: 500, y: 100)))
+        XCTAssertEqual(fit.hostPoint(forPointerAt: CGPoint(x: 500, y: 100), clamp: true), CGPoint(x: 0.5, y: 0))
+        XCTAssertEqual(RemoteViewport.hostPoint(at: CGPoint(x: 500, y: 375), in: fit.fitted), CGPoint(x: 0.5, y: 0.25))
+        XCTAssertNil(RemoteViewport.hostPoint(at: CGPoint(x: 500, y: 100), in: fit.fitted))
+    }
+
+    func testTouchpadMovementScalesWithZoomAndSpeed() {
+        var viewport = RemoteViewport(bounds: CGSize(width: 1000, height: 1000), videoSize: CGSize(width: 2000, height: 1000))
+        let slow = viewport.hostDelta(forTranslation: CGPoint(x: 100, y: 50), speed: 0)
+        XCTAssertEqual(slow.dx, 0.1, accuracy: 1e-9)
+        XCTAssertEqual(slow.dy, 0.1, accuracy: 1e-9)
+        viewport.zoom = 2
+        let zoomed = viewport.hostDelta(forTranslation: CGPoint(x: 100, y: 50), speed: 0)
+        XCTAssertEqual(zoomed.dx, 0.05, accuracy: 1e-9)
+        XCTAssertEqual(zoomed.dy, 0.05, accuracy: 1e-9)
+        let fast = viewport.hostDelta(forTranslation: CGPoint(x: 100, y: 0), speed: RemoteViewport.accelerationSpeed)
+        XCTAssertEqual(fast.dx, 0.1, accuracy: 1e-9)
+        let fastest = viewport.hostDelta(forTranslation: CGPoint(x: 100, y: 0), speed: 1_000_000)
+        XCTAssertEqual(fastest.dx, 0.05 * (1 + RemoteViewport.maximumAcceleration), accuracy: 1e-9)
+    }
+
+    func testTapDragClicksDoubleClicksAndDrags() {
+        var single = TapDrag()
+        XCTAssertEqual(single.handle(.tap), [.press, .scheduleRelease])
+        XCTAssertEqual(single.handle(.releaseTimer), [.release])
+        XCTAssertEqual(single.state, .idle)
+        XCTAssertEqual(single.handle(.releaseTimer), [])
+
+        var double = TapDrag()
+        _ = double.handle(.tap)
+        XCTAssertEqual(double.handle(.touchDown), [.cancelRelease])
+        XCTAssertEqual(double.handle(.tap), [.cancelRelease, .release, .press, .scheduleRelease])
+        XCTAssertEqual(double.handle(.releaseTimer), [.release])
+
+        var drag = TapDrag()
+        _ = drag.handle(.tap)
+        _ = drag.handle(.touchDown)
+        XCTAssertEqual(drag.handle(.dragBegan), [])
+        XCTAssertEqual(drag.state, .dragging)
+        XCTAssertEqual(drag.handle(.touchesEndedWithoutGesture), [])
+        XCTAssertEqual(drag.handle(.dragEnded), [.release])
+        XCTAssertEqual(drag.state, .idle)
+
+        var held = TapDrag()
+        _ = held.handle(.tap)
+        _ = held.handle(.touchDown)
+        XCTAssertEqual(held.handle(.touchesEndedWithoutGesture), [.release])
+
+        var interrupted = TapDrag()
+        _ = interrupted.handle(.tap)
+        XCTAssertEqual(interrupted.handle(.otherGesture), [.cancelRelease, .release])
+
+        // Moving the pointer without tapping first never presses.
+        var move = TapDrag()
+        XCTAssertEqual(move.handle(.touchDown), [])
+        XCTAssertEqual(move.handle(.dragBegan), [])
+        XCTAssertEqual(move.handle(.dragEnded), [])
+        XCTAssertEqual(move.handle(.otherGesture), [])
+    }
+
+    func testTouchpadCursorAndZoomOnTheSurface() async throws {
+        let window = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first?.keyWindow)
+        let previous = window.rootViewController
+        let controller = UIViewController()
+        let surface = StreamSurfaceView(frame: window.bounds)
+        let renderer = VideoRenderer()
+        let video = CGSize(width: 1280, height: 720)
+        var inputs: [InputMessage] = []
+        var zoomReports: [Bool] = []
+        let onInput: (InputMessage) -> Void = { inputs.append($0) }
+        let onZoomedChange: (Bool) -> Void = { zoomReports.append($0) }
+        surface.configure(renderer: renderer, videoSize: video, displayID: 1, inputEnabled: true,
+                          inputResetGeneration: 0, onInput: onInput, onFocusLost: {},
+                          onZoomedChange: onZoomedChange)
+        controller.view = surface
+        window.rootViewController = controller
+        defer {
+            surface.detach()
+            window.rootViewController = previous
+        }
+        try await waitUntil { surface.isFirstResponder }
+        surface.layoutIfNeeded()
+
+        let fit = RemoteViewport(bounds: surface.bounds.size, videoSize: video)
+        XCTAssertEqual(surface.contentFrame, fit.fitted)
+        // The cursor starts in the middle; a quarter of the picture's width moves it a quarter.
+        surface.moveCursor(by: CGPoint(x: fit.contentSize.width / 4, y: 0))
+        XCTAssertEqual(inputs, [.pointer(x: 49151, y: 32768, display: 1)])
+
+        surface.setZoom(2)
+        try await waitUntil { zoomReports == [false, true] }
+        var zoomed = fit
+        zoomed.zoom = 2
+        let centred = zoomed.contentFrame(cursor: CGPoint(x: 0.75, y: 0.5), follow: .center)
+        XCTAssertEqual(surface.contentFrame, centred)
+        XCTAssertEqual(renderer.displayLayer.affineTransform(), zoomed.transform(for: centred))
+        // At 2×, the same movement covers half as much of the display, and the picture follows.
+        surface.moveCursor(by: CGPoint(x: -fit.contentSize.width / 4, y: 0))
+        XCTAssertEqual(surface.cursor.x, 0.625, accuracy: 0.0001)
+        XCTAssertEqual(surface.contentFrame, zoomed.contentFrame(cursor: surface.cursor, follow: .center))
+
+        // Zooming out keeps the cursor where the host has it.
+        surface.configure(renderer: renderer, videoSize: video, displayID: 1, inputEnabled: true,
+                          inputResetGeneration: 0, zoomResetGeneration: 1, onInput: onInput, onFocusLost: {},
+                          onZoomedChange: onZoomedChange)
+        XCTAssertEqual(surface.zoom, 1)
+        XCTAssertEqual(surface.contentFrame, fit.fitted)
+        XCTAssertEqual(renderer.displayLayer.affineTransform(), .identity)
+        XCTAssertEqual(surface.cursor.x, 0.625, accuracy: 0.0001)
+        try await waitUntil { zoomReports == [false, true, false] }
+
+        // Another display starts over at 1×, with the cursor in the middle.
+        surface.setZoom(3)
+        surface.configure(renderer: renderer, videoSize: video, displayID: 2, inputEnabled: true,
+                          inputResetGeneration: 0, zoomResetGeneration: 1, onInput: onInput, onFocusLost: {},
+                          onZoomedChange: onZoomedChange)
+        XCTAssertEqual(surface.zoom, 1)
+        XCTAssertEqual(surface.cursor, CGPoint(x: 0.5, y: 0.5))
+    }
+
     func testPairingVaultRoundTripReplacementAndRemoval() throws {
         let original = Pairing.generate()
         defer { try? PairingVault.remove(id: original.id) }
@@ -251,6 +422,14 @@ final class ClientTests: XCTestCase {
     }
 
     private enum WaitError: Error { case timeout }
+
+    private func assertEqual(_ rect: CGRect, _ expected: CGRect, accuracy: CGFloat = 0.001,
+                             file: StaticString = #filePath, line: UInt = #line) {
+        XCTAssertEqual(rect.minX, expected.minX, accuracy: accuracy, file: file, line: line)
+        XCTAssertEqual(rect.minY, expected.minY, accuracy: accuracy, file: file, line: line)
+        XCTAssertEqual(rect.width, expected.width, accuracy: accuracy, file: file, line: line)
+        XCTAssertEqual(rect.height, expected.height, accuracy: accuracy, file: file, line: line)
+    }
 }
 
 /// A real UDP/authentication peer with controllable outages; no screen-capture permission needed.

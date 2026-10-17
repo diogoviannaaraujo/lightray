@@ -7,47 +7,25 @@ struct ContentView: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var showingAddComputer = false
     @State private var showingKeyboard = false
+    @State private var showingTools = false
+    @State private var isZoomed = false
+    @State private var zoomResetGeneration: UInt64 = 0
+    @AppStorage(SessionTools.cornerKey) private var toolsCorner = SessionTools.Corner.topTrailing
 
     var body: some View {
-        NavigationStack {
-            Group {
-                if session.isPresentingSession {
-                    stream
-                } else {
+        Group {
+            if session.isPresentingSession {
+                stream
+            } else {
+                NavigationStack {
                     computers
-                }
-            }
-            .navigationTitle(session.activeHost?.name ?? "Lightray")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                if session.isPresentingSession {
-                    ToolbarItem(placement: .topBarLeading) {
-                        Button("Disconnect", systemImage: "xmark") { session.disconnect() }
-                    }
-                    ToolbarItemGroup(placement: .topBarTrailing) {
-                        Button(showingKeyboard ? "Hide keyboard" : "Show keyboard",
-                               systemImage: showingKeyboard ? "keyboard.chevron.compact.down" : "keyboard") {
-                            showingKeyboard.toggle()
+                        .navigationTitle("Lightray")
+                        .navigationBarTitleDisplayMode(.inline)
+                        .toolbar {
+                            ToolbarItem(placement: .primaryAction) {
+                                Button("Add computer", systemImage: "plus") { showingAddComputer = true }
+                            }
                         }
-                        .disabled(!session.canSendInput || scenePhase != .active)
-                        .accessibilityIdentifier("toggleKeyboard")
-                        displayMenu
-                        Menu("Session", systemImage: "ellipsis") {
-                            Toggle("Statistics", systemImage: "chart.bar", isOn: $session.showStatistics)
-                            Toggle("Control computer", systemImage: "cursorarrow", isOn: $session.inputEnabled)
-                            Divider()
-                            Button("Send Escape") { session.sendKey(0x29) }
-                                .disabled(!session.canSendInput)
-                            Button("Send Tab") { session.sendKey(0x2B) }
-                                .disabled(!session.canSendInput)
-                            Button("Release all keys", systemImage: "keyboard") { session.releaseInput() }
-                            Button("Reconnect", systemImage: "arrow.clockwise") { session.reconnect() }
-                        }
-                    }
-                } else {
-                    ToolbarItem(placement: .primaryAction) {
-                        Button("Add computer", systemImage: "plus") { showingAddComputer = true }
-                    }
                 }
             }
         }
@@ -118,7 +96,7 @@ struct ContentView: View {
                         }
                     }
                     Section {
-                        Label("Tap to click. Drag to move with the button held. Use two fingers to scroll or tap for a secondary click.", systemImage: "hand.draw")
+                        Label("Drag to move the pointer. Tap to click, or tap with two fingers to right-click. Double-tap and drag to drag. Drag with two fingers to scroll, and pinch to zoom.", systemImage: "hand.draw")
                             .font(.subheadline).foregroundStyle(.secondary)
                     }
                 }
@@ -126,17 +104,24 @@ struct ContentView: View {
         }
     }
 
+    /// The remote display fills the window; the session's controls float over it.
     private var stream: some View {
-        ZStack(alignment: .topLeading) {
+        ZStack {
             Color.black
+                .ignoresSafeArea(.container)
+            // Edge to edge, but clear of the onscreen keyboard so the picture moves up above it.
             StreamSurface(renderer: session.renderer, videoSize: session.videoSize,
                           displayID: session.selectedDisplay,
                           inputEnabled: session.canSendInput && scenePhase == .active,
                           inputResetGeneration: session.inputResetGeneration,
+                          zoomResetGeneration: zoomResetGeneration,
                           softwareKeyboardVisible: showingKeyboard,
                           onInput: session.send,
-                          onKeyboardDismissed: { showingKeyboard = false })
+                          onKeyboardDismissed: { showingKeyboard = false },
+                          onZoomedChange: { isZoomed = $0 },
+                          onTouch: { if showingTools { withAnimation(.bouncy) { showingTools = false } } })
                 .id(ObjectIdentifier(session.renderer))
+                .ignoresSafeArea(.container)
                 .accessibilityLabel("Remote display")
 
             if !session.hasPicture {
@@ -165,23 +150,24 @@ struct ContentView: View {
                     .padding(12)
                     .allowsHitTesting(false)
                     .accessibilityLabel("Stream statistics: \(session.statistics)")
+                    // Opposite the session tools.
+                    .frame(maxWidth: .infinity, maxHeight: .infinity,
+                           alignment: toolsCorner.isLeading ? .topTrailing : .topLeading)
             }
-        }
-        .clipShape(Rectangle())
-        .persistentSystemOverlays(.hidden)
-        .onDisappear { showingKeyboard = false }
-    }
 
-    private var displayMenu: some View {
-        Menu("Displays", systemImage: "display.2") {
-            ForEach(session.displays, id: \.id) { display in
-                Button { session.selectDisplay(display.id) } label: {
-                    Label("\(display.name) · \(display.width) × \(display.height)",
-                          systemImage: session.selectedDisplay == display.id ? "checkmark" : "display")
-                }
-            }
+            SessionTools(session: session, expanded: $showingTools, showingKeyboard: $showingKeyboard,
+                         keyboardAvailable: session.canSendInput && scenePhase == .active,
+                         isZoomed: isZoomed, resetZoom: { zoomResetGeneration &+= 1 })
         }
-        .disabled(session.displays.isEmpty || session.phase != .connected)
+        .statusBarHidden()
+        .persistentSystemOverlays(.hidden)
+        // Touchpad drags near an edge need a second swipe to reach Home or Notification Center.
+        .defersSystemGestures(on: .vertical)
+        .onDisappear {
+            showingKeyboard = false
+            showingTools = false
+            isZoomed = false
+        }
     }
 }
 

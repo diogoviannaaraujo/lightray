@@ -64,19 +64,30 @@ Use the Mac's network address from a physical iPad. A simulator on the Mac can u
 
 ## Controls and lifecycle
 
-- Tap to click; drag with one finger to hold the primary mouse button and move. The drag starts
-  at the initial touch location after UIKit recognizes the gesture. Letterbox areas ignore input.
-- Tap with two fingers for a secondary click; drag with two fingers to scroll. Pencil also works
-  as a pointer; pressure and tilt are not sent.
-- A mouse or trackpad supports hover, buttons and scrolling. A hardware keyboard sends physical
-  HID keys. iPadOS keeps its reserved system shortcuts.
+- The remote display fills the screen, without the navigation bar, status bar or Home indicator.
+  The session tools live in a floating Liquid Glass button: tap it to show the list. Drag it to
+  another corner if it covers something; the corner is remembered. Swipes from the top or bottom
+  edge need a second swipe, so touchpad drags near an edge stay on the host.
+- Fingers work as a touchpad anywhere on the screen. Drag with one finger to move the pointer;
+  faster movements go farther. Tap to click, tap with two fingers for a secondary click, and drag
+  with two fingers to scroll. To drag with the button held, double-tap and drag: a tap holds the
+  button for 250 ms, and a touch landing in that time keeps it held until you lift.
+- Pinch to zoom, up to 5×. A zoomed picture stays centred on the cursor and follows it, short of
+  the display's edges. **Show whole display** zooms back out. The client can't see the host's own
+  mouse, so after connecting or switching displays the pointer starts from the middle.
+- Pencil points directly: tap to click where it touches, drag to hold the primary button.
+  Letterbox areas ignore it. Pressure and tilt are not sent.
+- A mouse or trackpad supports hover, buttons and scrolling, and points directly. When zoomed,
+  the picture pans with the pointer so the cursor stays under it, and a trackpad pinch zooms.
+  A hardware keyboard sends physical HID keys. iPadOS keeps its reserved system shortcuts.
 - The **keyboard** button shows or hides the onscreen keyboard. Tap a text field on the remote
   desktop, then type; Return and Backspace work on the host. The keyboard closes when input is
   disabled or the session leaves the foreground. Text entry requires an updated Mac host with
   the provisional `TEXT` input message; older hosts ignore it.
 - **Displays** switches the single video stream between the host's available displays.
 - **Session** offers statistics, input enable/disable, Escape, Tab, release-all-keys and reconnect.
-  **Disconnect** returns to Computers. Swipe a remembered computer to forget its pairing.
+  **Disconnect** (the power button) returns to Computers. Swipe a remembered computer to forget
+  its pairing.
 - Losing focus releases held keys and buttons. Entering the background closes the session.
   Foreground entry creates a fresh socket, decoder and renderer and restores the selected display
   if it still exists. Opening Control Center releases input without closing the session.
@@ -123,4 +134,5 @@ One session and one display at a time. Audio, clipboard, game controllers, disco
 picture-in-picture, and protocol-level park/resume are not implemented. Returning from
 the background authenticates a new session; it does not claim protocol session continuity.
 The shared core's provisional input and display-selection formats match the current Mac host.
-Physical-device latency and touch/trackpad ergonomics still need validation on an available iPad.
+Physical-device latency, touchpad acceleration and the mouse magnifier still need validation on
+an available iPad.
