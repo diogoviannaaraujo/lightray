@@ -10,5 +10,7 @@ let package = Package(
         .executableTarget(name: "lightray-client",
                           dependencies: [.product(name: "LightrayCore", package: "core")],
                           swiftSettings: [.swiftLanguageMode(.v5)]),
+        .testTarget(name: "LightrayClientTests", dependencies: ["lightray-client"],
+                    swiftSettings: [.swiftLanguageMode(.v5)]),
     ]
 )

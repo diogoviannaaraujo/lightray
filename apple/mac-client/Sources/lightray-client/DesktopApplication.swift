@@ -2,7 +2,7 @@ import AppKit
 import LightrayCore
 
 /// Finder/Dock lifecycle for the client. Sharing lives in the independent Host app.
-final class DesktopApplication: NSObject, NSApplicationDelegate {
+@MainActor final class DesktopApplication: NSObject, NSApplicationDelegate {
     private let launcher: ConnectionLauncher
 
     init(options: ClientOptions, pairing: Pairing?) {

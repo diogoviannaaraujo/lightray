@@ -121,7 +121,7 @@ final class ClientApp: NSObject, NSApplicationDelegate, NSMenuItemValidation, @u
         let appMenu = NSMenu()
         appMenu.addItem(withTitle: "Quit Lightray (⌃⌥⌘Q)", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "")
         if onReturnToComputers != nil {
-            let computers = appMenu.addItem(withTitle: "Disconnect and Show Computers", action: #selector(returnToComputers(_:)), keyEquivalent: "")
+            let computers = appMenu.addItem(withTitle: "Disconnect and Show Hosts", action: #selector(returnToComputers(_:)), keyEquivalent: "")
             computers.target = self
         }
         appItem.submenu = appMenu

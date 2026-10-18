@@ -26,7 +26,7 @@ let usage = """
     --physical-keys use the original physical modifier mapping
     --host-cursor   hide the local pointer
     --no-preferences ignore saved host preferences and do not save changes during this run
-    --launcher      open the computer list instead of connecting immediately; default with no host
+    --launcher      open the host list instead of connecting immediately; default with no host
     --no-host-catalog do not load or save remembered computers
 
     Local shortcuts: ⌃⌥⌘Q quits; ⌃⌥⌘M toggles statistics; ⌃⌥⌘Esc releases input; ⌃⌥⌘F toggles fullscreen.
@@ -103,14 +103,16 @@ if let pairingPath {
     fail("not paired: run `lightray-host pair` on the host and pass its token with --pair")
 }
 
-let app = NSApplication.shared
-let delegate: NSApplicationDelegate
-if Bundle.main.bundleIdentifier == "com.getlightray.client", options.launcher {
-    delegate = DesktopApplication(options: options, pairing: pairing)
+MainActor.assumeIsolated {
+    let app = NSApplication.shared
+    let delegate: NSApplicationDelegate
+    if Bundle.main.bundleIdentifier == "com.getlightray.client", options.launcher {
+        delegate = DesktopApplication(options: options, pairing: pairing)
+    }
+    else if options.launcher { delegate = ConnectionLauncher(options: options, pairing: pairing) }
+    else if let pairing { delegate = ClientApp(options: options, pairing: pairing) }
+    else { fail("a pairing is required") }
+    app.delegate = delegate
+    app.setActivationPolicy(.regular)
+    withExtendedLifetime(delegate) { app.run() }
 }
-else if options.launcher { delegate = ConnectionLauncher(options: options, pairing: pairing) }
-else if let pairing { delegate = ClientApp(options: options, pairing: pairing) }
-else { fail("a pairing is required") }
-app.delegate = delegate
-app.setActivationPolicy(.regular)
-app.run()

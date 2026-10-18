@@ -18,6 +18,7 @@ Requires macOS 27, Xcode 27, and Swift 6.4. Run from the repository root:
 ```bash
 swift test --package-path apple/core
 swift test --package-path apple/mac-host
+swift test --package-path apple/mac-client
 swift build -c release --package-path apple/mac-client
 swift build -c release --package-path apple/mac-host
 swift run --package-path tools/vectors lightray-vectors check
@@ -49,12 +50,12 @@ stop sharing and explicitly review Lightray Host's approval in System Settings b
 
 The [release workflow](../.github/workflows/release.yml) runs on every push to `main`,
 version tags, and manual dispatches. Pull requests run the same validation without signing or
-uploading: shared core and host tests, a Mac client build, an iPad simulator build, protocol vectors,
+uploading: shared core, Mac host and client tests, an iPad simulator build, protocol vectors,
 and matching Apple/Windows versions.
 Pull requests additionally execute the iPad simulator tests, with a twelve-minute step timeout
 covering simulator startup and a three-minute limit per test. Hosted simulator execution can
-stall before tests launch, so main distributions use the simulator compile check plus the core
-and host tests as their validation gate. Simulator CI explicitly excludes the two integration
+stall before tests launch, so main distributions use the simulator compile check plus the core,
+host and client tests as their validation gate. Simulator CI explicitly excludes the two integration
 tests that require a manually configured host. Run the opt-in host tests through the
 [iPad validation scripts](ios-client/README.md#validation).
 

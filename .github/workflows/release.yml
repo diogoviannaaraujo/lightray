@@ -59,10 +59,10 @@ jobs:
       - name: Test TestFlight processing checks
         run: python3 -m unittest discover -s apple/scripts/tests
 
-      - name: Test Mac host and build client
+      - name: Test Mac host and client
         run: |
           swift test --package-path apple/mac-host
-          swift build --package-path apple/mac-client
+          swift test --package-path apple/mac-client
 
       - name: Build iPad simulator app
         run: |

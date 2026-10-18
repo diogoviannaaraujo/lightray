@@ -170,7 +170,7 @@ import LightrayHostSupport
             } header: {
                 Text("Connect a Device")
             } footer: {
-                Text("In Lightray on your Mac or iPad, choose Add computer, enter this Mac’s address, and paste the pairing code.")
+                Text("In Lightray, choose Add Host on Mac or Add computer on iPad, enter this Mac’s address, and paste the pairing code.")
             }
             Section {
                 Button("Copy Pairing Code", systemImage: "key", action: model.copyPairing)

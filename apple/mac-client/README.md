@@ -8,6 +8,7 @@ Install [Lightray Host](../mac-host/README.md) separately on a Mac you want to s
 Requires macOS 27 and Swift 6.4. From the repository root:
 
 ```bash
+swift test --package-path apple/mac-client
 swift build -c release --package-path apple/mac-client
 python3 apple/scripts/package-app.py --app client
 ```
@@ -25,11 +26,14 @@ See the [Apple build and release guide](../README.md) for signing and release ar
 
 ### Command-line launcher
 
-Start `apple/mac-client/.build/release/lightray-client` without a host to open Computers.
-Enter a hostname/IP and port, import the pairing file supplied by the host, choose a local display, and connect.
-Remember this computer stores public metadata separately from the protected pairing file.
-The session menu offers Disconnect, which returns to Computers; closing the last stream does the same in this mode.
-The launcher returns to Computers with guidance if authentication does not succeed within 12 seconds after network setup.
+Start `apple/mac-client/.build/release/lightray-client` without a host to open the SwiftUI Paired Hosts list.
+Choose **Add Host** (⌘N), enter a hostname/IP and optional name, paste the host’s pairing code or
+import its pairing file, and choose a local display. **Add Host** saves the host to the list;
+**Connect** on its row starts a session. Each host’s menu offers **Edit Host** and **Forget Host**.
+Public metadata is stored separately from the protected pairing file. Hosts are kept only for
+the current run when the catalog is disabled or could not be loaded.
+The session menu offers Disconnect, which returns to the host list; closing the last stream does the same in this mode.
+The launcher returns to the host list with guidance if authentication does not succeed within 12 seconds after network setup.
 `--launcher` forces this mode with optional CLI defaults; `--no-host-catalog --no-preferences` isolates laboratory runs from saved hosts/settings.
 Monitor preferences use persistent display UUIDs, with an available-display fallback after disconnection.
 The [connection and WGC validation report](https://github.com/diogoviannaaraujo/lightray/blob/5ae52d6/docs/windows/connection-capture-progress-2026-10-01.md), kept at the commit that added it, records the tested behavior and the open onboarding and compatibility gates.
@@ -44,7 +48,7 @@ Import the pairing supplied by the host once; the client remembers it. Keys go t
 host, including Command shortcuts except those reserved by macOS. **⌃⌥⌘Q quits the client.**
 Each window displays one host display. Use the Displays menu to open or switch displays;
 `--all-displays` opens all of them, subject to the `--streams` limit (default 4).
-Closing the last stream returns to Computers in launcher mode and quits in direct CLI mode.
+Closing the last stream returns to the host list in launcher mode and quits in direct CLI mode.
 
 ### Options
 
@@ -53,7 +57,7 @@ Closing the last stream returns to Computers in launcher mode and quits in direc
 | `host[:port]` | Name or address; `[::1]:7373` for IPv6 with a port |
 | `--pair TOKEN` | Use and remember a pairing token |
 | `--pair-file FILE` | Use the token in a file for this run, without saving it or showing it in the arguments |
-| `--launcher` | Open the Computers list instead of connecting; the default with no host |
+| `--launcher` | Open the host list instead of connecting; the default with no host |
 | `--no-host-catalog` | Do not load or save remembered computers |
 | `--no-preferences` | Ignore saved session preferences and save none during this run |
 | `--stats`, `--no-stats` | Show or hide the statistics overlay at start |
