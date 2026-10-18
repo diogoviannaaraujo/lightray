@@ -179,6 +179,7 @@ private struct AddComputerView: View {
     @State private var token = ""
     @State private var remember = true
     @State private var importing = false
+    @State private var scanning = false
     @State private var importError: String?
 
     var body: some View {
@@ -199,10 +200,13 @@ private struct AddComputerView: View {
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
                         .accessibilityIdentifier("pairingToken")
+                    if PairingScannerView.isSupported {
+                        Button("Scan QR Code", systemImage: "qrcode.viewfinder") { scanning = true }
+                    }
                     Button("Import pairing file", systemImage: "doc.badge.plus") { importing = true }
                     Toggle("Remember this computer", isOn: $remember)
                 } header: { Text("Pairing") } footer: {
-                    Text("On your Mac, run lightray-host pair and copy the token or save it to a text file. Remembered pairings are stored in this iPad’s Keychain.")
+                    Text("On your Mac, open Lightray Host › Pairing › Add Device, then scan its QR code or paste its code. Each code works only until this iPad first connects with it. Remembered pairings are stored in this iPad’s Keychain.")
                 }
                 Section {
                     Label("Start the Lightray host and allow Local Network access when this iPad asks.", systemImage: "network")
@@ -229,6 +233,14 @@ private struct AddComputerView: View {
                     }
                     .disabled(address.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || token.isEmpty)
                     .accessibilityIdentifier("connectComputer")
+                }
+            }
+            .sheet(isPresented: $scanning) {
+                PairingScannerView { invite in
+                    address = invite.address
+                    if name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { name = invite.name }
+                    token = invite.pairing.token
+                    importError = nil
                 }
             }
             .fileImporter(isPresented: $importing, allowedContentTypes: [.plainText, .data]) { result in

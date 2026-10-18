@@ -43,14 +43,18 @@ Build and start the Mac host as described in [`apple/mac-host/`](../mac-host/REA
 
 ```bash
 swift build -c release --package-path apple/mac-host
-apple/mac-host/.build/release/lightray-host pair
 apple/mac-host/.build/release/lightray-host
+apple/mac-host/.build/release/lightray-host pair iPad
 ```
 
-On iPad, tap **Add computer**, enter the Mac's LAN hostname or address, and paste the pairing
-token. **Import pairing file** accepts a text file containing that token. The default UDP port is
-7373; enter `hostname:port` or `[IPv6]:port` to use another. Keep the token private: it authorizes
-control of the host. Remembered credentials stay in this device's Keychain; names and addresses
+With Lightray Host, choose **Pairing › Add Device…** instead. Each device gets a code of its own,
+which works only until the device first connects with it.
+
+On iPad, tap **Add computer**, then **Scan QR Code** and point the camera at the code Lightray Host
+shows: it fills in the Mac's address, its name and the pairing code. Or enter the Mac's LAN
+hostname or address and paste the pairing code; **Import pairing file** accepts a text file
+containing it. The default UDP port is 7373; enter `hostname:port` or `[IPv6]:port` to use
+another. Keep the code private: it authorizes control of the host until the host revokes it. Remembered credentials stay in this device's Keychain; names and addresses
 are saved separately. Uncheck **Remember this computer** for a temporary connection.
 
 The host needs Screen Recording and Accessibility permissions for a real desktop. For a safe
@@ -114,8 +118,8 @@ Simulator builds must retain their default ad-hoc signing to use the Keychain. D
 `CODE_SIGNING_ALLOWED=NO` when running the app or its tests; that option is only useful for a
 compile check. No development team is needed for the simulator.
 
-For an end-to-end test, build the Mac host, create its pairing once, and boot an iPadOS 27
-simulator. Then, from the repository root:
+For an end-to-end test, build the Mac host and boot an iPadOS 27 simulator. The script adds a
+device of its own to the host's paired devices and revokes it when it finishes. Then, from the repository root:
 
 ```bash
 python3 apple/ios-client/scripts/smoke-test.py --simulator SIMULATOR_UDID

@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Run iPad simulator tests against the Mac's permission-free synthetic host.
 
-Requires a built apple/mac-host/.build/release/lightray-host and an existing host pairing.
-The pairing travels through a private temporary file, never argv or test logs.
+Requires a built apple/mac-host/.build/release/lightray-host. The run adds a device of its own to
+the host's paired devices and revokes it afterwards. Its pairing code travels through a private
+temporary file, never argv or test logs.
 """
 
 import argparse
@@ -27,9 +28,8 @@ def main():
     output = root / "apple/ios-client/.build"
     output.mkdir(parents=True, exist_ok=True)
     binary = root / "apple/mac-host/.build/release/lightray-host"
-    pairing_file = Path.home() / "Library/Application Support/Lightray/host-pairing"
-    if not binary.is_file() or not pairing_file.is_file():
-        parser.error("Build the Mac host and run lightray-host pair first; see apple/ios-client/README.md.")
+    if not binary.is_file():
+        parser.error("Build the Mac host first; see apple/ios-client/README.md.")
     # Fail before launching a second host on a port owned by another process.
     with socket.socket(socket.AF_INET6, socket.SOCK_DGRAM) as probe:
         probe.bind(("::", options.port))
@@ -49,8 +49,9 @@ def main():
     configuration.parent.mkdir(parents=True, exist_ok=True)
     host = None
     test = None
+    device = f"iPad smoke test {int(time.time())}"
     try:
-        token = pairing_file.read_text().strip()
+        token = run(str(binary), "pair", device, "--minutes", "15", capture_output=True).stdout.strip()
         with os.fdopen(os.open(configuration, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600), "w") as file:
             json.dump({"address": f"127.0.0.1:{options.port}", "token": token}, file)
         with (output / "smoke-host.log").open("w") as host_log, (output / "smoke-tests.log").open("w") as test_log:
@@ -83,6 +84,7 @@ def main():
         print("PASS: iPad tests and host-side input delivery. Logs in apple/ios-client/.build/.", flush=True)
     finally:
         configuration.unlink(missing_ok=True)
+        subprocess.run([str(binary), "revoke", device], capture_output=True)
         for process in (test, host):
             if process is not None and process.poll() is None:
                 process.terminate()
