@@ -39,6 +39,50 @@ public struct Pairing: Equatable, Sendable {
     }
 }
 
+/// What a host's pairing QR code carries: where to reach the host, what to call it, and the
+/// pairing, as `lightray://pair?address=…&name=…&code=lr1-…`. Only Lightray's own scanner reads
+/// it: no app registers the scheme, so the system never hands the code to another app.
+public struct PairingInvite: Equatable, Sendable {
+    public let address: String
+    public let name: String
+    public let pairing: Pairing
+
+    static let maximumLength = 1024
+    private static let unreserved = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~")
+
+    public init(address: String, name: String, pairing: Pairing) {
+        self.address = address
+        self.name = name
+        self.pairing = pairing
+    }
+
+    public var string: String {
+        // Everything but unreserved characters is escaped, so a name holding & or = stays one value.
+        let escape = { (value: String) in value.addingPercentEncoding(withAllowedCharacters: Self.unreserved)! }
+        return "lightray://pair?address=\(escape(address))&name=\(escape(name))&code=\(pairing.token)"
+    }
+
+    /// Unknown parameters are ignored; a repeated one, or text over 1 KiB, is refused.
+    public init?(string: String) {
+        guard string.utf8.count <= Self.maximumLength, let components = URLComponents(string: string),
+            components.scheme == "lightray", components.host == "pair", let items = components.queryItems
+        else { return nil }
+        var values: [String: String] = [:]
+        for item in items where ["address", "name", "code"].contains(item.name) {
+            guard values[item.name] == nil, let value = item.value else { return nil }
+            values[item.name] = value
+        }
+        let printable = { (value: String) in value.unicodeScalars.allSatisfy { !CharacterSet.controlCharacters.contains($0) } }
+        guard let address = values["address"], !address.isEmpty, address.count <= 255, printable(address),
+            !address.contains(where: \.isWhitespace),
+            let code = values["code"], let pairing = Pairing(token: code)
+        else { return nil }
+        let name = values["name"] ?? ""
+        guard name.count <= 100, printable(name) else { return nil }
+        self.init(address: address, name: name, pairing: pairing)
+    }
+}
+
 /// Stores a pairing token in `Lightray/` in Application Support (on iOS, inside the app's
 /// container), readable only by the user.
 public enum PairingStore {

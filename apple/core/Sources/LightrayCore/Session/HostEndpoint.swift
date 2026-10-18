@@ -46,6 +46,8 @@ public struct HostStats: Sendable {
 /// One client's session on the host.
 public final class HostSession {
     public let connection: Connection
+    /// The pairing whose key opened the INIT.
+    public let pairingID: UInt64
     /// Every video stream in the table, in table order; each is independent of the others.
     public let videoStreams: [UInt8]
     public let videos: [UInt8: VideoSender]
@@ -58,8 +60,9 @@ public final class HostSession {
     /// nil once taken, or if a repeated RESPONSE made it ambiguous.
     fileprivate var responseSent: UInt64?
 
-    init(connection: Connection, videos: [VideoSender], fec: Bool) {
+    init(connection: Connection, pairingID: UInt64, videos: [VideoSender], fec: Bool) {
         self.connection = connection
+        self.pairingID = pairingID
         self.fec = fec
         videoStreams = videos.map(\.stream)
         self.videos = Dictionary(uniqueKeysWithValues: videos.map { ($0.stream, $0) })
@@ -254,7 +257,7 @@ public final class HostEndpoint {
             }
             return video
         }
-        let session = HostSession(connection: connection, videos: videos, fec: fec)
+        let session = HostSession(connection: connection, pairingID: opened.pairingID, videos: videos, fec: fec)
         session.responseSent = now
         self.session = session
         outbox.append((result.response, address))

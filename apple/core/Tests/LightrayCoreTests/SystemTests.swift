@@ -129,6 +129,34 @@ import Testing
     #expect(Pairing(token: "lr1-00") == nil)
 }
 
+@Test func pairingInviteRoundTrips() throws {
+    let pairing = Pairing.generate()
+    let invite = PairingInvite(address: "vogoiddesk.local:7373", name: "Diogo’s Mac & Co = 1+1", pairing: pairing)
+    #expect(PairingInvite(string: invite.string) == invite)
+    #expect(invite.string.hasPrefix("lightray://pair?address=vogoiddesk.local%3A7373&name="))
+    let unnamed = try #require(PairingInvite(string: "lightray://pair?address=10.0.0.2&code=\(pairing.token)&v=2"))
+    #expect(unnamed.name == "" && unnamed.address == "10.0.0.2" && unnamed.pairing == pairing)
+}
+
+@Test func malformedPairingInvitesAreRefused() {
+    let token = Pairing.generate().token
+    for text in [
+        "lr1-00",
+        "https://pair?address=a&code=\(token)",
+        "lightray://other?address=a&code=\(token)",
+        "lightray://pair?address=a",
+        "lightray://pair?address=a&code=lr1-00",
+        "lightray://pair?code=\(token)",
+        "lightray://pair?address=&code=\(token)",
+        "lightray://pair?address=a%20b&code=\(token)",
+        "lightray://pair?address=a&address=b&code=\(token)",
+        "lightray://pair?address=a&name=%07&code=\(token)",
+        "lightray://pair?address=a&code=\(token)&pad=" + String(repeating: "x", count: 1024),
+    ] {
+        #expect(PairingInvite(string: text) == nil, "\(text.prefix(60))")
+    }
+}
+
 @Test func socketsExchangeDatagrams() throws {
     let queue = DispatchQueue(label: "test")
     let a = try UDPSocket(family: AF_INET6, queue: queue)

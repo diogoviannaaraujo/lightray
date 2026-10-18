@@ -161,6 +161,23 @@ assignment. The Mac host does not send it.
   dropped frames are not counted, and the round-trip time is not added to them: none of it is
   input-to-photon latency.
 
+### Pairing invite
+
+Pairing is the application's to define ([gaps.md](../../docs/gaps.md#pairing)). Lightray Host
+shows a QR code when it adds a device, and the iPad's scanner reads it as a `PairingInvite`:
+
+```
+lightray://pair?address=HOST&name=NAME&code=lr1-…
+```
+
+- **`address`**: where to reach the host, `hostname:port` as the client's address field takes it.
+  Required, at most 255 characters, no whitespace.
+- **`name`**: the host's computer name, at most 100 characters; may be absent.
+- **`code`**: the device's pairing token, `lr1-` then the identifier and key in hex.
+- Values are percent-encoded except unreserved characters. A repeated parameter, a control
+  character, or more than 1 KiB in all is refused; unknown parameters are ignored.
+- No app registers the `lightray` scheme, so the system never hands an invite to another app.
+
 ### Implementation defaults
 
 None of these is on the wire.

@@ -249,6 +249,7 @@ func buttonOverflowResetsInput(pendingMotion: Bool) throws {
     #expect(link.keyframesSent == 1)
     #expect(session.connection.rtt.hasSample)
     #expect(link.host.session!.connection.rtt.hasSample)
+    #expect(link.host.session!.pairingID == link.pairingID)
 }
 
 /// Conformance test 1: the RESPONSE is lost; the identical INIT is answered from the cache.
