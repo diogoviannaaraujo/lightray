@@ -73,6 +73,9 @@ jobs:
                      for d in group if "iPad" in d["name"]))')
           xcodebuild -project apple/ios-client/Lightray.xcodeproj -scheme Lightray \
             -destination "platform=iOS Simulator,id=$simulator" \
+            -skip-testing:LightrayTests/ClientTests/testPreparedDesktopStartupAndReconnect \
+            -skip-testing:LightrayTests/ClientTests/testSyntheticHostStreamingSwitchingInputAndReconnect \
+            -test-timeouts-enabled YES -maximum-test-execution-time-allowance 180 \
             -derivedDataPath "$RUNNER_TEMP/lightray-ios" test
 
       - name: Check protocol examples and documentation

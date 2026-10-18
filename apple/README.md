@@ -51,6 +51,9 @@ The [release workflow](../.github/workflows/release.yml) runs on every push to `
 version tags, and manual dispatches. Pull requests run the same validation without signing or
 uploading: shared core and host tests, a Mac client build, iPad simulator tests, protocol vectors,
 and matching Apple/Windows versions.
+Simulator CI explicitly excludes the two integration tests that require a manually configured
+host and limits each remaining test to three minutes. Run the opt-in host tests through the
+[iPad validation scripts](ios-client/README.md#validation).
 
 Distributions share a FIFO concurrency queue across main pushes, tags, and manual runs, with up to
 100 pending runs. New pushes keep earlier pending runs instead of replacing them. This also
