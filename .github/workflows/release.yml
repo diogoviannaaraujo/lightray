@@ -2,25 +2,29 @@ name: Release
 
 on:
   push:
+    branches: [main]
     tags:
       - 'v[0-9]*.[0-9]*.[0-9]*'
+  pull_request:
   workflow_dispatch:
     inputs:
       testflight:
-        description: Upload the iPad app to TestFlight
+        description: Upload both iOS and macOS clients to TestFlight
         type: boolean
-        default: false
+        default: true
 
 permissions:
   contents: read
 
 concurrency:
-  group: release-${{ github.ref }}
+  # Serialize distributions across main, tags and manual runs. Keep every pending push.
+  group: release-${{ github.event_name == 'pull_request' && github.ref || 'apple-distribution' }}
+  queue: max
   cancel-in-progress: false
 
 jobs:
-  build:
-    name: Build Apple Silicon executables
+  checks:
+    name: Validate Apple clients and protocol
     runs-on: xcode-27
     timeout-minutes: 45
     outputs:
@@ -44,38 +48,56 @@ jobs:
         env:
           IS_TAG: ${{ github.ref_type == 'tag' }}
         run: |
-          version=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' apple/mac-client/App/Info.plist)
-          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "::error::CFBundleShortVersionString must use MAJOR.MINOR.PATCH."
-            exit 1
-          fi
-          if [[ "$IS_TAG" == true && "$GITHUB_REF_NAME" != "v$version" ]]; then
-            echo "::error::Release tag must match v$version from apple/mac-client/App/Info.plist."
-            exit 1
-          fi
+          args=()
+          if [[ "$IS_TAG" == true ]]; then args+=("$GITHUB_REF_NAME"); fi
+          version=$(python3 apple/scripts/release-version.py "${args[@]}")
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
       - name: Test shared Apple core
         run: swift test --package-path apple/core
+
+      - name: Test TestFlight processing checks
+        run: python3 -m unittest discover -s apple/scripts/tests
 
       - name: Test Mac host and build client
         run: |
           swift test --package-path apple/mac-host
           swift build --package-path apple/mac-client
 
-      - name: Build iPad simulator app
+      - name: Test iPad simulator app
         run: |
+          simulator=$(xcrun simctl list devices available --json | python3 -c '
+          import json, sys
+          devices = json.load(sys.stdin)["devices"]
+          print(next(d["udid"] for runtime, group in devices.items() if "iOS-27" in runtime
+                     for d in group if "iPad" in d["name"]))')
           xcodebuild -project apple/ios-client/Lightray.xcodeproj -scheme Lightray \
-            -destination 'generic/platform=iOS Simulator' \
-            -derivedDataPath "$RUNNER_TEMP/lightray-ios" build
+            -destination "platform=iOS Simulator,id=$simulator" \
+            -derivedDataPath "$RUNNER_TEMP/lightray-ios" test
 
       - name: Check protocol examples and documentation
         run: swift run --package-path tools/vectors lightray-vectors check
 
+  build:
+    name: Sign and notarize macOS DMGs
+    if: github.event_name != 'pull_request'
+    needs: checks
+    runs-on: xcode-27
+    timeout-minutes: 60
+    outputs:
+      version: ${{ needs.checks.outputs.version }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
       - name: Check Developer ID secrets
         id: signing
         env:
-          IS_TAG: ${{ github.ref_type == 'tag' }}
+          REQUIRE_SIGNING: ${{ github.event_name == 'push' }}
           CERTIFICATE: ${{ secrets.MACOS_DEVELOPER_ID_P12 }}
           CERTIFICATE_PASSWORD: ${{ secrets.MACOS_DEVELOPER_ID_PASSWORD }}
           API_KEY: ${{ secrets.APPLE_NOTARY_KEY }}
@@ -83,8 +105,8 @@ jobs:
           API_ISSUER_ID: ${{ secrets.APPLE_NOTARY_ISSUER_ID }}
         run: |
           if [[ -z "$CERTIFICATE" ]]; then
-            if [[ "$IS_TAG" == true ]]; then
-              echo "::error::Tagged releases must be signed; set the Developer ID secrets listed in apple/README.md."
+            if [[ "$REQUIRE_SIGNING" == true ]]; then
+              echo "::error::Main and tagged releases must be signed; set the Developer ID secrets listed in apple/README.md."
               exit 1
             fi
             echo "::warning::Developer ID secrets are not set; packaging with ad-hoc signatures."
@@ -113,7 +135,7 @@ jobs:
       - name: Build and package app
         env:
           IDENTITY: ${{ steps.certificate.outputs.identity || '-' }}
-        run: python3 apple/scripts/package-app.py --app all --sign "$IDENTITY" --output "$RUNNER_TEMP/lightray-app"
+        run: python3 apple/scripts/package-app.py --app all --sign "$IDENTITY" --build-number "${{ github.run_number }}.${{ github.run_attempt }}" --output "$RUNNER_TEMP/lightray-app"
 
       - name: Build and sign command-line executables
         env:
@@ -136,7 +158,7 @@ jobs:
       - name: Notarize disk images and command-line executables
         if: steps.signing.outputs.enabled == 'true'
         env:
-          VERSION: ${{ steps.version.outputs.version }}
+          VERSION: ${{ needs.checks.outputs.version }}
           NOTARY_KEY: ${{ secrets.APPLE_NOTARY_KEY }}
           NOTARY_KEY_ID: ${{ secrets.APPLE_NOTARY_KEY_ID }}
           NOTARY_ISSUER_ID: ${{ secrets.APPLE_NOTARY_ISSUER_ID }}
@@ -174,7 +196,7 @@ jobs:
 
       - name: Package command-line executables and checksums
         env:
-          VERSION: ${{ steps.version.outputs.version }}
+          VERSION: ${{ needs.checks.outputs.version }}
         run: |
           mkdir -p dist
           cp "$RUNNER_TEMP/lightray-app/Lightray-$VERSION-arm64.dmg" dist/
@@ -201,15 +223,16 @@ jobs:
 
   windows:
     name: Build Windows x64 applications
-    needs: build
+    if: github.ref_type == 'tag' || github.event_name == 'workflow_dispatch'
+    needs: checks
     uses: ./.github/workflows/windows.yml
     with:
-      version: ${{ needs.build.outputs.version }}
+      version: ${{ needs.checks.outputs.version }}
 
   testflight:
     name: Upload iPad app to TestFlight
-    if: github.ref_type == 'tag' || inputs.testflight
-    needs: build
+    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.testflight)
+    needs: checks
     runs-on: xcode-27
     timeout-minutes: 60
     env:
@@ -227,7 +250,7 @@ jobs:
       - name: Check TestFlight secrets and version
         id: app
         env:
-          VERSION: ${{ needs.build.outputs.version }}
+          VERSION: ${{ needs.checks.outputs.version }}
           CERTIFICATE: ${{ secrets.IOS_DISTRIBUTION_P12 }}
           CERTIFICATE_PASSWORD: ${{ secrets.IOS_DISTRIBUTION_PASSWORD }}
           PROFILE: ${{ secrets.IOS_APP_STORE_PROFILE }}
@@ -334,6 +357,19 @@ jobs:
           printf '%s\n' "$API_KEY" > "$RUNNER_TEMP/app-store-connect.p8"
           xcrun altool --upload-package "$ipa" --api-key "$API_KEY_ID" --api-issuer "$API_ISSUER_ID" \
             --p8-file-path "$RUNNER_TEMP/app-store-connect.p8" --wait
+          python3 apple/scripts/testflight-status.py --platform IOS \
+            --version "${{ needs.checks.outputs.version }}" \
+            --build-number "${{ github.run_number }}.${{ github.run_attempt }}" \
+            --key "$RUNNER_TEMP/app-store-connect.p8"
+
+      - name: Preserve iOS TestFlight package
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lightray-testflight-ios
+          path: ${{ runner.temp }}/lightray-ipa/*.ipa
+          if-no-files-found: warn
+          retention-days: 14
 
       - name: Remove signing keychain
         if: always() && steps.certificate.outputs.keychain != ''
@@ -341,10 +377,110 @@ jobs:
           KEYCHAIN: ${{ steps.certificate.outputs.keychain }}
         run: security delete-keychain "$KEYCHAIN"
 
+  testflight-macos:
+    name: Upload native macOS client to TestFlight
+    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.testflight)
+    needs: checks
+    runs-on: xcode-27
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Check macOS TestFlight secrets
+        env:
+          CERTIFICATE: ${{ secrets.IOS_DISTRIBUTION_P12 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.IOS_DISTRIBUTION_PASSWORD }}
+          PROFILE: ${{ secrets.MACOS_APP_STORE_PROFILE }}
+          INSTALLER: ${{ secrets.MACOS_INSTALLER_P12 }}
+          INSTALLER_PASSWORD: ${{ secrets.MACOS_INSTALLER_PASSWORD }}
+          API_KEY: ${{ secrets.APPLE_NOTARY_KEY }}
+          API_KEY_ID: ${{ secrets.APPLE_NOTARY_KEY_ID }}
+          API_ISSUER_ID: ${{ secrets.APPLE_NOTARY_ISSUER_ID }}
+        run: |
+          for name in CERTIFICATE CERTIFICATE_PASSWORD PROFILE INSTALLER INSTALLER_PASSWORD API_KEY API_KEY_ID API_ISSUER_ID; do
+            if [[ -z "${!name}" ]]; then
+              echo "::error::$name is empty; see the macOS TestFlight secrets in apple/README.md."
+              exit 1
+            fi
+          done
+
+      - name: Import Apple Distribution certificate
+        id: certificate
+        uses: ./.github/actions/import-signing-identity
+        with:
+          p12: ${{ secrets.IOS_DISTRIBUTION_P12 }}
+          password: ${{ secrets.IOS_DISTRIBUTION_PASSWORD }}
+          kind: Apple Distribution
+          intermediates: AppleWWDRCAG3
+
+      - name: Import Mac Installer Distribution certificate
+        id: installer
+        uses: ./.github/actions/import-signing-identity
+        with:
+          p12: ${{ secrets.MACOS_INSTALLER_P12 }}
+          password: ${{ secrets.MACOS_INSTALLER_PASSWORD }}
+          kind: 3rd Party Mac Developer Installer
+          intermediates: AppleWWDRCAG3
+          policy: basic
+          keychain-name: lightray-installer
+
+      - name: Package sandboxed macOS client for TestFlight
+        env:
+          IDENTITY: ${{ steps.certificate.outputs.identity }}
+          INSTALLER_IDENTITY: ${{ steps.installer.outputs.identity }}
+          PROFILE: ${{ secrets.MACOS_APP_STORE_PROFILE }}
+        run: |
+          base64 --decode <<< "$PROFILE" > "$RUNNER_TEMP/mac-app-store.provisionprofile"
+          python3 apple/scripts/package-app.py --app client --no-dmg \
+            --sign "$IDENTITY" --installer-sign "$INSTALLER_IDENTITY" \
+            --app-store-profile "$RUNNER_TEMP/mac-app-store.provisionprofile" \
+            --build-number "${{ github.run_number }}.${{ github.run_attempt }}" \
+            --output "$RUNNER_TEMP/lightray-macos-testflight"
+
+      - name: Upload and verify macOS TestFlight processing
+        env:
+          API_KEY: ${{ secrets.APPLE_NOTARY_KEY }}
+          API_KEY_ID: ${{ secrets.APPLE_NOTARY_KEY_ID }}
+          API_ISSUER_ID: ${{ secrets.APPLE_NOTARY_ISSUER_ID }}
+          VERSION: ${{ needs.checks.outputs.version }}
+        run: |
+          trap 'rm -f "$RUNNER_TEMP/mac-app-store-connect.p8"' EXIT
+          printf '%s\n' "$API_KEY" > "$RUNNER_TEMP/mac-app-store-connect.p8"
+          xcrun altool --upload-package "$RUNNER_TEMP/lightray-macos-testflight/Lightray-$VERSION-macos.pkg" \
+            --api-key "$API_KEY_ID" --api-issuer "$API_ISSUER_ID" \
+            --p8-file-path "$RUNNER_TEMP/mac-app-store-connect.p8" --wait
+          python3 apple/scripts/testflight-status.py --platform MAC_OS --version "$VERSION" \
+            --build-number "${{ github.run_number }}.${{ github.run_attempt }}" \
+            --key "$RUNNER_TEMP/mac-app-store-connect.p8"
+
+      - name: Preserve macOS TestFlight package
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lightray-testflight-macos
+          path: ${{ runner.temp }}/lightray-macos-testflight/*.pkg
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Remove signing assets
+        if: always()
+        env:
+          KEYCHAIN: ${{ steps.certificate.outputs.keychain }}
+          INSTALLER_KEYCHAIN: ${{ steps.installer.outputs.keychain }}
+        run: |
+          rm -f "$RUNNER_TEMP/mac-app-store.provisionprofile"
+          if [[ -n "$KEYCHAIN" ]]; then security delete-keychain "$KEYCHAIN"; fi
+          if [[ -n "$INSTALLER_KEYCHAIN" ]]; then security delete-keychain "$INSTALLER_KEYCHAIN"; fi
+
   release:
     name: Create draft GitHub release
     if: github.event_name == 'push' && github.ref_type == 'tag'
-    needs: [build, windows]
+    needs: [checks, build, windows, testflight, testflight-macos]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -357,7 +493,7 @@ jobs:
 
       - name: Collect release files and checksums
         env:
-          VERSION: ${{ needs.build.outputs.version }}
+          VERSION: ${{ needs.checks.outputs.version }}
         run: |
           mkdir dist
           cp downloads/lightray-macos-arm64/*.dmg downloads/lightray-macos-arm64/*.tar.gz dist/
@@ -373,7 +509,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           RELEASE_TAG: ${{ github.ref_name }}
-          VERSION: ${{ needs.build.outputs.version }}
+          VERSION: ${{ needs.checks.outputs.version }}
         run: |
           cat > release-notes.md <<'EOF'
           ### macOS

@@ -47,15 +47,34 @@ Ad-hoc builds remain available for local development, but rebuilding changes the
 can invalidate macOS background-service and privacy approvals. When changing signing identities,
 stop sharing and explicitly review Lightray Host's approval in System Settings before retesting.
 
-The [release workflow](../.github/workflows/release.yml) tests core and host, builds the
-client and iPad simulator app, checks protocol examples, then packages both DMGs. It also produces
-`Lightray-VERSION-macos-arm64-cli.tar.gz` with both CLI executables. The same workflow builds
-the [Windows applications](../windows/README.md), and the draft release carries both platforms'
-files with one `SHA256SUMS.txt`.
-All Mac app/service plists must have matching versions and build numbers, and the workspace version
-in `windows/Cargo.toml` must match them. Update them together, commit, and push a matching `vMAJOR.MINOR.PATCH` tag to create a draft release. Existing releases
-are never overwritten. Manual workflow runs upload artifacts without creating a release.
-Artifacts are retained for 14 days; published release assets persist independently.
+The [release workflow](../.github/workflows/release.yml) runs on every push to `main`,
+version tags, and manual dispatches. Pull requests run the same validation without signing or
+uploading: shared core and host tests, a Mac client build, iPad simulator tests, protocol vectors,
+and matching Apple/Windows versions.
+
+Distributions share a FIFO concurrency queue across main pushes, tags, and manual runs, with up to
+100 pending runs. New pushes keep earlier pending runs instead of replacing them. This also
+avoids concurrent uploads racing Apple's monotonically increasing build numbers. To upload an
+old commit after newer builds, dispatch a new run rather than rerunning an old numbered run.
+
+After validation, three independent jobs produce both signed and notarized Mac DMGs plus the CLI
+archive, upload the iOS client to TestFlight, and upload the native sandboxed macOS client to
+TestFlight. Every distributed Apple build uses `RUN_NUMBER.RUN_ATTEMPT` as its build number,
+including the Mac host service. The version remains `MAJOR.MINOR.PATCH` from the source plists.
+TestFlight jobs wait for Apple processing and fail if the build is invalid, missing compliance,
+or not available to internal testers within 30 minutes. See the job logs for the App Store
+Connect link. An internal tester group must have automatic distribution enabled.
+
+Download DMGs and `SHA256SUMS.txt` from **Actions → Release → the main commit → Artifacts →
+lightray-macos-arm64**. iOS IPAs and macOS App Store packages are also retained as separate
+artifacts, including when upload/processing fails. Artifacts last 14 days.
+
+All Mac app/service plists must have matching source versions and build numbers, the iOS marketing
+version must match, and `windows/Cargo.toml` must use the same version. Push a matching
+`vMAJOR.MINOR.PATCH` tag to create a draft GitHub release with Mac and Windows downloads after all
+Apple distributions succeed. Existing releases are never overwritten. Windows retains its
+path-filtered push/PR workflow; tag and manual releases call it explicitly with the release version.
+Manual runs can disable both TestFlight uploads with the **testflight** checkbox.
 
 ### Release signing
 
@@ -73,28 +92,44 @@ the disk images. It reads these repository secrets:
 
 The Account Holder creates the certificate in Xcode (Settings → Accounts → the team → Manage
 Certificates → + → Developer ID Application) and exports it from Keychain Access with its private
-key. Tagged releases fail without these secrets; manual runs fall back to ad-hoc signatures with a
+key. Main pushes and tagged releases fail without these secrets; manual runs fall back to ad-hoc signatures with a
 warning. The first signed release changes the apps' code identity, so macOS asks for Lightray
 Host's screen and input permissions and background approval once more.
 
 ### TestFlight
 
-Tagged releases also upload the iPad app to TestFlight; a manual run does so when its
-**Upload the iPad app to TestFlight** box is ticked. The job signs only the app target with an
-Apple Distribution certificate and an App Store provisioning profile, sets the build number to
-`RUN_NUMBER.RUN_ATTEMPT`, and uploads with the API key above, which needs at least Developer
-access. The iPad `MARKETING_VERSION` must match the Mac apps' version. Besides the API key secrets,
-the job reads:
+Every main push and version tag uploads both clients. Manual runs upload both by default.
+The iOS job archives and exports the iPad app with an Apple Distribution certificate and iOS
+App Store profile. The macOS job packages the native Swift client using the same Apple Distribution
+certificate, a Mac App Store profile, and a Mac Installer Distribution certificate.
+The existing `IOS_DISTRIBUTION_*` secret names are retained because Apple Distribution works on
+both platforms. These secrets are required in addition to the API key above:
 
 | Secret | Contents |
 |---|---|
-| `IOS_DISTRIBUTION_P12` | The Apple Distribution certificate and private key, exported as `.p12`, base64-encoded |
+| `IOS_DISTRIBUTION_P12` | Apple Distribution certificate and private key, exported as `.p12`, base64-encoded; used for both clients |
 | `IOS_DISTRIBUTION_PASSWORD` | The `.p12` export password |
-| `IOS_APP_STORE_PROFILE` | An App Store Connect provisioning profile for `com.getlightray.client`, base64-encoded |
+| `IOS_APP_STORE_PROFILE` | iOS App Store Connect profile for `com.getlightray.client`, base64-encoded |
+| `MACOS_APP_STORE_PROFILE` | Mac App Store Connect profile for `com.getlightray.client`, base64-encoded |
+| `MACOS_INSTALLER_P12` | Mac Installer Distribution certificate and private key, exported as `.p12`, base64-encoded |
+| `MACOS_INSTALLER_PASSWORD` | The installer `.p12` export password |
 
-The bundle ID must be registered under Identifiers, and an App Store Connect app record must use it,
-before the first upload. Both the certificate and the profile expire after a year; renew them
-together and replace the three secrets.
+Register `com.getlightray.client` under Identifiers and create the App Store Connect app record
+with iOS and macOS platforms before the first uploads. Create each profile for its platform and
+the same Apple Distribution certificate. Create the Mac Installer Distribution certificate in
+Certificates, Identifiers & Profiles (its signing name is `3rd Party Mac Developer Installer`).
+Renew expiring certificates/profiles together and update the corresponding repository secrets.
+
+The macOS TestFlight client enables App Sandbox, outbound/inbound network access for UDP, and
+read access to pairing files chosen through the open panel. Its settings and pairing live inside
+the sandbox, separately from the Developer ID DMG app. The host remains a separate Developer ID
+DMG with its independent sharing service.
+
+Both clients declare `ITSAppUsesNonExemptEncryption = NO`: cryptographic algorithms are supplied
+by Apple's CryptoKit framework. Revisit the declaration if the encryption implementation changes.
+Apple's [encryption export guidance](https://developer.apple.com/documentation/security/complying-with-encryption-export-regulations)
+explains the declaration. The first iOS build was uploaded as `0.1.0 (4.1)`; its missing-compliance
+prompt was completed in App Store Connect during this CI setup.
 
 ## Installed-service acceptance
 
