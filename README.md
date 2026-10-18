@@ -12,6 +12,8 @@ from another over the internet, and using a Mac from an iPad over the internet.
 This repository holds the protocol's specification, the measurements behind it, the tool that
 generates and checks its examples, and its implementations.
 
+[Explore the Lightray website](https://diogoviannaaraujo.github.io/lightray/).
+
 ## Applications
 
 On **macOS and Windows, the host and client must be separate applications**, installed and run

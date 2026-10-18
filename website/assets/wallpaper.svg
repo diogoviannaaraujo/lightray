@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900" fill="none">
+  <defs>
+    <linearGradient id="sky" x1="100" x2="1200" y1="0" y2="900" gradientUnits="userSpaceOnUse"><stop stop-color="#e1f4ff"/><stop offset=".47" stop-color="#9bd3f3"/><stop offset="1" stop-color="#518bbf"/></linearGradient>
+    <linearGradient id="light" x1="1250" x2="320" y1="-100" y2="1000" gradientUnits="userSpaceOnUse"><stop stop-color="#fcffff"/><stop offset=".45" stop-color="#e1f5ff"/><stop offset="1" stop-color="#75b7e5"/></linearGradient>
+    <linearGradient id="shadow" x1="1200" x2="300" y1="800" y2="100" gradientUnits="userSpaceOnUse"><stop stop-color="#457bb5"/><stop offset="1" stop-color="#8ac8ec"/></linearGradient>
+    <linearGradient id="wave" x1="1320" x2="300" y1="200" y2="900" gradientUnits="userSpaceOnUse"><stop stop-color="#ccecff"/><stop offset="1" stop-color="#79b5df"/></linearGradient>
+  </defs>
+  <path fill="url(#sky)" d="M0 0h1440v900H0z"/>
+  <path fill="url(#shadow)" d="M1440 0c-282 155-200 387-494 478S229 524 0 900h1440V0Z"/>
+  <path fill="url(#wave)" d="M1440 118c-316 103-195 405-555 490S217 620 65 900h1375V118Z"/>
+  <path fill="url(#light)" d="M1294 0c-277 159-163 329-456 435S282 501 131 650 11 805 0 900V0h1294Z"/>
+  <path stroke="#fff" stroke-opacity=".26" stroke-width="2" d="M1294 0c-277 159-163 329-456 435S282 501 131 650 11 805 0 900"/>
+  <path fill="#e7f8ff" fill-opacity=".16" d="M1139 0c-65 140-76 275-253 363S309 440 161 558 12 715 0 790V0h1139Z"/>
+</svg>
