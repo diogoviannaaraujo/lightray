@@ -60,19 +60,22 @@ jobs:
             windows/target
           key: windows-x64-rust-1.98-${{ hashFiles('windows/Cargo.lock') }}
           restore-keys: windows-x64-rust-1.98-
-      - name: Validate release version
-        if: inputs.version != ''
+      - name: Resolve and validate release version
+        id: version
         env:
-          VERSION: ${{ inputs.version }}
+          REQUESTED_VERSION: ${{ inputs.version }}
         run: |
           $cargo = Select-String -Path windows/Cargo.toml -Pattern '^version = "(.+)"$' | Select-Object -First 1
-          if (-not $cargo -or $cargo.Matches[0].Groups[1].Value -ne $env:VERSION) {
-            Write-Output "::error::Workspace version in windows/Cargo.toml must match $env:VERSION."
+          if (-not $cargo) { throw 'Missing workspace version in windows/Cargo.toml.' }
+          $version = $cargo.Matches[0].Groups[1].Value
+          if ($env:REQUESTED_VERSION -and $version -ne $env:REQUESTED_VERSION) {
+            Write-Output "::error::Workspace version in windows/Cargo.toml must match $env:REQUESTED_VERSION."
             exit 1
           }
+          "version=$version" >> $env:GITHUB_OUTPUT
       - name: Validate, build, test the ABI, and package both applications
         env:
-          VERSION: ${{ inputs.version || '0.1.0' }}
+          VERSION: ${{ steps.version.outputs.version }}
         run: ./windows/scripts/Build.ps1 -Version $env:VERSION
       - uses: actions/upload-artifact@v4
         with:

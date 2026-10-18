@@ -74,6 +74,7 @@ version must match, and `windows/Cargo.toml` must use the same version. Push a m
 `vMAJOR.MINOR.PATCH` tag to create a draft GitHub release with Mac and Windows downloads after all
 Apple distributions succeed. Existing releases are never overwritten. Windows retains its
 path-filtered push/PR workflow; tag and manual releases call it explicitly with the release version.
+Ordinary Windows runs resolve their package version from Cargo instead of a hardcoded default.
 Manual runs can disable both TestFlight uploads with the **testflight** checkbox.
 
 ### Release signing
