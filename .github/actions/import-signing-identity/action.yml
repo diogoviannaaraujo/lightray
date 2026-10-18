@@ -22,6 +22,9 @@ inputs:
   keychain-name:
     description: Unique name when importing multiple identities in one job
     default: lightray-signing
+  trusted-tool:
+    description: Executable allowed to use this private key without an interactive keychain prompt
+    default: /usr/bin/codesign
 
 outputs:
   identity:
@@ -30,6 +33,9 @@ outputs:
   keychain:
     description: Path of the temporary keychain
     value: ${{ steps.import.outputs.keychain }}
+  name:
+    description: Certificate common name, as required by productbuild
+    value: ${{ steps.import.outputs.name }}
 
 runs:
   using: composite
@@ -43,6 +49,7 @@ runs:
         INTERMEDIATES: ${{ inputs.intermediates }}
         POLICY: ${{ inputs.policy }}
         KEYCHAIN_NAME: ${{ inputs.keychain-name }}
+        TRUSTED_TOOL: ${{ inputs.trusted-tool }}
       run: |
         keychain="$RUNNER_TEMP/$KEYCHAIN_NAME.keychain-db"
         keychain_password=$(openssl rand -base64 32)
@@ -52,7 +59,7 @@ runs:
         echo "keychain=$keychain" >> "$GITHUB_OUTPUT"
         base64 --decode <<< "$P12" > "$RUNNER_TEMP/signing.p12"
         security import "$RUNNER_TEMP/signing.p12" -k "$keychain" -f pkcs12 -P "$PASSWORD" \
-          -T /usr/bin/codesign
+          -T "$TRUSTED_TOOL"
         rm "$RUNNER_TEMP/signing.p12"
         # The .p12 may omit Apple's intermediate certificate, or already carry it.
         for ca in $INTERMEDIATES; do
@@ -78,3 +85,6 @@ runs:
         fi
         security find-identity -v -p "$POLICY" "$keychain" | grep "$identity"
         echo "identity=$identity" >> "$GITHUB_OUTPUT"
+        name=$(security find-identity -v -p "$POLICY" "$keychain" |
+          awk -F '"' -v identity="$identity" 'index($0, identity) { print $2; exit }')
+        echo "name=$name" >> "$GITHUB_OUTPUT"

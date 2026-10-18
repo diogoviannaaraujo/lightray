@@ -107,8 +107,11 @@ def package_app(role, options, output):
         print(f'App: {destination}', flush=True)
         if options.app_store_profile:
             installer = output / f'Lightray-{info["CFBundleShortVersionString"]}-macos.pkg'
-            run('productbuild', '--component', destination, '/Applications',
-                '--sign', options.installer_sign, installer)
+            command = ['productbuild', '--component', destination, '/Applications',
+                       '--sign', options.installer_sign]
+            if options.installer_keychain:
+                command += ['--keychain', options.installer_keychain]
+            run(*command, installer, timeout=180)
             run('pkgutil', '--check-signature', installer)
             print(f'App Store package: {installer}', flush=True)
         if not options.no_dmg:
@@ -134,6 +137,7 @@ def main():
     parser.add_argument('--app-store-profile', type=Path,
                         help='Mac App Store profile: sandbox the client and produce a TestFlight .pkg')
     parser.add_argument('--installer-sign', help='Mac Installer Distribution signing identity')
+    parser.add_argument('--installer-keychain', type=Path, help='Keychain containing the installer identity')
     options = parser.parse_args()
     if options.build_number and not re.fullmatch(r'[0-9]+(?:\.[0-9]+){0,2}', options.build_number):
         parser.error('--build-number must contain one to three numeric components')

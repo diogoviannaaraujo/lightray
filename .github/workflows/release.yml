@@ -428,16 +428,19 @@ jobs:
           intermediates: AppleWWDRCAG3
           policy: basic
           keychain-name: lightray-installer
+          trusted-tool: /usr/bin/productbuild
 
       - name: Package sandboxed macOS client for TestFlight
         env:
           IDENTITY: ${{ steps.certificate.outputs.identity }}
-          INSTALLER_IDENTITY: ${{ steps.installer.outputs.identity }}
+          INSTALLER_IDENTITY: ${{ steps.installer.outputs.name }}
+          INSTALLER_KEYCHAIN: ${{ steps.installer.outputs.keychain }}
           PROFILE: ${{ secrets.MACOS_APP_STORE_PROFILE }}
         run: |
           base64 --decode <<< "$PROFILE" > "$RUNNER_TEMP/mac-app-store.provisionprofile"
           python3 apple/scripts/package-app.py --app client --no-dmg \
             --sign "$IDENTITY" --installer-sign "$INSTALLER_IDENTITY" \
+            --installer-keychain "$INSTALLER_KEYCHAIN" \
             --app-store-profile "$RUNNER_TEMP/mac-app-store.provisionprofile" \
             --build-number "${{ github.run_number }}.${{ github.run_attempt }}" \
             --output "$RUNNER_TEMP/lightray-macos-testflight"
