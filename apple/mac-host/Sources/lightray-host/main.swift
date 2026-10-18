@@ -19,9 +19,15 @@ if CommandLine.arguments.contains("--service") {
 
 let usage = """
     usage: lightray-host [options]
-           lightray-host pair [--new]
+           lightray-host pair NAME [--minutes N]
+           lightray-host devices
+           lightray-host revoke ID|NAME
 
-    pair            print this host's pairing token for lightray-client --pair (--new replaces it)
+    pair            add a device and print its own pairing code, for lightray-client --pair. A
+                    running host accepts the code until the device first connects, which pairs
+                    it, or for N minutes (default 10)
+    devices         list the paired devices and the codes still waiting for theirs
+    revoke          remove a device: its code stops working, and a running host disconnects it
 
     --port N        UDP port (default 7373)
     --fps N         frame rate cap (default 60)
@@ -46,17 +52,59 @@ func fail(_ message: String) -> Never {
     exit(1)
 }
 
-let pairingFile = "host-pairing"
+let devices = PairedDeviceStore()
 var arguments = Array(CommandLine.arguments.dropFirst())
 
-if arguments.first == "pair" {
-    var pairing = PairingStore.load(pairingFile)
-    if pairing == nil || arguments.contains("--new") {
-        pairing = Pairing.generate()
-        do { try PairingStore.save(pairing!, as: pairingFile) } catch { fail("cannot save the pairing: \(error)") }
+func describe(_ date: Date?) -> String {
+    date.map { $0.formatted(date: .abbreviated, time: .shortened) } ?? "never"
+}
+
+switch arguments.first {
+case "pair":
+    arguments.removeFirst()
+    var minutes = PairedDeviceStore.waitingLifetime / 60
+    if let index = arguments.firstIndex(of: "--minutes") {
+        guard index + 1 < arguments.count, let value = Double(arguments[index + 1]), value > 0, value <= 24 * 60 else {
+            fail("--minutes takes a number of minutes, at most 1440")
+        }
+        minutes = value
+        arguments.removeSubrange(index...index + 1)
     }
-    print(pairing!.token)
+    guard arguments.count == 1 else { fail("usage: lightray-host pair NAME [--minutes N]") }
+    do {
+        let device = try devices.addWaiting(name: arguments[0], lifetime: minutes * 60)
+        FileHandle.standardError.write(Data("""
+            Waiting for \(device.name) (\(device.hexID)). A running host accepts this code until the device \
+            first connects, or until \(describe(device.expires)).
+
+            """.utf8))
+        print(device.pairing.token)
+    } catch { fail("cannot add the device: \(error.localizedDescription)") }
     exit(0)
+case "devices":
+    do {
+        let list = try devices.load().sorted { $0.created < $1.created }
+        if list.isEmpty { print("no paired devices: add one with `lightray-host pair NAME`") }
+        for device in list {
+            let state = device.isWaiting ? "waiting until \(describe(device.expires))" : "paired \(describe(device.paired))"
+            print("\(device.hexID)  \(device.name)  \(state)  last connected \(describe(device.lastConnected))")
+        }
+    } catch { fail("cannot read the paired devices: \(error.localizedDescription)") }
+    exit(0)
+case "revoke":
+    guard arguments.count == 2 else { fail("usage: lightray-host revoke ID|NAME") }
+    let target = arguments[1]
+    do {
+        let list = try devices.load()
+        let matches = list.filter { $0.hexID == target.lowercased() || $0.name == target }
+        guard let device = matches.first else { fail("no device has the ID or name \(target)") }
+        guard matches.count == 1 else { fail("\(matches.count) devices are named \(target): revoke one by its ID") }
+        try devices.remove(id: device.id)
+        print("revoked \(device.name) (\(device.hexID))")
+    } catch { fail("cannot revoke the device: \(error.localizedDescription)") }
+    exit(0)
+default:
+    break
 }
 
 var options = HostOptions()
@@ -98,8 +146,9 @@ while !arguments.isEmpty {
     }
 }
 
-guard let pairing = PairingStore.load(pairingFile) else {
-    fail("no pairing yet: run `lightray-host pair` and give the token to the client")
+let pairings = StoredPairings(store: devices)
+if pairings.all.isEmpty {
+    log("no paired devices yet: run `lightray-host pair NAME` while this host runs, and give the code to the client")
 }
 
 if options.testPattern == nil, !CGPreflightScreenCaptureAccess() {
@@ -119,7 +168,7 @@ if options.inputMode == .inject {
     }
 }
 
-let app = HostApp(options: options, pairing: pairing)
+let app = HostApp(options: options, pairings: pairings)
 var signalSources: [DispatchSourceSignal] = []
 for number in [SIGINT, SIGTERM] {
     Darwin.signal(number, SIG_IGN)

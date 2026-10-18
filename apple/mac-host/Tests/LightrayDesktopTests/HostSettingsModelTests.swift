@@ -1,5 +1,6 @@
 import Foundation
 import XCTest
+import LightrayCore
 import LightrayHostSupport
 @testable import lightray_host_app
 
@@ -28,6 +29,7 @@ import LightrayHostSupport
 @MainActor final class HostSettingsModelTests: XCTestCase {
     private var directory: URL!
     private var store: HostSettingsStore!
+    private var devices: PairedDeviceStore!
     private var registration: SettingsRegistration!
     private var control: SettingsControl!
 
@@ -35,6 +37,7 @@ import LightrayHostSupport
         directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         store = HostSettingsStore(directory: directory)
         try store.save(HostSettings())
+        devices = PairedDeviceStore(directory: directory, legacy: directory.appendingPathComponent("host-pairing"))
         registration = SettingsRegistration()
         control = SettingsControl()
     }
@@ -42,7 +45,7 @@ import LightrayHostSupport
     override func tearDown() async throws { try? FileManager.default.removeItem(at: directory) }
 
     private func makeModel() -> HostSettingsModel {
-        HostSettingsModel(service: HostService(store: store, registration: registration,
+        HostSettingsModel(service: HostService(store: store, devices: devices, registration: registration,
                                               control: control, build: "test"))
     }
 
@@ -181,5 +184,74 @@ import LightrayHostSupport
         XCTAssertFalse(model.canEdit)
         XCTAssertFalse(model.canStart)
         XCTAssertEqual(control.statusRequests, 0)
+    }
+
+    func testAddingADeviceNeedsARunningHost() async {
+        let model = makeModel()
+        XCTAssertFalse(model.canAddDevice)
+        model.showAddDevice()
+        XCTAssertNil(model.addDevice)
+        registration.state = .enabled
+        await model.service.refresh()
+        XCTAssertTrue(model.canAddDevice)
+    }
+
+    func testDeviceJoinsTheListOnlyOnceItConnects() async throws {
+        registration.state = .enabled
+        let model = makeModel()
+        await model.service.refresh()
+        model.showAddDevice()
+        XCTAssertEqual(model.addDevice, .naming)
+        model.newDeviceName = "iPad"
+        model.beginAdding()
+        guard case .waiting(let device, let invite)? = model.addDevice else { return XCTFail("The sheet is not waiting.") }
+        XCTAssertEqual(invite.pairing, device.pairing)
+        XCTAssertEqual(invite.address, model.address)
+        XCTAssertNotNil(PairingInvite(string: invite.string))
+        XCTAssertTrue(model.devices.isEmpty)
+        XCTAssertEqual(try devices.load().map(\.id), [device.id])
+        // The running host records the first connection, and reports it as connected.
+        try devices.markConnected(id: device.id)
+        control.snapshot.connectedDevice = device.hexID
+        await model.service.refresh()
+        XCTAssertEqual(model.devices.map(\.id), [device.id])
+        guard case .paired? = model.addDevice else { return XCTFail("The device did not pair.") }
+        XCTAssertTrue(model.isConnected(model.devices[0]))
+        model.closeAddDevice()
+        XCTAssertNil(model.addDevice)
+        XCTAssertEqual(try devices.load().count, 1)
+        model.revoke(model.devices[0])
+        XCTAssertTrue(model.devices.isEmpty)
+        XCTAssertTrue(try devices.load().isEmpty)
+        XCTAssertEqual(model.notice, "iPad was revoked and disconnected.")
+    }
+
+    func testClosingTheSheetWithdrawsAWaitingCode() async throws {
+        registration.state = .enabled
+        let model = makeModel()
+        await model.service.refresh()
+        model.showAddDevice()
+        model.newDeviceName = "iPad"
+        model.beginAdding()
+        XCTAssertEqual(try devices.load().count, 1)
+        model.closeAddDevice()
+        XCTAssertTrue(try devices.load().isEmpty)
+        XCTAssertTrue(model.devices.isEmpty)
+    }
+
+    func testWithdrawnCodeOffersToTryAgain() async throws {
+        registration.state = .enabled
+        let model = makeModel()
+        await model.service.refresh()
+        model.showAddDevice()
+        model.newDeviceName = "iPad"
+        model.beginAdding()
+        guard case .waiting(let device, _)? = model.addDevice else { return XCTFail("The sheet is not waiting.") }
+        try devices.removeWaiting(id: device.id)
+        await model.service.refresh()
+        XCTAssertEqual(model.addDevice, .expired("iPad"))
+        model.retryAdding()
+        XCTAssertEqual(model.addDevice, .naming)
+        XCTAssertEqual(model.newDeviceName, "iPad")
     }
 }

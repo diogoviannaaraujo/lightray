@@ -14,15 +14,17 @@ import LightrayHostSupport
     private var requestingPermission = false
     private var revision = 0
     let store: HostSettingsStore
+    let devices: PairedDeviceStore
     let registration: ServiceRegistration
     let control: HostControlClient
     let build: String
     var logURL: URL { HostIdentity.logURL }
     var isActive: Bool { settings.enabled || registration.state == .enabled || registration.state == .requiresApproval }
 
-    init(store: HostSettingsStore = HostSettingsStore(), registration: ServiceRegistration? = nil,
-         control: HostControlClient? = nil, build: String? = nil) {
+    init(store: HostSettingsStore = HostSettingsStore(), devices: PairedDeviceStore = PairedDeviceStore(),
+         registration: ServiceRegistration? = nil, control: HostControlClient? = nil, build: String? = nil) {
         self.store = store
+        self.devices = devices
         self.registration = registration ?? AppServiceRegistration()
         self.control = control ?? XPCClient()
         self.build = build ?? "\(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") ?? "0")-\(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") ?? "0")"

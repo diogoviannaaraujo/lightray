@@ -36,6 +36,15 @@ struct HostSettingsBanner: Identifiable {
     let action: Action
 }
 
+/// Adding a device: name it, show its code while the host waits for its first connection, then
+/// confirm it paired. The code is never shown again.
+enum AddDeviceStep: Equatable {
+    case naming
+    case waiting(PairedDevice, PairingInvite)
+    case paired(PairedDevice)
+    case expired(String)
+}
+
 /// Keeps drafts separate from the running service and observes service-owned permission state.
 @MainActor @Observable final class HostSettingsModel {
     var page: HostSettingsPage? = .general
@@ -50,6 +59,13 @@ struct HostSettingsBanner: Identifiable {
     private(set) var configurationError: String?
     private(set) var notice: String?
     private(set) var noticeIsError = false
+    /// Paired devices, oldest first; codes still waiting are shown only while being added.
+    private(set) var devices: [PairedDevice] = []
+    private(set) var devicesError: String?
+    var addDevice: AddDeviceStep?
+    var newDeviceName = ""
+    private(set) var addDeviceMessage: String?
+    var revoking: PairedDevice?
     @ObservationIgnored let service: HostService
     @ObservationIgnored weak var window: NSWindow?
 
@@ -65,6 +81,7 @@ struct HostSettingsBanner: Identifiable {
         hasServiceSnapshot = service.hasServiceSnapshot
         busy = service.busy
         service.onChange = { [weak self] in self?.refresh() }
+        reloadDevices()
     }
 
     var canEdit: Bool { !isActive && !busy && configurationError == nil }
@@ -73,6 +90,10 @@ struct HostSettingsBanner: Identifiable {
         guard let value = UInt16(port), value > 0 else { return nil }
         return value
     }
+    /// A new code is accepted only by a running host, which waits for the device's first connection.
+    var canAddDevice: Bool { snapshot.state == .running && hasServiceSnapshot && !busy }
+    var computerName: String { SCDynamicStoreCopyComputerName(nil, nil) as String? ?? "Mac" }
+    func isConnected(_ device: PairedDevice) -> Bool { snapshot.connectedDevice == device.hexID }
     var address: String {
         let name = SCDynamicStoreCopyLocalHostName(nil) as String? ?? ProcessInfo.processInfo.hostName
         return "\(name).local:\(port)"
@@ -146,6 +167,22 @@ struct HostSettingsBanner: Identifiable {
         isActive = service.isActive
         hasServiceSnapshot = service.hasServiceSnapshot
         configurationError = service.configurationError
+        reloadDevices()
+    }
+
+    private func reloadDevices() {
+        let all: [PairedDevice]
+        do { all = try service.devices.load(); devicesError = nil }
+        catch { devicesError = error.localizedDescription; return }
+        let paired = all.filter { !$0.isWaiting }.sorted { $0.created < $1.created }
+        if paired != devices { devices = paired }
+        guard case .waiting(let device, _) = addDevice else { return }
+        if let current = all.first(where: { $0.id == device.id }), current.accepts(at: Date()) {
+            if !current.isWaiting { addDevice = .paired(current) }
+        } else {
+            try? service.devices.removeWaiting(id: device.id)
+            addDevice = .expired(device.name)
+        }
     }
 
     func perform(_ action: HostSettingsBanner.Action) {
@@ -172,8 +209,6 @@ struct HostSettingsBanner: Identifiable {
             showNotice("Enter a port between 1 and 65535.", isError: true)
             return
         }
-        do { _ = try hostPairing() }
-        catch { showPairingError(error); return }
         clearNotice()
         let profile = quality
         let input = allowInput
@@ -191,30 +226,68 @@ struct HostSettingsBanner: Identifiable {
         showNotice("Mac address copied.")
     }
 
-    func copyPairing() {
-        do {
-            let pairing = try hostPairing()
-            NSPasteboard.general.clearContents()
-            NSPasteboard.general.setString(pairing.token, forType: .string)
-            showNotice("Pairing code copied. Paste it into Lightray on your other device.")
-        } catch { showPairingError(error) }
+    func showAddDevice() {
+        guard canAddDevice else { return }
+        newDeviceName = ""; addDeviceMessage = nil
+        addDevice = .naming
     }
 
-    func exportPairing() {
-        guard let window else { return }
+    func beginAdding() {
         do {
-            let pairing = try hostPairing()
-            let panel = NSSavePanel()
-            panel.nameFieldStringValue = "Lightray-pairing.txt"
-            panel.beginSheetModal(for: window) { [weak self] result in
-                guard result == .OK, let url = panel.url else { return }
-                do {
-                    try Data((pairing.token + "\n").utf8).write(to: url, options: .atomic)
-                    try FileManager.default.setAttributes([.posixPermissions: 0o600], ofItemAtPath: url.path)
-                    self?.showNotice("Pairing file exported.")
-                } catch { self?.showPairingError(error) }
-            }
-        } catch { showPairingError(error) }
+            let device = try service.devices.addWaiting(name: newDeviceName)
+            addDeviceMessage = nil
+            addDevice = .waiting(device, PairingInvite(address: address, name: computerName, pairing: device.pairing))
+        } catch { addDeviceMessage = error.localizedDescription }
+    }
+
+    func retryAdding() {
+        guard case .expired(let name) = addDevice else { return }
+        newDeviceName = name; addDeviceMessage = nil
+        addDevice = .naming
+    }
+
+    /// Closing the sheet withdraws a code still waiting; a device that already connected stays.
+    func closeAddDevice() {
+        if case .waiting(let device, _) = addDevice {
+            do { try service.devices.removeWaiting(id: device.id) }
+            catch { showNotice("Could not withdraw the code for \(device.name): \(error.localizedDescription)", isError: true) }
+        }
+        addDevice = nil; addDeviceMessage = nil
+        reloadDevices()
+    }
+
+    func copyCode() {
+        guard case .waiting(let device, _) = addDevice else { return }
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents()
+        // The nspasteboard.org marker that clipboard history tools skip.
+        pasteboard.setData(Data(), forType: NSPasteboard.PasteboardType("org.nspasteboard.ConcealedType"))
+        pasteboard.setString(device.pairing.token, forType: .string)
+        addDeviceMessage = "Code copied. Paste it into Lightray on \(device.name)."
+    }
+
+    func exportCode() {
+        guard case .waiting(let device, _) = addDevice, let window = NSApp.keyWindow ?? window else { return }
+        let panel = NSSavePanel()
+        panel.nameFieldStringValue = "Lightray pairing for \(device.name.replacingOccurrences(of: "/", with: "-")).txt"
+        panel.beginSheetModal(for: window) { [weak self] result in
+            guard result == .OK, let url = panel.url else { return }
+            do {
+                try Data((device.pairing.token + "\n").utf8).write(to: url, options: .atomic)
+                try FileManager.default.setAttributes([.posixPermissions: 0o600], ofItemAtPath: url.path)
+                self?.addDeviceMessage = "Pairing file saved. Delete it once \(device.name) is paired."
+            } catch { self?.addDeviceMessage = "Could not save the pairing file: \(error.localizedDescription)" }
+        }
+    }
+
+    func revoke(_ device: PairedDevice) {
+        revoking = nil
+        let connected = isConnected(device)
+        do {
+            try service.devices.remove(id: device.id)
+            showNotice(connected ? "\(device.name) was revoked and disconnected." : "\(device.name) was revoked.")
+        } catch { showNotice("Could not revoke \(device.name): \(error.localizedDescription)", isError: true) }
+        reloadDevices()
     }
 
     func showLog() {
@@ -227,18 +300,5 @@ struct HostSettingsBanner: Identifiable {
 
     private func showNotice(_ message: String, isError: Bool = false) {
         notice = message; noticeIsError = isError
-    }
-
-    private func showPairingError(_ error: Error) {
-        showNotice("Could not access this Mac’s pairing: \(error.localizedDescription)", isError: true)
-    }
-
-    private func hostPairing() throws -> Pairing {
-        if FileManager.default.fileExists(atPath: PairingStore.path("host-pairing")) {
-            return try PairingStore.read("host-pairing")
-        }
-        let pairing = Pairing.generate()
-        try PairingStore.save(pairing, as: "host-pairing")
-        return pairing
     }
 }

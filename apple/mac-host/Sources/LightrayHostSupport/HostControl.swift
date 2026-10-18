@@ -7,9 +7,13 @@ public struct HostSnapshot: Codable, Equatable, Sendable {
     public var message: String
     public var screenAllowed: Bool
     public var inputAllowed: Bool
-    public init(state: State = .stopped, message: String = "Sharing is off.", screenAllowed: Bool = false, inputAllowed: Bool = false) {
+    /// The paired device streaming now, by its pairing ID in hex.
+    public var connectedDevice: String?
+    public init(state: State = .stopped, message: String = "Sharing is off.", screenAllowed: Bool = false, inputAllowed: Bool = false,
+                connectedDevice: String? = nil) {
         self.state = state; self.message = message
         self.screenAllowed = screenAllowed; self.inputAllowed = inputAllowed
+        self.connectedDevice = connectedDevice
     }
 }
 

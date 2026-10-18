@@ -27,12 +27,31 @@ public struct HostOptions {
     public var encoderBitrate: Int { bitrate * 100 / (100 + fecPercent) }
 }
 
+/// Where the host finds each pairing's key. Called on the host's network queue.
+public protocol HostPairings: AnyObject, Sendable {
+    /// The key of a pairing the host accepts now, or nil.
+    func key(for id: UInt64) -> Bytes?
+    /// Rereads the pairings if they changed; true when they did.
+    func refresh() -> Bool
+    /// A device completed a handshake with this pairing.
+    func connected(_ id: UInt64)
+}
+
+/// A single pairing that never changes.
+public final class FixedPairing: HostPairings {
+    public let pairing: Pairing
+    public init(_ pairing: Pairing) { self.pairing = pairing }
+    public func key(for id: UInt64) -> Bytes? { id == pairing.id ? pairing.psk : nil }
+    public func refresh() -> Bool { false }
+    public func connected(_ id: UInt64) {}
+}
+
 /// Glue between the protocol and the machine. The endpoint, the socket, the timer and the table
 /// of pipelines live on `queue`. Each video stream the client binds to a display gets a pipeline,
 /// with capture and encoding on a queue of its own; encoded frames come back to `queue`.
 public final class HostApp: @unchecked Sendable {
     let options: HostOptions
-    let pairing: Pairing
+    let pairings: HostPairings
     let queue = DispatchQueue(label: "lightray.net", qos: .userInteractive)
     let endpoint: HostEndpoint
     private var socket: UDPSocket!
@@ -50,23 +69,28 @@ public final class HostApp: @unchecked Sendable {
     private var reconfigureToken = 0
     private var displayWatch: DispatchSourceTimer?
     private var prewarming = false
+    private var pairingsChecked: UInt64 = 0
 
     // Statistics, on `queue`.
     private var framesSent: [UInt8: Int] = [:]
     private var lastReport = monotonicMicros()
     private var lastBytes = 0
 
-    public init(options: HostOptions, pairing: Pairing) {
+    public convenience init(options: HostOptions, pairing: Pairing) {
+        self.init(options: options, pairings: FixedPairing(pairing))
+    }
+
+    public init(options: HostOptions, pairings: HostPairings) {
         self.options = options
-        self.pairing = pairing
+        self.pairings = pairings
         var config = HostConfig()
         config.bitrate = options.bitrate
         config.frameRate = options.frameRate
         config.maxDatagramSize = options.maxDatagramSize
         config.fecPercent = options.fecPercent
         config.fecMinParity = options.fecMinParity
-        endpoint = HostEndpoint(config: config, hostSecret: randomBytes(32)) { [pairing] id in
-            id == pairing.id ? pairing.psk : nil
+        endpoint = HostEndpoint(config: config, hostSecret: randomBytes(32)) { [pairings] id in
+            pairings.key(for: id)
         }
     }
 
@@ -136,6 +160,7 @@ public final class HostApp: @unchecked Sendable {
     private func pump() {
         guard !stopped else { return }
         let now = monotonicMicros()
+        checkPairings(now: now)
         endpoint.tick(now: now)
         for (datagram, to) in endpoint.takeOutbox() { socket.send(datagram, to: to) }
         for event in endpoint.takeEvents() { handle(event) }
@@ -150,7 +175,9 @@ public final class HostApp: @unchecked Sendable {
     private func handle(_ event: HostEvent) {
         switch event {
         case .sessionStarted(let id, let peer):
-            log("session \(String(id, radix: 16)) started with \(peer), \(endpoint.session?.fec == true ? "FEC on" : "no FEC")")
+            let pairing = endpoint.session.map { String(format: "%016llx", $0.pairingID) } ?? "?"
+            log("session \(String(id, radix: 16)) started with \(peer) for device \(pairing), \(endpoint.session?.fec == true ? "FEC on" : "no FEC")")
+            if let session = endpoint.session { pairings.connected(session.pairingID) }
             // The new session's counters start from zero.
             lastBytes = 0
             framesSent.removeAll()
@@ -176,6 +203,21 @@ public final class HostApp: @unchecked Sendable {
         case .input(let message):
             injector.handle(message, displays: displays)
         }
+    }
+
+    /// Rereads the pairings at most once a second; pump runs at least that often. A session
+    /// whose device was revoked ends at once.
+    private func checkPairings(now: UInt64) {
+        guard now >= pairingsChecked + 1_000_000 else { return }
+        pairingsChecked = now
+        guard pairings.refresh(), let session = endpoint.session, pairings.key(for: session.pairingID) == nil else { return }
+        log("session \(String(session.connection.sessionID, radix: 16)): its device was revoked")
+        endpoint.close(now: now, code: .appRequest)
+    }
+
+    /// The device of the session that is streaming now, if any.
+    public var connectedPairing: UInt64? {
+        queue.sync { endpoint.session.flatMap { $0.paused ? nil : $0.pairingID } }
     }
 
     /// A new session learns the displays, then gets the primary one on its first video stream and

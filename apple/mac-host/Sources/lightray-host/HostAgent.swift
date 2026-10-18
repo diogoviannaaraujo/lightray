@@ -114,8 +114,7 @@ import LightrayHostSupport
             options.scale = settings.quality.scale
             options.inputMode = settings.allowInput ? .inject : .off
             options.requireCaptureReady = true
-            let pairing = try PairingStore.read("host-pairing")
-            let host = HostApp(options: options, pairing: pairing)
+            let host = HostApp(options: options, pairings: StoredPairings())
             runtime = host
             update(.starting, "Preparing sharing…")
             startup = Task { [weak self] in
@@ -141,6 +140,7 @@ import LightrayHostSupport
     fileprivate func statusData() -> Data {
         snapshot.screenAllowed = CGPreflightScreenCaptureAccess()
         snapshot.inputAllowed = AXIsProcessTrusted()
+        snapshot.connectedDevice = runtime?.connectedPairing.map { String(format: "%016llx", $0) }
         return try! JSONEncoder().encode(snapshot)
     }
 
@@ -205,3 +205,5 @@ private final class AgentControl: NSObject, HostControlProtocol, @unchecked Send
         Task { @MainActor in await agent?.quiesce(); reply() }
     }
 }
+
+extension StoredPairings: HostPairings {}

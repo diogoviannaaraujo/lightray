@@ -15,8 +15,8 @@ python3 apple/scripts/package-app.py --app host
 
 Copy `apple/.build/apps/Lightray Host.app` to Applications from `LightrayHost-0.1.0-arm64.dmg`.
 Quit the old combined Lightray app first so its host releases the UDP port and capture resources.
-Existing host pairing is preserved. Host settings are imported once from the old app, with sharing
-initially disabled. The client and host need no terminal or web runtime.
+Existing host pairing is preserved as a shared device (see [Pairing](#pairing)). Host settings are
+imported once from the old app, with sharing initially disabled. The client and host need no terminal or web runtime.
 
 ## Sharing and login
 
@@ -54,22 +54,47 @@ Before removing the Host app, choose Stop Sharing to unregister it.
 
 The service runs in the logged-in graphical user session. It provides no pre-login access and
 installs no root daemon. Its label and Mach service are `com.getlightray.host.service`.
-Settings live in `~/Library/Application Support/Lightray/Host/settings.json` (private directory,
-owner-only file); pairing remains in `~/Library/Application Support/Lightray/host-pairing`.
+Settings live in `~/Library/Application Support/Lightray/Host/settings.json` and paired devices in
+`devices.json` beside it (private directory, owner-only files).
 **Show Host Log** opens `~/Library/Logs/Lightray/host.log`; the previous oversized log is retained.
-Never share pairing codes or files publicly: they authorize remote control.
-
-Use **Copy Pairing Code** or **Export Pairing File…** to authorize a Mac or iPad client.
 Service registration state and actual streaming readiness are reported separately.
+
+## Pairing
+
+Every device has a pairing code of its own, so the host can list its devices and revoke one
+without touching the others. **Pairing** lists them, with when each paired and last connected,
+and marks the one streaming now.
+
+- **Add Device…** works while sharing is on. Name the device, and the host shows its code once:
+  as a QR code for the iPad's **Scan QR Code**, which carries this Mac's address and name too, or
+  with **Copy Code** and **Save to File…** for a Mac client. The host waits for the device: the code
+  works until its first connection, which adds it to the list, or for 10 minutes. Closing the sheet
+  before then withdraws it. The code is never shown again; to pair the device again, add it again.
+- **Revoke…** removes a device. Its code stops working at once, and the running host disconnects
+  it within a second if it is streaming.
+- The code is the device's key: anyone who copies it can connect as that device until it is
+  revoked. Never share codes or pairing files publicly.
+- The single code of earlier versions, `~/Library/Application Support/Lightray/host-pairing`, is
+  imported once as **Earlier pairing code** and its file removed. Devices paired with it keep
+  working; add each of them on its own, then revoke the earlier code.
+
+The settings app, the service and the CLI share `devices.json` and change it under a lock on
+`devices.lock`. The running host rereads it when it changes, at most once a second, and records
+each device's connections.
 
 ## Standalone command-line host
 
-The CLI does not install or modify a login service. Create pairing once, then run:
+The CLI does not install or modify a login service. Run the host, and add a device while it runs:
 
 ```bash
-apple/mac-host/.build/release/lightray-host pair
 apple/mac-host/.build/release/lightray-host
+apple/mac-host/.build/release/lightray-host pair NAME
 ```
+
+`pair NAME` prints the device's code for `lightray-client --pair`. A running host (the CLI or the
+service) accepts it until the device first connects, or for 10 minutes (`--minutes N` changes
+that). `lightray-host devices` lists the devices and the codes still waiting, and
+`lightray-host revoke ID|NAME` revokes one.
 
 For a permission-free synthetic stream:
 

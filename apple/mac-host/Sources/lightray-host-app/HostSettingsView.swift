@@ -64,6 +64,18 @@ import LightrayHostSupport
                 .formStyle(.grouped)
             }
             .background(.background)
+            .sheet(isPresented: Binding(get: { model.addDevice != nil }, set: { if !$0 { model.closeAddDevice() } })) {
+                AddDeviceSheet(model: model)
+            }
+            .confirmationDialog("Revoke \(model.revoking?.name ?? "this device")?",
+                                isPresented: Binding(get: { model.revoking != nil }, set: { if !$0 { model.revoking = nil } }),
+                                presenting: model.revoking) { device in
+                Button("Revoke", role: .destructive) { model.revoke(device) }
+            } message: { device in
+                Text(device.shared
+                     ? "Every device still using the earlier pairing code will be disconnected and can’t connect again until you add it again."
+                     : "\(device.name) will be disconnected and can’t connect again until you add it again.")
+            }
             .navigationTitle((model.page ?? .general).title)
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
@@ -165,22 +177,65 @@ import LightrayHostSupport
     private var pairingSettings: some View {
         Group {
             Section {
+                if let error = model.devicesError {
+                    Label(error, systemImage: "exclamationmark.circle").foregroundStyle(.red)
+                } else if model.devices.isEmpty {
+                    Text("No devices yet.").foregroundStyle(.secondary)
+                }
+                ForEach(model.devices) { deviceRow($0) }
+                Button("Add Device…", systemImage: "plus", action: model.showAddDevice)
+                    .disabled(!model.canAddDevice)
+            } header: {
+                Text("Paired Devices")
+            } footer: {
+                Text(model.canAddDevice
+                     ? "Each device gets its own code, shown once. Revoke a device to disconnect it and stop it from connecting again."
+                     : "Start sharing to add a device. A new code works only while this Mac waits for the device’s first connection.")
+            }
+            if model.devices.contains(where: \.shared) {
+                Section {
+                    Label("Devices you paired before this update share the earlier pairing code. Add each of them on its own, then revoke the earlier code.",
+                          systemImage: "info.circle")
+                        .foregroundStyle(.secondary)
+                }
+            }
+            Section {
                 addressRow
                 Button("Copy Mac Address", systemImage: "doc.on.doc", action: model.copyAddress)
             } header: {
                 Text("Connect a Device")
             } footer: {
-                Text("In Lightray, choose Add Host on Mac or Add computer on iPad, enter this Mac’s address, and paste the pairing code.")
-            }
-            Section {
-                Button("Copy Pairing Code", systemImage: "key", action: model.copyPairing)
-                Button("Export Pairing File…", systemImage: "square.and.arrow.up", action: model.exportPairing)
-            } header: {
-                Text("Pairing Credentials")
-            } footer: {
-                Text("Keep your pairing code and file private. They authorize access to this Mac. Only share them with devices you trust.")
+                Text("In Lightray, choose Add Host on Mac or Add computer on iPad, enter this Mac’s address, and paste the device’s pairing code. On iPad you can scan its QR code instead.")
             }
         }
+    }
+
+    private func deviceRow(_ device: PairedDevice) -> some View {
+        HStack(spacing: 10) {
+            Image(systemName: device.shared ? "key" : "laptopcomputer.and.ipad")
+                .foregroundStyle(.secondary).frame(width: 22).accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 3) {
+                Text(device.name)
+                Group {
+                    if let last = device.lastConnected {
+                        Text("Paired \(device.paired ?? device.created, format: .dateTime.day().month().year()) · Last connected \(last, format: .relative(presentation: .named))")
+                    } else {
+                        Text("Paired \(device.paired ?? device.created, format: .dateTime.day().month().year())")
+                    }
+                }
+                .font(.callout).foregroundStyle(.secondary)
+            }
+            .accessibilityElement(children: .combine)
+            Spacer()
+            if model.isConnected(device) {
+                Label("Connected", systemImage: "circle.fill")
+                    .labelStyle(.titleAndIcon).font(.callout)
+                    .foregroundStyle(.green)
+            }
+            Button("Revoke…", role: .destructive) { model.revoking = device }
+                .accessibilityLabel("Revoke \(device.name)")
+        }
+        .accessibilityElement(children: .contain)
     }
 
     private var diagnosticSettings: some View {
