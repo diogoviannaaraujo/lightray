@@ -64,7 +64,15 @@ jobs:
           swift test --package-path apple/mac-host
           swift build --package-path apple/mac-client
 
-      - name: Test iPad simulator app
+      - name: Build iPad simulator app
+        run: |
+          xcodebuild -project apple/ios-client/Lightray.xcodeproj -scheme Lightray \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath "$RUNNER_TEMP/lightray-ios" build
+
+      - name: Test iPad simulator app on pull requests
+        if: github.event_name == 'pull_request'
+        timeout-minutes: 12
         run: |
           simulator=$(xcrun simctl list devices available --json | python3 -c '
           import json, sys

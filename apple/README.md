@@ -49,10 +49,13 @@ stop sharing and explicitly review Lightray Host's approval in System Settings b
 
 The [release workflow](../.github/workflows/release.yml) runs on every push to `main`,
 version tags, and manual dispatches. Pull requests run the same validation without signing or
-uploading: shared core and host tests, a Mac client build, iPad simulator tests, protocol vectors,
+uploading: shared core and host tests, a Mac client build, an iPad simulator build, protocol vectors,
 and matching Apple/Windows versions.
-Simulator CI explicitly excludes the two integration tests that require a manually configured
-host and limits each remaining test to three minutes. Run the opt-in host tests through the
+Pull requests additionally execute the iPad simulator tests, with a twelve-minute step timeout
+covering simulator startup and a three-minute limit per test. Hosted simulator execution can
+stall before tests launch, so main distributions use the simulator compile check plus the core
+and host tests as their validation gate. Simulator CI explicitly excludes the two integration
+tests that require a manually configured host. Run the opt-in host tests through the
 [iPad validation scripts](ios-client/README.md#validation).
 
 Distributions share a FIFO concurrency queue across main pushes, tags, and manual runs, with up to
